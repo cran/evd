@@ -1,6 +1,6 @@
 
-R : Copyright 2001, The R Development Core Team
-Version 1.3.1  (2001-08-31)
+R : Copyright 2002, The R Development Core Team
+Version 1.4.1  (2002-01-30)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -131,122 +131,134 @@ Type `q()' to quit R.
 > 
 > data <- rgev(1000, loc = 0.13, scale = 1.1, shape = 0.2)
 > fgev(data)
-$estimate
-   loc  scale  shape 
-0.1650 1.1368 0.2035 
 
-$std.err
-    loc   scale   shape 
-0.04053 0.03215 0.02486 
+Call: fgev(x = data) 
+Deviance: 3645 
 
-$deviance
-[1] 3645
+Estimates
+  loc  scale  shape  
+0.165  1.137  0.204  
 
-$counts
-function gradient 
-      56       12 
+Standard Errors
+   loc   scale   shape  
+0.0405  0.0322  0.0249  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 56 
+  Gradient Evaluations: 12 
 
 > fgev(data, loc = 0, scale = 1)
-$estimate
- shape 
-0.2282 
 
-$std.err
-  shape 
-0.02116 
+Call: fgev(x = data, loc = 0, scale = 1) 
+Deviance: 3670 
 
-$deviance
-[1] 3670
+Estimates
+shape  
+0.228  
 
-$counts
-function gradient 
-      23        7 
+Standard Errors
+ shape  
+0.0212  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 23 
+  Gradient Evaluations: 7 
 
 > 
 > data2 <- rext(100, qnorm, mean = 0.56, mlen = 365)
 > fext(data2, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
-$estimate
-  mean     sd 
-0.5950 0.9928 
 
-$std.err
-   mean      sd 
-0.20337 0.07418 
+Call: fext(x = data2, start = list(mean = 0, sd = 1), distn = "norm",      mlen = 365) 
+Deviance: 80.58 
 
-$deviance
-[1] 80.58
+Estimates
+ mean     sd  
+0.595  0.993  
 
-$counts
-function gradient 
-      59       NA 
+Standard Errors
+  mean      sd  
+0.2034  0.0742  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 59 
 
 > fext(data2, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365)
-$estimate
- scale 
-0.7396 
 
-$std.err
-  scale 
-0.01576 
+Call: fext(x = data2, start = list(scale = 1), shape = 0.5, distn = "gamma",      mlen = 365) 
+Deviance: 151.6 
 
-$deviance
-[1] 151.6
+Estimates
+scale  
+ 0.74  
 
-$counts
-function gradient 
-      28       NA 
+Standard Errors
+ scale  
+0.0158  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 28 
 
 > 
 > # Section: Fitting Bivariate Distributions by Maximum Likelihood
 > 
 > bvdata <- rbvlog(100, dep = 0.6, mar1 = c(1.2,1.4,0), mar2 = c(1,1.6,0.1))
 > fbvlog(bvdata)
-$estimate
-   loc1  scale1  shape1    loc2  scale2  shape2     dep 
-1.16881 1.67308 0.02413 1.00118 1.66516 0.12351 0.47628 
 
-$std.err
-   loc1  scale1  shape1    loc2  scale2  shape2     dep 
-0.18838 0.14239 0.06976 0.18515 0.14291 0.06650 0.04796 
+Call: fbvlog(x = bvdata) 
+Deviance: 772.8 
 
-$deviance
-[1] 772.8
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+1.1688  1.6731  0.0241  1.0012  1.6652  0.1235  0.4763  
 
-$counts
-function gradient 
-      52       14 
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+0.1884  0.1424  0.0698  0.1852  0.1429  0.0665  0.0480  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 52 
+  Gradient Evaluations: 14 
 
 > fbvlog(bvdata, dep = 1)
-$estimate
-   loc1  scale1  shape1    loc2  scale2  shape2 
-1.19204 1.66900 0.02933 0.97984 1.66732 0.13177 
 
-$std.err
-   loc1  scale1  shape1    loc2  scale2  shape2 
-0.19276 0.14394 0.08808 0.19102 0.14709 0.08528 
+Call: fbvlog(x = bvdata, dep = 1) 
+Deviance: 855.4 
 
-$deviance
-[1] 855.4
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2  
+1.1920  1.6690  0.0293  0.9798  1.6673  0.1318  
 
-$counts
-function gradient 
-       5        1 
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2  
+0.1928  0.1439  0.0881  0.1910  0.1471  0.0853  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 5 
+  Gradient Evaluations: 1 
 
 > fbvlog(bvdata, shape1 = 0, shape2 = 0)
-$estimate
-  loc1 scale1   loc2 scale2    dep 
-1.1962 1.6296 1.1242 1.7868 0.4983 
 
-$std.err
-   loc1  scale1    loc2  scale2     dep 
-0.17071 0.12400 0.18661 0.13875 0.04797 
+Call: fbvlog(x = bvdata, shape1 = 0, shape2 = 0) 
+Deviance: 777.5 
 
-$deviance
-[1] 777.5
+Estimates
+  loc1  scale1    loc2  scale2     dep  
+ 1.196   1.630   1.124   1.787   0.498  
 
-$counts
-function gradient 
-      39       11 
+Standard Errors
+  loc1  scale1    loc2  scale2     dep  
+ 0.171   0.124   0.187   0.139   0.048  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 39 
+  Gradient Evaluations: 11 
 
 > pchisq(748.4 - 728, df = 2, lower.tail = FALSE)
 [1] 3.717e-05
@@ -254,20 +266,22 @@ function gradient
 > # Boundary Problems
 > 
 > fbvalog(bvdata)
-$estimate
-   loc1  scale1  shape1    loc2  scale2  shape2    asy1    asy2     dep 
-1.19015 1.70785 0.02964 0.97453 1.63160 0.13115 0.79884 0.96855 0.38475 
 
-$std.err
-   loc1  scale1  shape1    loc2  scale2  shape2    asy1    asy2     dep 
-0.19191 0.14565 0.07346 0.18601 0.14148 0.06883 0.11066 0.06191 0.06351 
+Call: fbvalog(x = bvdata) 
+Deviance: 770.1 
 
-$deviance
-[1] 770.1
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2    asy1    asy2     dep  
+1.1902  1.7078  0.0296  0.9745  1.6316  0.1311  0.7988  0.9685  0.3847  
 
-$counts
-function gradient 
-      74       17 
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2    asy1    asy2     dep  
+0.1919  0.1457  0.0735  0.1860  0.1415  0.0688  0.1107  0.0619  0.0635  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 74 
+  Gradient Evaluations: 17 
 
 > fbvalog(bvdata, asy2 = 1)$estimate
    loc1  scale1  shape1    loc2  scale2  shape2    asy1     dep 
@@ -281,39 +295,43 @@ function gradient
 > data(oxford)
 > oxford.fit.trend <- fgev(oxford, nsloc = (1901:1980 - 1950)/100)
 > oxford.fit.trend
-$estimate
-     loc loctrend    scale    shape 
- 83.6617  -1.8812   4.2233  -0.2841 
 
-$std.err
-     loc loctrend    scale    shape 
- 0.55566  1.96754  0.36504  0.07068 
+Call: fgev(x = oxford, nsloc = (1901:1980 - 1950)/100) 
+Deviance: 456.9 
 
-$deviance
-[1] 456.9
+Estimates
+     loc  loctrend     scale     shape  
+  83.662    -1.881     4.223    -0.284  
 
-$counts
-function gradient 
-      33       14 
+Standard Errors
+     loc  loctrend     scale     shape  
+  0.5557    1.9675    0.3650    0.0707  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 33 
+  Gradient Evaluations: 14 
 
 > 
 > oxford.fit <- fgev(oxford)
 > oxford.fit <- fgev(oxford, nsloc = (1901:1980 - 1950)/100, loctrend = 0)
 > oxford.fit
-$estimate
-    loc   scale   shape 
-83.8392  4.2599 -0.2873 
 
-$std.err
-    loc   scale   shape 
-0.52311 0.36579 0.06833 
+Call: fgev(x = oxford, loctrend = 0, nsloc = (1901:1980 - 1950)/100) 
+Deviance: 457.8 
 
-$deviance
-[1] 457.8
+Estimates
+   loc   scale   shape  
+83.839   4.260  -0.287  
 
-$counts
-function gradient 
-      29       11 
+Standard Errors
+   loc   scale   shape  
+0.5231  0.3658  0.0683  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 29 
+  Gradient Evaluations: 11 
 
 > 
 > fgev(oxford, shape = 0)$deviance - oxford.fit$deviance
@@ -325,36 +343,38 @@ function gradient
 [1] 75 95
 > 
 > fext(oxford, start = list(mean = 40, sd = 1), distn = "norm", mlen = 365)
-$estimate
- mean    sd 
-48.85 12.43 
 
-$std.err
-  mean     sd 
-2.7204 0.9928 
+Call: fext(x = oxford, start = list(mean = 40, sd = 1), distn = "norm",      mlen = 365) 
+Deviance: 464.2 
 
-$deviance
-[1] 464.2
+Estimates
+mean    sd  
+48.8  12.4  
 
-$counts
-function gradient 
-      51       NA 
+Standard Errors
+ mean     sd  
+2.720  0.993  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 51 
 
 > fext(oxford, start = list(scale = 1, shape = 1), distn = "gamma", mlen = 365)
-$estimate
-scale shape 
- 1.63 32.94 
 
-$std.err
- scale  shape 
-0.2407 6.0378 
+Call: fext(x = oxford, start = list(scale = 1, shape = 1), distn = "gamma",      mlen = 365) 
+Deviance: 465.9 
 
-$deviance
-[1] 465.9
+Estimates
+scale  shape  
+ 1.63  32.94  
 
-$counts
-function gradient 
-     353       NA 
+Standard Errors
+scale  shape  
+0.241  6.038  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 353 
 
 > 
 > # Section: Extended Example: Sea Level Data
@@ -405,44 +425,48 @@ function gradient
 [1] 0.6047
 > 
 > fbvlog(sl, nsloc1 = tvec, nsloc2 = tvec)
-$estimate
-     loc1 loc1trend    scale1    shape1      loc2 loc2trend    scale2    shape2 
-  3.57566   0.43946   0.15880   0.06640   2.54897   0.53289   0.20701   0.04781 
-      dep 
-  0.70283 
 
-$std.err
-     loc1 loc1trend    scale1    shape1      loc2 loc2trend    scale2    shape2 
-  0.02173   0.07540   0.01699   0.09768   0.03102   0.17208   0.02346   0.07607 
-      dep 
-  0.09551 
+Call: fbvlog(x = sl, nsloc1 = tvec, nsloc2 = tvec) 
+Deviance: -36.5 
 
-$deviance
-[1] -36.5
+Estimates
+     loc1  loc1trend     scale1     shape1       loc2  loc2trend     scale2  
+   3.5757     0.4395     0.1588     0.0664     2.5490     0.5329     0.2070  
+   shape2        dep  
+   0.0478     0.7028  
 
-$counts
-function gradient 
-      57       15 
+Standard Errors
+     loc1  loc1trend     scale1     shape1       loc2  loc2trend     scale2  
+   0.0217     0.0754     0.0170     0.0977     0.0310     0.1721     0.0235  
+   shape2        dep  
+   0.0761     0.0955  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 57 
+  Gradient Evaluations: 15 
 
 > fbvlog(sl, nsloc1 = tdframe, nsloc2 = tvec, loc1quad = 0)
-$estimate
-      loc1 loc1linear     scale1     shape1       loc2  loc2trend     scale2 
-   3.57565    0.43946    0.15880    0.06640    2.54897    0.53289    0.20701 
-    shape2        dep 
-   0.04781    0.70283 
 
-$std.err
-      loc1 loc1linear     scale1     shape1       loc2  loc2trend     scale2 
-   0.02173    0.07540    0.01699    0.09768    0.03102    0.17208    0.02346 
-    shape2        dep 
-   0.07607    0.09551 
+Call: fbvlog(x = sl, loc1quad = 0, nsloc1 = tdframe, nsloc2 = tvec) 
+Deviance: -36.5 
 
-$deviance
-[1] -36.5
+Estimates
+      loc1  loc1linear      scale1      shape1        loc2   loc2trend  
+    3.5757      0.4395      0.1588      0.0664      2.5490      0.5329  
+    scale2      shape2         dep  
+    0.2070      0.0478      0.7028  
 
-$counts
-function gradient 
-      64       15 
+Standard Errors
+      loc1  loc1linear      scale1      shape1        loc2   loc2trend  
+    0.0217      0.0754      0.0170      0.0977      0.0310      0.1721  
+    scale2      shape2         dep  
+    0.0235      0.0761      0.0955  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 64 
+  Gradient Evaluations: 15 
 
 > 
 > m5 <- fbvlog(sl, nsloc1 = tvec, nsloc2 = tvec, shape1 = 0, shape2 = 0)

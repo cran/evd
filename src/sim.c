@@ -1,34 +1,4 @@
-#include <R.h>
-#include <Rmath.h>
-
-#define RANDIN GetRNGstate()
-#define RANDOUT PutRNGstate()
-#define UNIF unif_rand()
-#define EXP exp_rand()
-
-void rbvlog_shi(int *n, double *alpha, double *sim);
-void rbvalog_shi(int *n, double *alpha, double *asy, double *sim);
-void rmvlog_tawn(int *n, int *d, double *alpha, double *sim);
-void rmvalog_tawn(int *n, int *d, int *nb, double *alpha, double *asy, 
-                  double *sim);
-double rpstable(double cexp);
-double maximum_n(int n, double *x);
-void rbvhr(double *n, double *dep, double *sim);
-double ccbvhr(double m1, double m2, double oldm1, double dep);
-void rbvneglog(double *n, double *dep, double *sim);
-double ccbvneglog(double m1, double m2, double oldm1, double dep);
-void rbvaneglog(double *n, double *dep, double *asy, double *sim);
-double ccbvaneglog(double m1, double m2, double oldm1, double dep, 
-                   double asy1, double asy2);
-void rbvbilog(double *n, double *alpha, double *beta, double *sim);
-double ccbvbilog(double m1, double m2, double oldm1, double alpha, 
-                double beta);
-void rbvnegbilog(double *n, double *alpha, double *beta, double *sim);
-double ccbvnegbilog(double m1, double m2, double oldm1, double alpha, 
-                   double beta);
-void rbvct(double *n, double *alpha, double *beta, double *sim);
-double ccbvct(double m1, double m2, double oldm1, double alpha, double beta);
-
+#include "header.h"
 
 /* 
    All simulation functions produce standard Frechet margins 
@@ -187,22 +157,6 @@ void rbvhr(double *n, double *dep, double *sim)
   }
 }
 
-double ccbvhr(double m1, double m2, double oldm1, double dep)
-{
-  double tm1,tm2,v,idep,q,fval;
-
-  tm1 = -log(m1);
-  tm2 = -log(m2);
-  idep = 1 / dep;
-  v = tm2 * pnorm(idep + (log(tm2) - log(tm1)) * dep/2, 0, 1, 1, 0) +
-    tm1 * pnorm(idep + (log(tm1) - log(tm2)) * dep/2, 0, 1, 1, 0);
-  q = pnorm(idep + (log(tm2) - log(tm1)) * dep/2, 0, 1, 1, 0) *
-    exp(-v) / m2 - oldm1;
-  fval = pnorm(idep + (log(tm2) - log(tm1)) * dep/2, 0, 1, 1, 0) *
-    exp(-v) / m2 - oldm1;
-  return fval;
-}
-
 /* produces uniform margins */
 void rbvneglog(double *n, double *dep, double *sim)
 {
@@ -238,18 +192,6 @@ void rbvneglog(double *n, double *dep, double *sim)
     }
     sim[2*i+0] = midpt;
   }
-}
-
-double ccbvneglog(double m1, double m2, double oldm1, double dep)
-{
-  double tm1,tm2,v,idep,fval;
-
-  tm1 = -log(m1);
-  tm2 = -log(m2);
-  idep = 1 / dep;
-  v = R_pow((R_pow(tm2,-dep) + R_pow(tm1,-dep)),-idep);
-  fval = exp(v) * m1 * (1-R_pow(1 + R_pow(tm2/tm1,dep), -1-idep)) - oldm1;
-  return fval;
 }
 
 /* produces uniform margins */
@@ -289,20 +231,6 @@ void rbvaneglog(double *n, double *dep, double *asy, double *sim)
   }
 }
 
-double ccbvaneglog(double m1, double m2, double oldm1, double dep, 
-                   double asy1, double asy2)
-{
-  double tm1,tm2,v,idep,fval;
-
-  tm1 = -log(m1);
-  tm2 = -log(m2);
-  idep = 1 / dep;
-  v = R_pow(asy1 * tm2, -dep) + R_pow(asy2 * tm1, -dep);
-  fval = exp(R_pow(v, -idep)) * m1 * (1 - R_pow(asy1, -dep) * 
-    R_pow(tm2, -dep-1) * R_pow(v, -idep-1)) - oldm1;
-  return fval;
-}
-
 /* produces uniform margins */
 void rbvbilog(double *n, double *alpha, double *beta, double *sim)
 {
@@ -338,47 +266,6 @@ void rbvbilog(double *n, double *alpha, double *beta, double *sim)
     }
     sim[2*i+0] = midpt;
   }
-}
-
-double ccbvbilog(double m1, double m2, double oldm1, double alpha, 
-                double beta)
-{
-  int i;
-  double tm1,tm2,v,fval;
-  double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
-
-  tm1 = -log(m1);
-  tm2 = -log(m2);
-
-  delta = eps = R_pow(DOUBLE_EPS, 0.75);
-  llim = 0;
-  ulim = ilen = 1;
-  lval = (1 - alpha) * tm1;
-  uval = (beta - 1) * tm2;
-  if(!(sign(lval) != sign(uval))) 
-    error("values at end points are not of opposite sign");
-  for(i=0;i<DOUBLE_DIGITS;i++) {
-    ilen = ilen/2;
-    midpt = llim + ilen;
-    midval = (1 - alpha) * tm1 * R_pow(1 - midpt, beta) - 
-             (1 - beta) * tm2 * R_pow(midpt, alpha);
-    if(fabs(midval) < eps || fabs(ilen) < delta) 
-      break;
-    if(sign(lval) != sign(midval)) {
-      ulim = midpt;
-      uval = midval;
-    }
-    else {
-      llim = midpt;
-      lval = midval;
-    }
-  if(i == DOUBLE_DIGITS-1) 
-    error("numerical problem in root finding algorithm");
-  }
-
-  v = tm1 * R_pow(midpt, 1 - alpha) + tm2 * R_pow(1 - midpt, 1 - beta);
-  fval = exp(-v) * (1 / m2) * R_pow(1 - midpt, 1 - beta) - oldm1;
-  return fval;
 }
 
 /* produces uniform margins */
@@ -418,48 +305,6 @@ void rbvnegbilog(double *n, double *alpha, double *beta, double *sim)
   }
 }
 
-double ccbvnegbilog(double m1, double m2, double oldm1, double alpha, 
-                   double beta)
-{
-  int i;
-  double tm1,tm2,v,fval;
-  double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
-
-  tm1 = -log(m1);
-  tm2 = -log(m2);
-
-  delta = eps = R_pow(DOUBLE_EPS, 0.75);
-  llim = 0;
-  ulim = ilen = 1;
-  lval = - (1 + beta) * tm2;
-  uval = (1 + alpha) * tm1;
-  if(!(sign(lval) != sign(uval))) 
-    error("values at end points are not of opposite sign1");
-  for(i=0;i<DOUBLE_DIGITS;i++) {
-    ilen = ilen/2;
-    midpt = llim + ilen;
-    midval = (1 + alpha) * tm1 * R_pow(midpt, alpha) - 
-             (1 + beta) * tm2 * R_pow(1 - midpt, beta);
-    if(fabs(midval) < eps || fabs(ilen) < delta) 
-      break;
-    if(sign(lval) != sign(midval)) {
-      ulim = midpt;
-      uval = midval;
-    }
-    else {
-      llim = midpt;
-      lval = midval;
-    }
-  if(i == DOUBLE_DIGITS-1) 
-    error("numerical problem in root finding algorithm");
-  }
-
-  v = - tm1 - tm2 + tm1 * R_pow(midpt, 1 + alpha) + 
-    tm2 * R_pow(1 - midpt, 1 + beta);
-  fval = exp(v) * (1 / m2) * (1 - R_pow(1 - midpt, 1 + beta)) - oldm1;
-  return fval;
-}
-
 /* produces uniform margins */
 void rbvct(double *n, double *alpha, double *beta, double *sim)
 {
@@ -497,19 +342,15 @@ void rbvct(double *n, double *alpha, double *beta, double *sim)
   }
 }
 
-double ccbvct(double m1, double m2, double oldm1, double alpha, double beta)
-{
-  double tm1,tm2,u,v,fval;
 
-  tm1 = -log(m1);
-  tm2 = -log(m2);
 
-  u = alpha * tm2 / (alpha * tm2 + beta * tm1);
-  v = tm1 * pbeta(u, alpha + 1, beta, 0, 0) + 
-    tm2 * pbeta(u, alpha, beta + 1, 1, 0);
-  fval = exp(-v) * (1 / m2) * pbeta(u, alpha, beta + 1, 1, 0) - oldm1;
-  return fval;
-}
+
+
+
+
+
+
+
 
 
 

@@ -250,7 +250,7 @@ function(q, alpha, beta, mar1 = c(0,1,0), mar2 = mar1)
 }
 
 "abvlog"<- 
-function(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, lty = 1,
+function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
          blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -261,14 +261,14 @@ function(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, lty = 1,
     idep <- 1/dep
     a <- (x^idep + (1-x)^idep)^dep
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
 }
 
 "abvalog"<- 
-function(x = 0.5, dep, asy = c(1,1), plot = FALSE, border = TRUE, add = FALSE,
+function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
          lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
          ylab = "", ...)
 {
@@ -283,14 +283,14 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, border = TRUE, add = FALSE,
     a <- ((asy[1]*x)^idep + (asy[2]*(1-x))^idep)^dep +
         (1-asy[1])*x + (1-asy[2])*(1-x)    
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...) 
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...) 
         return(invisible(a))
     }
     a
 }
 
 "abvhr" <-
-function(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, lty = 1,
+function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
          blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -301,14 +301,14 @@ function(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, lty = 1,
     fn <- function(z) z*pnorm(1/dep + dep * log(z/(1-z)) / 2)
     a <- fn(x) + fn(1-x)
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
 }
 
 "abvneglog"<- 
-function(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, lty = 1,
+function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
          blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -318,14 +318,14 @@ function(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, lty = 1,
     if(plot || add) x <- seq(0, 1, length = 100)
     a <- 1 - (x^(-dep) + (1-x)^(-dep))^(-1/dep)
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...) 
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...) 
         return(invisible(a))
     }
     a
 }
 
 "abvaneglog"<- 
-function(x = 0.5, dep, asy = c(1,1), plot = FALSE, border = TRUE, add = FALSE,
+function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
          lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
          ylab = "", ...)
 {
@@ -338,14 +338,14 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, border = TRUE, add = FALSE,
        max(asy) > 1) stop("invalid argument for `asy'")
     a <- 1 - ((asy[1]*x)^(-dep) + (asy[2]*(1-x))^(-dep))^(-1/dep)
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
 }
 
 "abvbilog"<- 
-function(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, add = FALSE,
+function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
          lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
          ylab = "", ...)
 {
@@ -370,14 +370,14 @@ function(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, add = FALSE,
     }
     a <- x * gma^(1-alpha) + (1-x) * (1 - gma)^(1-beta)
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
 }
 
 "abvnegbilog"<- 
-function(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, add = FALSE,
+function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
          lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
          ylab = "", ...)
 {
@@ -402,14 +402,14 @@ function(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, add = FALSE,
     }
     a <- 1 - x * gma^(1+alpha) - (1-x) * (1 - gma)^(1+beta)
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
 }
 
 "abvct" <-
-function(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, add = FALSE,
+function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
          lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
          ylab = "", ...)
 {
@@ -426,7 +426,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, add = FALSE,
     a <- (1-x) * pbeta(u, shape1 = alpha, shape2 = beta + 1) +
       x * pbeta(u, shape1 = alpha + 1, shape2 = beta, lower.tail = FALSE)
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
@@ -435,7 +435,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, add = FALSE,
 "abvnonpar"<- 
 function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
          method = c("cfg","deheuvels","pickands"), modify = 0,
-         wf = function(t) t, plot = FALSE, border = TRUE, add = FALSE,
+         wf = function(t) t, plot = FALSE, add = FALSE,
          lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1),
          xlab = "", ylab = "", ...)
 {
@@ -459,25 +459,24 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
             stop("`nsloc2' and `data' are not compatible")
         nslocmat2 <- cbind(1,as.matrix(nsloc2))
     }
+    # Transform to exponential margins
     mle.m1 <- fgev(data[,1], nsloc = nsloc1, std.err = FALSE)$estimate
     loc.mle.m1 <- mle.m1[grep("^loc", names(mle.m1))]
-    if(is.null(nsloc1))
-        loc.mle.m1 <- rep(loc.mle.m1, nrow(data))
+    if(is.null(nsloc1)) loc.mle.m1 <- rep(loc.mle.m1, nrow(data))
     else loc.mle.m1 <- nslocmat1 %*% loc.mle.m1
     mle.m1 <- cbind(loc.mle.m1, mle.m1["scale"], mle.m1["shape"])
     mle.m2 <- fgev(data[,2], nsloc = nsloc2, std.err = FALSE)$estimate
     loc.mle.m2 <- mle.m2[grep("^loc", names(mle.m2))]
-    if(is.null(nsloc2))
-        loc.mle.m2 <- rep(loc.mle.m2, nrow(data))
+    if(is.null(nsloc2)) loc.mle.m2 <- rep(loc.mle.m2, nrow(data))
     else loc.mle.m2 <- nslocmat2 %*% loc.mle.m2
     mle.m2 <- cbind(loc.mle.m2, mle.m2["scale"], mle.m2["shape"])
     data <- bvmtransform(data, mle.m1, mle.m2)
     data <- na.omit(data)
-    
+    # End transform
     if(plot || add) x <- seq(0, 1, length = 100)
     method <- match.arg(method)
     nn <- nrow(data)
-    
+
     if(method == "pickands") {
         if(modify != 2) {
             a <- numeric(length(x))
@@ -543,7 +542,7 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
         }
     }
     if(plot || add) {
-        bvdep(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
@@ -837,13 +836,13 @@ function(x, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, log = FALSE)
 }
     
 "fbvlog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-         method = "BFGS")
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvlog <- function(loc1 = 0, scale1 = 1, shape1 = 0, loc2 = loc1,
-                        scale2 = scale1, shape2 = shape1, dep)
+    call <- match.call()
+    nlbvlog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                        dep)
     {
-        if(any(c(scale1,scale2) < 0.01) || dep < 0.05 || dep > 1)
+        if(any(c(scale1,scale2) < 0.01) || dep < 0.1 || dep > 1)
             return(1e6)
         if(!is.null(nsloc1)) {
             ns <- numeric(length(loc.param1))
@@ -874,7 +873,7 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
                 as.double(shape2), dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0
         if(is.nan(m2l))
-            stop("NaN returned in likelihood evaluation\n\tPlease contact me at a.stephenson@lancaster.ac.uk")
+            stop("NaN returned in likelihood evaluation\n\tPlease contact me at a.stephenson@lancaster.ac.uk")    
         bvl <- .C("nlbvlog",
                 x1, x2, n,
                 as.double(dep), as.double(loc1[naind == 0]), as.double(scale1),
@@ -933,10 +932,10 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     n.m1 <- as.integer(length(x.m1))
     x.m2 <- as.double(x[naind == 1, 2])
     n.m2 <- as.integer(length(x.m2))
-    x <- x[naind == 0, , drop = FALSE]
-    x1 <- as.double(x[,1])
-    x2 <- as.double(x[,2])
-    n <- as.integer(nrow(x))
+    x.full <- x[naind == 0, , drop = FALSE]
+    x1 <- as.double(x.full[,1])
+    x2 <- as.double(x.full[,2])
+    n <- as.integer(nrow(x.full))
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvlog)[2:3],
@@ -951,38 +950,67 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         body(nllh) <- parse(text = paste("nlbvlog(", paste("p[",1:l,
             "]", collapse = ", "), ", ...)"))
     fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
     start.arg <- c(list(p = unlist(start)), fixed.param)
-    if(do.call("nllh", start.arg) == 1e6)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
-    
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if (opt$convergence > 0) 
+    if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
     if(std.err) {
         tol <- .Machine$double.eps^0.5
-        std.err <- qr(opt$hessian, tol = tol)
-        if (std.err$rank != ncol(std.err$qr)) 
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
             stop("observed information matrix is singular; use std.err = FALSE")
-        std.err <- diag(solve(std.err, tol = tol))
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
         if(any(std.err <= 0))
             stop("observed information matrix is singular; use std.err = FALSE")
         std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
     }
-    else std.err <- rep(NA,l)
-    names(std.err) <- nm
-    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
-         counts = opt$counts)
+    else std.err <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    # Transform to stationarity
+    x2 <- x
+    if(!is.null(nsloc1)) {
+        trend <- param[paste("loc1", names(nsloc1), sep="")]
+        trend <- drop(as.matrix(nsloc1) %*% trend)
+        x2[,1] <- x[,1] - trend
+    }
+    if(!is.null(nsloc2)) {
+        trend <- param[paste("loc2", names(nsloc2), sep="")]
+        trend <- drop(as.matrix(nsloc2) %*% trend)
+        x2[,2] <- x[,2] - trend
+    }
+    # End transform
+    structure(list(estimate = opt$par, std.err = std.err,
+    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    corr = corr, convergence = opt$convergence, counts = opt$counts,
+    message = opt$message, call = call, data = x, tdata = x2,
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = "bvlog"),
+    class = c("bvevd","evd"))
 }
 
 "fbvalog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-         method = "BFGS")
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvalog <- function(loc1 = 0, scale1 = 1, shape1 = 0, loc2 = loc1,
-                scale2 = scale1, shape2 = shape1, asy1 = 1, asy2 = 1, dep)
+    call <- match.call()
+    nlbvalog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                         asy1, asy2, dep)
     {
         if(any(c(scale1,scale2) < 0.01) || any(c(dep,asy1,asy2) > 1) ||
-           any(c(asy1,asy2) < 0) || dep < 0.05)
+           any(c(asy1,asy2) < 0) || dep < 0.1)
             return(1e6)
         if(!is.null(nsloc1)) {
             ns <- numeric(length(loc.param1))
@@ -1075,16 +1103,15 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     n.m1 <- as.integer(length(x.m1))
     x.m2 <- as.double(x[naind == 1, 2])
     n.m2 <- as.integer(length(x.m2))
-    x <- x[naind == 0, , drop = FALSE]
-    x1 <- as.double(x[,1])
-    x2 <- as.double(x[,2])
-    n <- as.integer(nrow(x))
+    x.full <- x[naind == 0, , drop = FALSE]
+    x1 <- as.double(x.full[,1])
+    x2 <- as.double(x.full[,2])
+    n <- as.integer(nrow(x.full))
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvalog)[2:3],
            as.list(numeric(length(loc.param2))), formals(nlbvalog)[5:9])
     names(f) <- param
-    
     m <- match(nm, param)
     if(any(is.na(m))) 
         stop("`start' specifies unknown arguments")    
@@ -1094,35 +1121,64 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         body(nllh) <- parse(text = paste("nlbvalog(", paste("p[",1:l,
             "]", collapse = ", "), ", ...)"))
     fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
     start.arg <- c(list(p = unlist(start)), fixed.param)
-    if(do.call("nllh", start.arg) == 1e6)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
-    
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if (opt$convergence > 0) 
+    if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
     if(std.err) {
         tol <- .Machine$double.eps^0.5
-        std.err <- qr(opt$hessian, tol = tol)
-        if (std.err$rank != ncol(std.err$qr)) 
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
             stop("observed information matrix is singular; use std.err = FALSE")
-        std.err <- diag(solve(std.err, tol = tol))
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
         if(any(std.err <= 0))
             stop("observed information matrix is singular; use std.err = FALSE")
         std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
     }
-    else std.err <- rep(NA,l)
-    names(std.err) <- nm
-    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
-         counts = opt$counts)
+    else std.err <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    # transform to stationarity
+    x2 <- x
+    if(!is.null(nsloc1)) {
+        trend <- param[paste("loc1", names(nsloc1), sep="")]
+        trend <- drop(as.matrix(nsloc1) %*% trend)
+        x2[,1] <- x[,1] - trend
+    }
+    if(!is.null(nsloc2)) {
+        trend <- param[paste("loc2", names(nsloc2), sep="")]
+        trend <- drop(as.matrix(nsloc2) %*% trend)
+        x2[,2] <- x[,2] - trend
+    }
+    # end transform
+    structure(list(estimate = opt$par, std.err = std.err,
+    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    corr = corr, convergence = opt$convergence, counts = opt$counts,
+    message = opt$message, call = call, data = x, tdata = x2,
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = "bvalog"),
+    class = c("bvevd","evd"))
 }
 
 "fbvhr"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-         method = "BFGS")
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvhr <- function(loc1 = 0, scale1 = 1, shape1 = 0, loc2 = loc1,
-                        scale2 = scale1, shape2 = shape1, dep)
+    call <- match.call()
+    nlbvhr <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                       dep)
     {
         if(any(c(scale1,scale2) < 0.01) || dep < 0.2 || dep > 10)
             return(1e6)
@@ -1214,10 +1270,10 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     n.m1 <- as.integer(length(x.m1))
     x.m2 <- as.double(x[naind == 1, 2])
     n.m2 <- as.integer(length(x.m2))
-    x <- x[naind == 0, , drop = FALSE]
-    x1 <- as.double(x[,1])
-    x2 <- as.double(x[,2])
-    n <- as.integer(nrow(x))
+    x.full <- x[naind == 0, , drop = FALSE]
+    x1 <- as.double(x.full[,1])
+    x2 <- as.double(x.full[,2])
+    n <- as.integer(nrow(x.full))
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvhr)[2:3],
@@ -1232,36 +1288,66 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         body(nllh) <- parse(text = paste("nlbvhr(", paste("p[",1:l,
             "]", collapse = ", "), ", ...)"))
     fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
     start.arg <- c(list(p = unlist(start)), fixed.param)
-    if(do.call("nllh", start.arg) == 1e6)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if (opt$convergence > 0) 
+    if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
     if(std.err) {
         tol <- .Machine$double.eps^0.5
-        std.err <- qr(opt$hessian, tol = tol)
-        if (std.err$rank != ncol(std.err$qr)) 
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
             stop("observed information matrix is singular; use std.err = FALSE")
-        std.err <- diag(solve(std.err, tol = tol))
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
         if(any(std.err <= 0))
             stop("observed information matrix is singular; use std.err = FALSE")
         std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
     }
-    else std.err <- rep(NA,l)
-    names(std.err) <- nm
-    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
-         counts = opt$counts)
+    else std.err <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    # transform to stationarity
+    x2 <- x
+    if(!is.null(nsloc1)) {
+        trend <- param[paste("loc1", names(nsloc1), sep="")]
+        trend <- drop(as.matrix(nsloc1) %*% trend)
+        x2[,1] <- x[,1] - trend
+    }
+    if(!is.null(nsloc2)) {
+        trend <- param[paste("loc2", names(nsloc2), sep="")]
+        trend <- drop(as.matrix(nsloc2) %*% trend)
+        x2[,2] <- x[,2] - trend
+    }
+    # end transform
+    structure(list(estimate = opt$par, std.err = std.err,
+    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    corr = corr, convergence = opt$convergence, counts = opt$counts,
+    message = opt$message, call = call, data = x, tdata = x2,
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = "bvhr"),
+    class = c("bvevd","evd"))
 }
 
 "fbvneglog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-         method = "BFGS")
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvneglog <- function(loc1 = 0, scale1 = 1, shape1 = 0, loc2 = loc1,
-                        scale2 = scale1, shape2 = shape1, dep)
+    call <- match.call()
+    nlbvneglog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                           dep)
     {
-        if(any(c(scale1,scale2) < 0.01) || dep < 0.05 || dep > 8)
+        if(any(c(scale1,scale2) < 0.01) || dep < 0.05 || dep > 5)
             return(1e6)
         if(!is.null(nsloc1)) {
             ns <- numeric(length(loc.param1))
@@ -1351,10 +1437,10 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     n.m1 <- as.integer(length(x.m1))
     x.m2 <- as.double(x[naind == 1, 2])
     n.m2 <- as.integer(length(x.m2))
-    x <- x[naind == 0, , drop = FALSE]
-    x1 <- as.double(x[,1])
-    x2 <- as.double(x[,2])
-    n <- as.integer(nrow(x))
+    x.full <- x[naind == 0, , drop = FALSE]
+    x1 <- as.double(x.full[,1])
+    x2 <- as.double(x.full[,2])
+    n <- as.integer(nrow(x.full))
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvneglog)[2:3],
@@ -1370,37 +1456,67 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         body(nllh) <- parse(text = paste("nlbvneglog(", paste("p[",1:l,
             "]", collapse = ", "), ", ...)"))
     fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
     start.arg <- c(list(p = unlist(start)), fixed.param)
-    if(do.call("nllh", start.arg) == 1e6)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if (opt$convergence > 0) 
+    if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
     if(std.err) {
         tol <- .Machine$double.eps^0.5
-        std.err <- qr(opt$hessian, tol = tol)
-        if (std.err$rank != ncol(std.err$qr)) 
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
             stop("observed information matrix is singular; use std.err = FALSE")
-        std.err <- diag(solve(std.err, tol = tol))
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
         if(any(std.err <= 0))
             stop("observed information matrix is singular; use std.err = FALSE")
         std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
     }
-    else std.err <- rep(NA,l)
-    names(std.err) <- nm
-    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
-         counts = opt$counts)
+    else std.err <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    # transform to stationarity
+    x2 <- x
+    if(!is.null(nsloc1)) {
+        trend <- param[paste("loc1", names(nsloc1), sep="")]
+        trend <- drop(as.matrix(nsloc1) %*% trend)
+        x2[,1] <- x[,1] - trend
+    }
+    if(!is.null(nsloc2)) {
+        trend <- param[paste("loc2", names(nsloc2), sep="")]
+        trend <- drop(as.matrix(nsloc2) %*% trend)
+        x2[,2] <- x[,2] - trend
+    }
+    # end transform
+    structure(list(estimate = opt$par, std.err = std.err,
+    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    corr = corr, convergence = opt$convergence, counts = opt$counts,
+    message = opt$message, call = call, data = x, tdata = x2,
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = "bvneglog"),
+    class = c("bvevd","evd"))
 }
 
 "fbvaneglog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-         method = "BFGS")
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvaneglog <- function(loc1 = 0, scale1 = 1, shape1 = 0, loc2 = loc1,
-                scale2 = scale1, shape2 = shape1, asy1 = 1, asy2 = 1, dep)
+    call <- match.call()
+    nlbvaneglog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                            asy1, asy2, dep)
     {
         if(any(c(scale1,scale2) < 0.01) || any(c(asy1,asy2) > 1) ||
-           any(c(asy1,asy2) < 0.001) || dep < 0.05 || dep > 8)
+           any(c(asy1,asy2) < 0.001) || dep < 0.05 || dep > 5)
             return(1e6)
         if(!is.null(nsloc1)) {
             ns <- numeric(length(loc.param1))
@@ -1494,10 +1610,10 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     n.m1 <- as.integer(length(x.m1))
     x.m2 <- as.double(x[naind == 1, 2])
     n.m2 <- as.integer(length(x.m2))
-    x <- x[naind == 0, , drop = FALSE]
-    x1 <- as.double(x[,1])
-    x2 <- as.double(x[,2])
-    n <- as.integer(nrow(x))
+    x.full <- x[naind == 0, , drop = FALSE]
+    x1 <- as.double(x.full[,1])
+    x2 <- as.double(x.full[,2])
+    n <- as.integer(nrow(x.full))
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvaneglog)[2:3],
@@ -1512,35 +1628,64 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         body(nllh) <- parse(text = paste("nlbvaneglog(", paste("p[",1:l,
             "]", collapse = ", "), ", ...)"))
     fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
     start.arg <- c(list(p = unlist(start)), fixed.param)
-    if(do.call("nllh", start.arg) == 1e6)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
-    
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if (opt$convergence > 0) 
+    if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
     if(std.err) {
         tol <- .Machine$double.eps^0.5
-        std.err <- qr(opt$hessian, tol = tol)
-        if (std.err$rank != ncol(std.err$qr)) 
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
             stop("observed information matrix is singular; use std.err = FALSE")
-        std.err <- diag(solve(std.err, tol = tol))
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
         if(any(std.err <= 0))
             stop("observed information matrix is singular; use std.err = FALSE")
         std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
     }
-    else std.err <- rep(NA,l)
-    names(std.err) <- nm
-    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
-         counts = opt$counts)
+    else std.err <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    # transform to stationarity
+    x2 <- x
+    if(!is.null(nsloc1)) {
+        trend <- param[paste("loc1", names(nsloc1), sep="")]
+        trend <- drop(as.matrix(nsloc1) %*% trend)
+        x2[,1] <- x[,1] - trend
+    }
+    if(!is.null(nsloc2)) {
+        trend <- param[paste("loc2", names(nsloc2), sep="")]
+        trend <- drop(as.matrix(nsloc2) %*% trend)
+        x2[,2] <- x[,2] - trend
+    }
+    # end transform
+    structure(list(estimate = opt$par, std.err = std.err,
+    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    corr = corr, convergence = opt$convergence, counts = opt$counts,
+    message = opt$message, call = call, data = x, tdata = x2,
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = "bvaneglog"),
+    class = c("bvevd","evd"))
 }
 
 "fbvbilog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-         method = "BFGS")
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvbilog <- function(loc1 = 0, scale1 = 1, shape1 = 0, loc2 = loc1,
-                        scale2 = scale1, shape2 = shape1, alpha, beta)
+    call <- match.call()
+    nlbvbilog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                          alpha, beta)
     {
         if(any(c(scale1,scale2) < 0.01) || any(c(alpha,beta) < 0.1) ||
            any(c(alpha,beta) > 0.999))
@@ -1634,10 +1779,10 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     n.m1 <- as.integer(length(x.m1))
     x.m2 <- as.double(x[naind == 1, 2])
     n.m2 <- as.integer(length(x.m2))
-    x <- x[naind == 0, , drop = FALSE]
-    x1 <- as.double(x[,1])
-    x2 <- as.double(x[,2])
-    n <- as.integer(nrow(x))
+    x.full <- x[naind == 0, , drop = FALSE]
+    x1 <- as.double(x.full[,1])
+    x2 <- as.double(x.full[,2])
+    n <- as.integer(nrow(x.full))
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvbilog)[2:3],
@@ -1652,35 +1797,64 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         body(nllh) <- parse(text = paste("nlbvbilog(", paste("p[",1:l,
             "]", collapse = ", "), ", ...)"))
     fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
     start.arg <- c(list(p = unlist(start)), fixed.param)
-    if(do.call("nllh", start.arg) == 1e6)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
-    
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if (opt$convergence > 0) 
+    if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
     if(std.err) {
         tol <- .Machine$double.eps^0.5
-        std.err <- qr(opt$hessian, tol = tol)
-        if (std.err$rank != ncol(std.err$qr)) 
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
             stop("observed information matrix is singular; use std.err = FALSE")
-        std.err <- diag(solve(std.err, tol = tol))
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
         if(any(std.err <= 0))
             stop("observed information matrix is singular; use std.err = FALSE")
         std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
     }
-    else std.err <- rep(NA,l)
-    names(std.err) <- nm
-    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
-         counts = opt$counts)
+    else std.err <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    # transform to stationarity
+    x2 <- x
+    if(!is.null(nsloc1)) {
+        trend <- param[paste("loc1", names(nsloc1), sep="")]
+        trend <- drop(as.matrix(nsloc1) %*% trend)
+        x2[,1] <- x[,1] - trend
+    }
+    if(!is.null(nsloc2)) {
+        trend <- param[paste("loc2", names(nsloc2), sep="")]
+        trend <- drop(as.matrix(nsloc2) %*% trend)
+        x2[,2] <- x[,2] - trend
+    }
+    # end transform
+    structure(list(estimate = opt$par, std.err = std.err,
+    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    corr = corr, convergence = opt$convergence, counts = opt$counts,
+    message = opt$message, call = call, data = x, tdata = x2,
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = "bvbilog"),
+    class = c("bvevd","evd"))
 }
 
 "fbvnegbilog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-         method = "BFGS")
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvnegbilog <- function(loc1 = 0, scale1 = 1, shape1 = 0, loc2 = loc1,
-                        scale2 = scale1, shape2 = shape1, alpha, beta)
+    call <- match.call()
+    nlbvnegbilog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                             alpha, beta)
     {
         if(any(c(scale1,scale2) < 0.01) || any(c(alpha,beta) < 0.1) ||
            any(c(alpha,beta) > 20))
@@ -1774,10 +1948,10 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     n.m1 <- as.integer(length(x.m1))
     x.m2 <- as.double(x[naind == 1, 2])
     n.m2 <- as.integer(length(x.m2))
-    x <- x[naind == 0, , drop = FALSE]
-    x1 <- as.double(x[,1])
-    x2 <- as.double(x[,2])
-    n <- as.integer(nrow(x))
+    x.full <- x[naind == 0, , drop = FALSE]
+    x1 <- as.double(x.full[,1])
+    x2 <- as.double(x.full[,2])
+    n <- as.integer(nrow(x.full))
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvnegbilog)[2:3],
@@ -1792,35 +1966,64 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         body(nllh) <- parse(text = paste("nlbvnegbilog(", paste("p[",1:l,
             "]", collapse = ", "), ", ...)"))
     fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
     start.arg <- c(list(p = unlist(start)), fixed.param)
-    if(do.call("nllh", start.arg) == 1e6)
-        warning("negative log-likelihood is infinite at starting values")
-    
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
+        warning("negative log-likelihood is infinite at starting values") 
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if (opt$convergence > 0) 
+    if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
     if(std.err) {
         tol <- .Machine$double.eps^0.5
-        std.err <- qr(opt$hessian, tol = tol)
-        if (std.err$rank != ncol(std.err$qr)) 
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
             stop("observed information matrix is singular; use std.err = FALSE")
-        std.err <- diag(solve(std.err, tol = tol))
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
         if(any(std.err <= 0))
             stop("observed information matrix is singular; use std.err = FALSE")
         std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
     }
-    else std.err <- rep(NA,l)
-    names(std.err) <- nm
-    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
-         counts = opt$counts)
+    else std.err <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    # transform to stationarity
+    x2 <- x
+    if(!is.null(nsloc1)) {
+        trend <- param[paste("loc1", names(nsloc1), sep="")]
+        trend <- drop(as.matrix(nsloc1) %*% trend)
+        x2[,1] <- x[,1] - trend
+    }
+    if(!is.null(nsloc2)) {
+        trend <- param[paste("loc2", names(nsloc2), sep="")]
+        trend <- drop(as.matrix(nsloc2) %*% trend)
+        x2[,2] <- x[,2] - trend
+    }
+    # end transform
+    structure(list(estimate = opt$par, std.err = std.err,
+    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    corr = corr, convergence = opt$convergence, counts = opt$counts,
+    message = opt$message, call = call, data = x, tdata = x2,
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = "bvnegbilog"),
+    class = c("bvevd","evd"))
 }
 
 "fbvct"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-         method = "BFGS")
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvct <- function(loc1 = 0, scale1 = 1, shape1 = 0, loc2 = loc1,
-                        scale2 = scale1, shape2 = shape1, alpha, beta)
+    call <- match.call()
+    nlbvct <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                       alpha, beta)
     {
         if(any(c(scale1,scale2) < 0.01) || any(c(alpha,beta) < 0.001) ||
            any(c(alpha,beta) > 30))
@@ -1914,10 +2117,10 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     n.m1 <- as.integer(length(x.m1))
     x.m2 <- as.double(x[naind == 1, 2])
     n.m2 <- as.integer(length(x.m2))
-    x <- x[naind == 0, , drop = FALSE]
-    x1 <- as.double(x[,1])
-    x2 <- as.double(x[,2])
-    n <- as.integer(nrow(x))
+    x.full <- x[naind == 0, , drop = FALSE]
+    x1 <- as.double(x.full[,1])
+    x2 <- as.double(x.full[,2])
+    n <- as.integer(nrow(x.full))
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvct)[2:3],
@@ -1932,32 +2135,62 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         body(nllh) <- parse(text = paste("nlbvct(", paste("p[",1:l,
             "]", collapse = ", "), ", ...)"))
     fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
     start.arg <- c(list(p = unlist(start)), fixed.param)
-    if(do.call("nllh", start.arg) == 1e6)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
-    
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if (opt$convergence > 0) 
+    if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
     if(std.err) {
         tol <- .Machine$double.eps^0.5
-        std.err <- qr(opt$hessian, tol = tol)
-        if (std.err$rank != ncol(std.err$qr)) 
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
             stop("observed information matrix is singular; use std.err = FALSE")
-        std.err <- diag(solve(std.err, tol = tol))
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
         if(any(std.err <= 0))
             stop("observed information matrix is singular; use std.err = FALSE")
         std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
     }
-    else std.err <- rep(NA,l)
-    names(std.err) <- nm
-    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
-         counts = opt$counts)
+    else std.err <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    # transform to stationarity
+    x2 <- x
+    if(!is.null(nsloc1)) {
+        trend <- param[paste("loc1", names(nsloc1), sep="")]
+        trend <- drop(as.matrix(nsloc1) %*% trend)
+        x2[,1] <- x[,1] - trend
+    }
+    if(!is.null(nsloc2)) {
+        trend <- param[paste("loc2", names(nsloc2), sep="")]
+        trend <- drop(as.matrix(nsloc2) %*% trend)
+        x2[,2] <- x[,2] - trend
+    }
+    # end transform
+    structure(list(estimate = opt$par, std.err = std.err,
+    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    corr = corr, convergence = opt$convergence, counts = opt$counts,
+    message = opt$message, call = call, data = x, tdata = x2,
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = "bvct"),
+    class = c("bvevd","evd"))
 }
 
 "fbvall"<-
-function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = TRUE, orderby = c("AIC","BIC","SC"), control = list(maxit = 250))
+function(x, ..., nsloc1 = NULL, nsloc2 = NULL, which = NULL, boxcon = TRUE, std.err = TRUE, orderby = c("AIC","BIC","SC"), control = list(maxit = 250))
 {
+    call <- match.call()
     if(!is.null(nsloc1)) {
         if(is.vector(nsloc1))
             nsloc1 <- data.frame(trend = nsloc1)
@@ -1978,10 +2211,17 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
     mparam <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
                "shape2")
+    fixed <- names(list(...))
+    if(!all(fixed %in% mparam))
+      stop("marginal parameter not recognised")
+    mparam <- mparam[!mparam %in% fixed]
     nmp <- length(mparam)
     param <- c(mparam, "asy1/alpha", "asy2/beta", "dep")
     models <- c("log","alog","hr","neglog","aneglog","bilog","negbilog","ct")
-    include <- !(models %in% omit)
+    if(is.null(which)) which <- models
+    if(!all(which %in% models))
+      stop("model not recognised")
+    include <- models %in% which
     models <- models[include]
     std.err <- rep(std.err, length.out = length(models))
     npars <- (nmp + c(1,3,1,1,3,2,2,2))[include]
@@ -2000,14 +2240,15 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     upper <- Inf
     if(include[1]) {
     if(boxcon) {
-        lower <- c(lw, 0.05)            
+        lower <- c(lw, 0.1)            
         upper <- c(up, 1)
     }
     fbvlog <- fbvlog(x = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
               std.err = std.err[1], method = method,
-              lower = lower, upper = upper, control = control)
+              lower = lower, upper = upper, control = control, ...)
     estimate[c(1:nmp,nmp+3),1] <- fbvlog$estimate
-    std.errors[c(1:nmp,nmp+3),1] <- fbvlog$std.err
+    if(std.err[1])
+        std.errors[c(1:nmp,nmp+3),1] <- fbvlog$std.err
     dm[1,1] <- 2*(1-abvlog(dep = fbvlog$estimate["dep"]))
     dm[2,1] <- 4 * integrate(function(x)
         1-abvlog(x, dep = fbvlog$estimate["dep"]), 0, 1)$value
@@ -2015,14 +2256,15 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     }
     if(include[2]) {
     if(boxcon) {
-        lower <- c(lw, 0, 0, 0.05)            
+        lower <- c(lw, 0, 0, 0.1)            
         upper <- c(up, 1, 1, 1)
     }
     fbvalog <- fbvalog(x = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
                std.err = std.err[sum(include[1:2])], method = method,
-               lower = lower, upper = upper, control = control)
+               lower = lower, upper = upper, control = control, ...)
     estimate[,sum(include[1:2])] <- fbvalog$estimate
-    std.errors[,sum(include[1:2])] <- fbvalog$std.err
+    if(std.err[sum(include[1:2])])
+        std.errors[,sum(include[1:2])] <- fbvalog$std.err
     asym <- c(fbvalog$estimate["asy1"],fbvalog$estimate["asy2"])
     depnd <- fbvalog$estimate["dep"]
     dm[1,sum(include[1:2])] <- 2*(1-abvalog(dep = depnd, asy = asym))
@@ -2041,9 +2283,10 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     }
     fbvhr <- fbvhr(x = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
              std.err = std.err[sum(include[1:3])], method = method,
-             lower = lower, upper = upper, control = control)
+             lower = lower, upper = upper, control = control, ...)
     estimate[c(1:nmp,nmp+3),sum(include[1:3])] <- fbvhr$estimate
-    std.errors[c(1:nmp,nmp+3),sum(include[1:3])] <- fbvhr$std.err
+    if(std.err[sum(include[1:3])])
+        std.errors[c(1:nmp,nmp+3),sum(include[1:3])] <- fbvhr$std.err
     dm[1,sum(include[1:3])] <- 2*(1-abvhr(dep = fbvhr$estimate["dep"]))
     dm[2,sum(include[1:3])] <- 4 * integrate(function(x)
         1-abvhr(x, dep = fbvhr$estimate["dep"]), 0, 1)$value
@@ -2052,13 +2295,14 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     if(include[4]) {
     if(boxcon) {
         lower <- c(lw, 0.05)            
-        upper <- c(up, 8)
+        upper <- c(up, 5)
     }
     fbvneglog <- fbvneglog(x = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
                  std.err = std.err[sum(include[1:4])], method = method,
-                 lower = lower, upper = upper, control = control)
+                 lower = lower, upper = upper, control = control, ...)
     estimate[c(1:nmp,nmp+3),sum(include[1:4])] <- fbvneglog$estimate
-    std.errors[c(1:nmp,nmp+3),sum(include[1:4])] <- fbvneglog$std.err
+    if(std.err[sum(include[1:4])])
+        std.errors[c(1:nmp,nmp+3),sum(include[1:4])] <- fbvneglog$std.err
     dm[1,sum(include[1:4])] <- 2*(1-abvneglog(dep = fbvneglog$estimate["dep"]))
     dm[2,sum(include[1:4])] <- 4 * integrate(function(x)
         1-abvneglog(x, dep = fbvneglog$estimate["dep"]), 0, 1)$value
@@ -2067,13 +2311,14 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     if(include[5]) {
     if(boxcon) {
         lower <- c(lw, 0.001, 0.001, 0.05)            
-        upper <- c(up, 1, 1, 8)
+        upper <- c(up, 1, 1, 5)
     }
     fbvaneglog <- fbvaneglog(x = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
                   std.err = std.err[sum(include[1:5])], method = method,
-                  lower = lower, upper = upper, control = control)
+                  lower = lower, upper = upper, control = control, ...)
     estimate[,sum(include[1:5])] <- fbvaneglog$estimate
-    std.errors[,sum(include[1:5])] <- fbvaneglog$std.err
+    if(std.err[sum(include[1:5])])
+        std.errors[,sum(include[1:5])] <- fbvaneglog$std.err
     asym <- c(fbvaneglog$estimate["asy1"],fbvaneglog$estimate["asy2"])
     depnd <- fbvaneglog$estimate["dep"]
     dm[1,sum(include[1:5])] <- 2*(1-abvaneglog(dep = depnd, asy = asym))
@@ -2092,9 +2337,10 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     }
     fbvbilog <- fbvbilog(x = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
                std.err = std.err[sum(include[1:6])], method = method,
-               lower = lower, upper = upper, control = control)
+               lower = lower, upper = upper, control = control, ...)
     estimate[1:(nmp+2),sum(include[1:6])] <- fbvbilog$estimate
-    std.errors[1:(nmp+2),sum(include[1:6])] <- fbvbilog$std.err
+    if(std.err[sum(include[1:6])])
+        std.errors[1:(nmp+2),sum(include[1:6])] <- fbvbilog$std.err
     alpha <- fbvbilog$estimate["alpha"]
     beta <- fbvbilog$estimate["beta"]
     dm[1,sum(include[1:6])] <- 2*(1-abvbilog(alpha = alpha, beta = beta))
@@ -2113,9 +2359,10 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     }
     fbvnegbilog <- fbvnegbilog(x = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
                   std.err = std.err[sum(include[1:7])], method = method,
-                  lower = lower, upper = upper, control = control)
+                  lower = lower, upper = upper, control = control, ...)
     estimate[1:(nmp+2),sum(include[1:7])] <- fbvnegbilog$estimate
-    std.errors[1:(nmp+2),sum(include[1:7])] <- fbvnegbilog$std.err
+    if(std.err[sum(include[1:7])])
+        std.errors[1:(nmp+2),sum(include[1:7])] <- fbvnegbilog$std.err
     alpha <- fbvnegbilog$estimate["alpha"]
     beta <- fbvnegbilog$estimate["beta"]
     dm[1,sum(include[1:7])] <- 2*(1-abvnegbilog(alpha = alpha, beta = beta))
@@ -2134,9 +2381,10 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     }
     fbvct <- fbvct(x = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
                    std.err = std.err[sum(include[1:8])], method = method,
-                   lower = lower, upper = upper, control = control)
+                   lower = lower, upper = upper, control = control, ...)
     estimate[1:(nmp+2),sum(include[1:8])] <- fbvct$estimate
-    std.errors[1:(nmp+2),sum(include[1:8])] <- fbvct$std.err
+    if(std.err[sum(include[1:8])])
+        std.errors[1:(nmp+2),sum(include[1:8])] <- fbvct$std.err
     alpha <- fbvct$estimate["alpha"]
     beta <- fbvct$estimate["beta"]
     dm[1,sum(include[1:8])] <- 2*(1-abvct(alpha = alpha, beta = beta))
@@ -2165,8 +2413,211 @@ function(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, std.err = 
     criteria <- criteria[, indx]
     devs <- devs[indx]
     dm <- dm[, indx]
-    list(estimate = estimate, std.err = std.errors, deviance = devs,
-         criteria = criteria, dep.summary = dm)
+    structure(list(estimate = estimate, std.err = std.errors,
+    deviance = devs, criteria = criteria, dep.summary = dm,
+    call = call, data = x, n = nrow(x)), class = "bvall")
+}
+
+"fitted.bvall" <- function (object, which = names(object$deviance), ...)
+    object$estimate[,which]
+"deviance.bvall" <- function (object, which = names(object$deviance), ...)
+    object$deviance[which]
+"std.errors.bvall" <- function (object, which = names(object$deviance), ...)
+    object$std.err[,which]
+
+"print.bvall" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
+{
+    cat("\nCall:", deparse(x$call), "\n")
+    cat("\nDeviances\n")
+    print.default(format(x$deviance, digits = digits), print.gap = 2, 
+        quote = FALSE)
+    cat("\nEstimates\n")
+    print.default(format(x$estimate, digits = digits), print.gap = 2, 
+        quote = FALSE)
+    if(!is.null(x$std.err)) {
+    cat("\nStandard Errors\n")
+    print.default(format(x$std.err, digits = digits), print.gap = 2, 
+        quote = FALSE)
+    }
+    cat("\nFitting Criteria\n")
+    print.default(format(x$criteria, digits = digits), print.gap = 2, 
+        quote = FALSE)
+    cat("\nSummaries of Dependence Structure\n")
+    print.default(format(x$dep.summary, digits = digits), print.gap = 2, 
+        quote = FALSE)
+    cat("\n")
+    invisible(x)
+}
+
+"plot.bvevd" <-  function(x, mar = 0, which = 1:4, main =
+     c("Conditional Plot One", "Conditional Plot Two", "Density Plot",
+       "Dependence Function"),
+     ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
+     nlevels = 10, levels, jitter = FALSE, nplty = 2, method = "cfg",
+     modify = 0, wf = function(t) t, ...) 
+{
+    if (!inherits(x, "bvevd")) 
+        stop("Use only with `bvevd' objects")
+    nb.fig <- prod(par("mfcol"))
+    if(mar == 1 || mar == 2) {
+        indx <- paste(c("loc","scale","shape"), as.character(mar), sep="")
+        tdata <- na.omit(x$tdata[, mar])
+        n <- length(tdata)
+        param <- x$param[indx]
+        names(param) <- c("loc","scale","shape")
+        gev.mar <- structure(list(param = param, tdata = tdata, n = n,
+                             model = "gev"), class = "evd")
+        if(missing(which)) which <- 1:4
+        if(missing(main)) main <- c("Probability Plot", "Quantile Plot",
+           "Density Plot", "Return Level Plot")
+        plot(gev.mar, which = which, main = main, ask = ask, ci = ci,
+             jitter = jitter, ...)
+        return(invisible(x))
+    }
+    if (!is.numeric(which) || any(which < 1) || any(which > 4)) 
+        stop("`which' must be in 1:4")
+    show <- rep(FALSE, 4)
+    show[which] <- TRUE
+    if (ask) {
+        op <- par(ask = TRUE)
+        on.exit(par(op))
+    }
+    if (show[1]) {
+        bvcpp(x, mar = 1, ci = ci, main = main[1], xlim = c(0,1),
+              ylim = c(0,1), ...)
+    }
+    if (show[2]) {
+        bvcpp(x, mar = 2, ci = ci, main = main[2], xlim = c(0,1),
+              ylim = c(0,1), ...)
+    }
+    if (show[3]) {
+        if(missing(levels))
+          bvdens(x, jitter = jitter, nlevels = nlevels, main = main[3], ...)
+        else
+          bvdens(x, jitter = jitter, levels = levels, main = main[3], ...)
+    }
+    if (show[4]) {
+        bvdp(x, nplty = nplty, method = method, wf = wf, main = main[4], ...)
+    }
+    invisible(x)
+} 
+
+"bvcpp" <-  function(x, mar = 2, ci = TRUE, main = "Conditional Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+{
+    if(x$model %in% c("ext","order","gev","gev.quantile"))
+        stop("conditional plots not implemented for this model") 
+    data <- x$tdata
+    mle.m1 <- x$param[c("loc1","scale1","shape1")]
+    mle.m2 <- x$param[c("loc2","scale2","shape2")]
+    data <- exp(- bvmtransform(data, mle.m1, mle.m2))
+    data <- na.omit(data)
+    n <- nrow(data)
+    ppx <- ppoints(n)
+    if(x$model %in% c("bvlog","bvhr","bvneglog"))
+        probs <- ccop(data[,1], data[,2], mar = mar, dep = x$param["dep"],
+                      model = x$model)
+    if(x$model  %in% c("bvalog","bvaneglog"))
+        probs <- ccop(data[,1], data[,2], mar = mar, dep = x$param["dep"],
+                      asy = x$param[c("asy1","asy2")], model = x$model)
+    if(x$model  %in% c("bvbilog","bvnegbilog","bvct"))
+        probs <- ccop(data[,1], data[,2], mar = mar, alpha = x$param["alpha"],
+                      beta = x$param["beta"], model = x$model)
+    probs <- sort(probs)
+    if(!ci) {
+        plot(ppx, probs, main = main, xlab = xlab, ylab = ylab, ...)
+        abline(0, 1)
+    }
+    else {
+        samp <- runif(n*99)
+        samp <- matrix(samp, n, 99)
+        samp <- apply(samp, 2, sort)
+        samp <- apply(samp, 1, sort)
+        env <- t(samp[c(3,97),])
+        matplot(ppx, cbind(probs, env), main = main, xlab = xlab,
+                ylab = ylab, type = "pnn", pch = 4, ...)
+        xyuser <- par("usr")
+        smidge <- min(diff(c(xyuser[1], ppx, xyuser[2])))/2
+        segments(ppx-smidge, env[,1], ppx+smidge, env[,1])
+        segments(ppx-smidge, env[,2], ppx+smidge, env[,2])
+        abline(0, 1)
+    }
+    invisible(list(x = ppx, y = probs))
+}
+
+"ccop" <- function(x1, x2, mar, dep, asy, alpha, beta, model)
+{
+    model <- match(model, c("bvlog","bvalog","bvhr","bvneglog","bvaneglog",
+                            "bvbilog","bvnegbilog","bvct"))
+    if(model <= 5) alpha <- beta <- 1
+    else dep <- 1
+    if(model != 2 && model != 5) asy <- c(1,1)
+    n <- length(x1)
+    .C("ccop",
+            as.double(x1), as.double(x2), as.integer(mar), as.double(dep),
+            as.double(asy[1]), as.double(asy[2]), as.double(alpha),
+            as.double(beta), as.integer(n), as.integer(model),
+            ccop = double(n), PACKAGE = "evd")$ccop
+}
+
+"bvdens" <-  function(x, jitter = FALSE, nlevels = 10, levels, main = "Density Plot", xlab = "", ylab = "", ...)
+{
+    if(x$model %in% c("ext","order","gev","gev.quantile"))
+        stop("bivariate density plots not implemented for this model")
+    xlimit <- range(x$tdata[,1], na.rm = TRUE)
+    ylimit <- range(x$tdata[,2], na.rm = TRUE)
+    xlimit[1] <- xlimit[1] - diff(xlimit) * 0.1
+    xlimit[2] <- xlimit[2] + diff(xlimit) * 0.1
+    ylimit[1] <- ylimit[1] - diff(ylimit) * 0.1
+    ylimit[2] <- ylimit[2] + diff(ylimit) * 0.1
+    xvec <- seq(xlimit[1], xlimit[2], length = 50)
+    yvec <- seq(ylimit[1], ylimit[2], length = 50)
+    xyvals <- expand.grid(xvec, yvec)
+    dfun <- paste("d",x$model,sep="")
+    mar1 <- x$param[c("loc1","scale1","shape1")]
+    mar2 <- x$param[c("loc2","scale2","shape2")]
+    if(x$model %in% c("bvlog","bvhr","bvneglog"))
+        dfunargs <- list(dep = x$param["dep"], mar1 = mar1, mar2 = mar2)
+    if(x$model  %in% c("bvalog","bvaneglog"))
+        dfunargs <- list(dep = x$param["dep"],
+            asy = x$param[c("asy1","asy2")], mar1 = mar1, mar2 = mar2)
+    if(x$model  %in% c("bvbilog","bvnegbilog","bvct"))
+        dfunargs <- list(alpha = x$param["alpha"], beta = x$param["beta"],
+            mar1 = mar1, mar2 = mar2)
+    dfunargs <- c(list(x = xyvals), dfunargs)
+    dens <- do.call(dfun, dfunargs)
+    max.dens <- max(dens)
+    if(missing(levels))
+        levels <- round(max.dens - log(seq(exp(max.dens),1,length=nlevels)),2)
+    dens <- matrix(dens, nrow = 50, ncol = 50)
+    contour(xvec, yvec, dens, levels = levels, main = main, xlab = xlab,
+            ylab = ylab, ...)
+    data <- na.omit(x$tdata)
+    if(jitter) {
+        data[,1] <- jitter(data[,1])
+        data[,2] <- jitter(data[,2])
+    }
+    points(data, pch = 4)
+    invisible(list(x = xyvals, y = dens))
+}
+
+"bvdp" <- function(x, method = "cfg", modify = 0, wf = function(t) t, add = FALSE, lty = 1, nplty = 2, blty = 3, main = "Dependence Function", xlab = "", ylab = "", ...)
+{
+    if(x$model %in% c("ext","order","gev","gev.quantile"))
+        stop("dependence function plots not implemented for this model")
+    abvnonpar(data = x$data, nsloc1 = x$nsloc1, nsloc2 = x$nsloc2,
+              method = method, modify = modify, wf = wf,
+              plot = TRUE, lty = nplty, blty = blty, main = main,
+              xlab = xlab, ylab = ylab, add = add, ...)
+    afun <- paste("a",x$model,sep="")
+    if(x$model %in% c("bvlog","bvhr","bvneglog"))
+        afunargs <- list(dep = x$param["dep"])
+    if(x$model  %in% c("bvalog","bvaneglog"))
+        afunargs <- list(dep = x$param["dep"], asy = x$param[c("asy1","asy2")])
+    if(x$model  %in% c("bvbilog","bvnegbilog","bvct"))
+        afunargs <- list(alpha = x$param["alpha"], beta = x$param["beta"])
+    afunargs <- c(list(add = TRUE, lty = lty), afunargs)
+    do.call(afun, afunargs)
+    invisible(x)
 }
 
 "mtransform"<- 
@@ -2201,15 +2652,13 @@ function(x, p1, p2, inv = FALSE)
     x
 }
 
-"bvdep" <- 
-function(x, a, border, add, lty, blty, xlab, ylab, xlim, ylim, ...)
+"bvdepfn" <- 
+function(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)
 {
     if(!add)  { 
-        oldpty <- par(pty="s") 
-        on.exit(par(oldpty)) 
         plot(x, a, type="n", xlab = xlab, ylab = ylab,
              xlim = xlim, ylim = ylim, ...) 
-        if(border)  polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty)  
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty)  
     }
     lines(x, a, lty = lty)
 }

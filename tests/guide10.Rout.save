@@ -1,0 +1,720 @@
+
+R : Copyright 2002, The R Development Core Team
+Version 1.4.1  (2002-01-30)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type `license()' or `licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type `contributors()' for more information.
+
+Type `demo()' for some demos, `help()' for on-line help, or
+`help.start()' for a HTML browser interface to help.
+Type `q()' to quit R.
+
+> ###################
+> # FROM MANUAL 1.0 #
+> ###################
+> 
+> library(evd)
+> options(digits = 4, width = 80)
+> set.seed(50)
+> 
+> # Section: Standard Univariate Functions
+> 
+> rrweibull(6, loc = 2, scale = .5, shape = c(1, 1.2))
+[1] 0.1555 1.8521 1.9409 0.6114 1.6987 1.8714
+> qrweibull(seq(0.1, 0.4, 0.1), 2, 0.5, 1, lower.tail = FALSE)
+[1] 1.947 1.888 1.822 1.745
+> qrweibull(seq(0.9, 0.6, -0.1), loc = 2, scale = 0.5, shape = 1)
+[1] 1.947 1.888 1.822 1.745
+> prweibull(-1:3, 2, 0.5, 1)
+[1] 0.002479 0.018316 0.135335 1.000000 1.000000
+> prweibull(-1:3, 2, 0.5, 1, low = FALSE)
+[1] 0.9975 0.9817 0.8647 0.0000 0.0000
+> drweibull(-1:3, loc = 2, scale = 0.5, shape = 1)
+[1] 0.004958 0.036631 0.270671 0.000000 0.000000
+> drweibull(-1:3, 2, 0.5, 1, log = TRUE)
+[1] -5.307 -3.307 -1.307   -Inf   -Inf
+> 
+> rext(4, qexp, rate = 1, mlen = 5)
+[1] 2.2001 0.8584 4.5595 3.9397
+> rext(4, distn = "exp", rate = 1, mlen = 5)
+[1] 1.604 1.599 4.053 2.220
+> rext(4, distn = "exp", mlen = 5)
+[1] 4.906 3.304 3.157 2.291
+> rext(1, distn = "norm", mean = 0.5, sd = 2, mlen = 20)
+[1] 4.903
+> max(rnorm(20, 0.5, 2))
+[1] 2.966
+> rext(1, distn="norm", sd = 2, mlen = 20, largest = FALSE)
+[1] -6.21
+> min(rnorm(20, 0, 2))
+[1] -3.112
+> pext(c(.4, .5), distn="norm", sd = c(1, 2), mlen = 4)
+[1] 0.1845 0.1285
+> pext(c(.4, .5), distn="norm", mean = 0, sd = c(1, 2), mlen = 4)
+[1] 0.1845 0.1285
+> dext(c(1, 4), distn="gamma", shape = 1, scale = 0.3, mlen = 100)
+[1] 0.3261328 0.0005398
+> 
+> rorder(1, distn = "norm", mlen = 20, j = 2)
+[1] 1.336
+> rorder(1, distn = "norm", mlen = 20, j = 19, largest = FALSE)
+[1] 1.345
+> porder(c(1, 2), distn="gamma", shape =c(.5, .7), mlen = 10, j = 2)
+[1] 0.5177 0.8259
+> dorder(c(1, 2), distn="gamma", shape =c(.5, .7), mlen = 10, j = 2)
+[1] 0.7473 0.3081
+> 
+> # Section: Standard Bivariate and Multivariate Functions
+> 
+> rbvalog(3, dep = .8, asy = c(.4, 1))
+       [,1]    [,2]
+[1,] 1.5248  1.0451
+[2,] 0.2877 -0.2457
+[3,] 0.7256  1.4770
+> rbvalog(3, dep = .8, asy = c(.4, 1), mar1 = c(1, 1, 1))
+       [,1]    [,2]
+[1,] 4.3391  0.8297
+[2,] 0.6297 21.3999
+[3,] 4.4126  0.2367
+> pbvalog(c(1, 1.2), dep = .4, asy = c(.4, .6), mar1 = c(1, 1, 1))
+[1] 0.216
+> tmp.quant <- matrix(c(1,1.2,1,2),ncol = 2, byrow = TRUE)
+> tmp.mar <- matrix(c(1,1,1,1.2,1.2,1.2), ncol = 3, byrow = TRUE)
+> pbvalog(tmp.quant, dep = .4, asy = c(.4, .6), mar1 = tmp.mar)
+[1] 0.2160 0.2153
+> dbvalog(c(1, 1.2), dep = .4, asy = c(.4, .6), mar1 = c(1, 1, 1))
+[1] 0.1427
+> dbvalog(tmp.quant, dep = .4, asy = c(.4, .6), mar1 = tmp.mar)
+[1] 0.1427 0.0696
+> abvalog(dep = .3, asy= c(.7, .9))
+[1] 0.7013
+> abvalog(seq(0, 1, 0.25), dep = .3, asy = c(.7, .9))
+[1] 1.0000 0.8272 0.7013 0.7842 1.0000
+> 
+> rmvlog(3, dep = .6, d = 5)
+        [,1]    [,2]    [,3]    [,4]    [,5]
+[1,] 1.74538  0.9195  0.7288  0.5207  0.5722
+[2,] 0.00659  0.3480  0.1166 -0.9005 -0.7970
+[3,] 0.61353 -0.4328 -0.3287  0.9970 -0.8769
+> tmp.mar <- matrix(c(1,1,1,1,1,1.5,1,1,2), ncol = 3, byrow = TRUE)
+> rmvlog(3, dep = .6, d = 5, mar = tmp.mar)
+       [,1]  [,2]   [,3]   [,4]    [,5]
+[1,] 2.0947 2.196 1.3607 1.6064 11.6005
+[2,] 0.9536 1.061 1.0652 0.6822  5.5413
+[3,] 0.5963 4.937 0.8745 1.2442  0.6395
+> tmp.quant <- matrix(rep(c(1,1.5,2), 5), ncol = 5)
+> pmvlog(tmp.quant, dep = .6, d = 5, mar = tmp.mar)
+[1] 0.07233 0.16387 0.21949
+> 
+> rmvalog(3, dep = c(.6,.5,.8,.3), asy = list(.4,0,.6,c(.3,.2),c(.1,.1),c(.4,.1),c(.2,.4,.2)), d = 3)
+       [,1]   [,2]   [,3]
+[1,] 1.0487 4.8371 1.4698
+[2,] 0.2002 0.2685 1.4147
+[3,] 1.7826 2.1011 0.8223
+> pmvalog(c(2, 2, 2), dep = c(.6,.5,.8,.3), asy = list(.4,.0,.6,c(.3,.2),c(.1,.1),c(.4,.1),c(.2,.4,.2)), d = 3)
+[1] 0.7223
+> tmp.quant <- matrix(rep(c(1,1.5,2), 3), ncol = 3)
+> pmvalog(tmp.quant, dep = c(.6,.5,.8,.3), asy = list(.4,.0,.6,c(.3,.2),c(.1,.1),c(.4,.1),c(.2,.4,.2)), d = 3)
+[1] 0.4131 0.5849 0.7223
+> 
+> rmvalog(3, dep = c(rep(1,6),.7,.3,.8,.7,.5), asy = list(0, 0, 0, 0, c(0,0), c(0,0), c(0,0), c(0,0), c(0,0), c(0,0), c(.2,.1,.2), c(.1,.1,.2), c(.3,.4,.1), c(.2,.2,.2), c(.4,.6,.2,.5)), d = 4)
+        [,1]  [,2]    [,3]   [,4]
+[1,]  0.6258 1.242  2.4371 2.2619
+[2,] -0.3428 4.122  2.5950 4.8448
+[3,] -0.5947 2.733 -0.3723 0.4123
+> 
+> rmvalog(3, dep = c(.6,1,.8,.3), asy = list(.4,0,.6,c(.3,.2),c(.0,.0),c(.4,.1),c(.3,.4,.3)), d = 3)
+        [,1]    [,2]    [,3]
+[1,] -0.9115 -0.1635 -0.4450
+[2,]  0.4082  1.4282  0.2809
+[3,]  0.1980  0.3856  0.8148
+> 
+> # Section: Fitting Distributions by Maximum Likelihood
+> 
+> # Subsection: Univariate Fitting
+> 
+> data <- rgev(1000, loc = 0.13, scale = 1.1, shape = 0.2)
+> fgev(data, start = list(loc = 0, scale = 1, shape = 0), method = "BFGS")
+
+Call: fgev(x = data, start = list(loc = 0, scale = 1, shape = 0), method = "BFGS") 
+Deviance: 3641 
+
+Estimates
+  loc  scale  shape  
+0.162  1.136  0.202  
+
+Standard Errors
+   loc   scale   shape  
+0.0405  0.0321  0.0248  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 50 
+  Gradient Evaluations: 13 
+
+> fgev(data, start = list(loc = 0, scale = 1), shape = 0, method = "BFGS")
+
+Call: fgev(x = data, start = list(loc = 0, scale = 1), shape = 0, method = "BFGS") 
+Deviance: 3741 
+
+Estimates
+  loc  scale  
+0.297  1.261  
+
+Standard Errors
+   loc   scale  
+0.0416  0.0328  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 34 
+  Gradient Evaluations: 9 
+
+> fgev(data, start = list(loc = 0), scale = 1, shape = 0)
+
+Call: fgev(x = data, start = list(loc = 0), scale = 1, shape = 0) 
+Deviance: 3831 
+
+Estimates
+  loc  
+0.187  
+
+Standard Errors
+   loc  
+0.0316  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 29 
+  Gradient Evaluations: 5 
+
+> 
+> -2*sum(dgev(data, loc = 0.1594, scale = 1.1422, shape = 0.2101, log = TRUE))
+[1] 3641
+> 
+> somedata <- rgev(100,1,1,0.05)
+> fgev(somedata, start = list(loc = 0.5, scale = 2), shape = 0)
+
+Call: fgev(x = somedata, start = list(loc = 0.5, scale = 2), shape = 0) 
+Deviance: 335.7 
+
+Estimates
+  loc  scale  
+0.944  1.042  
+
+Standard Errors
+   loc   scale  
+0.1088  0.0854  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 27 
+  Gradient Evaluations: 10 
+
+> 
+> data2 <- rgev(1000, loc = 0.13, scale = 1.1, shape = -0.25)
+> fgev(data2, start = list(loc=0.13,scale=1.1,shape=0), method="BFGS")
+
+Call: fgev(x = data2, start = list(loc = 0.13, scale = 1.1, shape = 0),      method = "BFGS") 
+Deviance: 3073 
+
+Estimates
+    loc    scale    shape  
+ 0.0433   1.0946  -0.2310  
+
+Standard Errors
+   loc   scale   shape  
+0.0381  0.0268  0.0191  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 56 
+  Gradient Evaluations: 12 
+
+> 
+> data3 <- rext(100, qnorm, mean = 0.56, mlen = 365)
+> fext(data3, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
+
+Call: fext(x = data3, start = list(mean = 0, sd = 1), distn = "norm",      mlen = 365) 
+Deviance: 78.15 
+
+Estimates
+ mean     sd  
+0.491  1.020  
+
+Standard Errors
+  mean      sd  
+0.1977  0.0722  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 63 
+
+> fext(data3, list(rate = 1), distn = "exp", mlen = 365)
+
+Call: fext(x = data3, start = list(rate = 1), distn = "exp", mlen = 365) 
+Deviance: 123.0 
+
+Estimates
+rate  
+1.78  
+
+Standard Errors
+  rate  
+0.0316  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 28 
+
+> fext(data3, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365)
+
+Call: fext(x = data3, start = list(scale = 1), shape = 0.5, distn = "gamma",      mlen = 365) 
+Deviance: 148.7 
+
+Estimates
+scale  
+0.733  
+
+Standard Errors
+ scale  
+0.0156  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 28 
+
+> 
+> # Subsection: Bivariate Fitting
+> 
+> bvdata <- rbvlog(100, dep = 0.6, mar1 = c(1.2,1.4,0.4), mar2 = c(1.2,1.4,0.4))
+> fbvlog(bvdata, start = list(mar1 = c(2,1,0), mar2 = c(1,1,0), dep = 0.75), control = list(maxit = 2000))
+
+Call: fbvlog(x = bvdata, start = list(mar1 = c(2, 1, 0), mar2 = c(1,      1, 0), dep = 0.75), control = list(maxit = 2000)) 
+Deviance: 883.4 
+
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+ 1.202   1.534   0.508   1.163   1.557   0.537   0.589  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+0.1713  0.1685  0.0812  0.1754  0.1804  0.0906  0.0548  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 84 
+  Gradient Evaluations: 28 
+
+> fbvlog(bvdata, start = list(loc1=2, scale1=1, shape1=0, loc2=1, scale2=1, shape2=0, dep=0.75), control = list(maxit = 2000))
+
+Call: fbvlog(x = bvdata, start = list(loc1 = 2, scale1 = 1, shape1 = 0,      loc2 = 1, scale2 = 1, shape2 = 0, dep = 0.75), control = list(maxit = 2000)) 
+Deviance: 883.4 
+
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+ 1.202   1.534   0.508   1.163   1.557   0.537   0.589  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+0.1713  0.1685  0.0812  0.1754  0.1804  0.0906  0.0548  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 84 
+  Gradient Evaluations: 28 
+
+> fbvlog(bvdata, start = list(mar1 = c(2,1,0), mar2 = c(1,1,0), dep = 0.75), method = "BFGS")$counts
+function gradient 
+      84       28 
+> 
+> fbvlog(bvdata, start = list(mar1 = c(2,1,0), mar2 = c(1,1,0)), dep = 1, method="BFGS")
+
+Call: fbvlog(x = bvdata, start = list(mar1 = c(2, 1, 0), mar2 = c(1,      1, 0)), dep = 1, method = "BFGS") 
+Deviance: 939 
+
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2  
+ 1.208   1.535   0.529   1.106   1.543   0.635  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2  
+0.1726  0.1693  0.0941  0.1734  0.1840  0.1002  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 80 
+  Gradient Evaluations: 25 
+
+> fgev(bvdata[,1], start = list(loc=1,scale=1,shape=0), method="BFGS")$estimate
+   loc  scale  shape 
+1.2083 1.5348 0.5287 
+> fgev(bvdata[,2], start = list(loc=1,scale=1,shape=0), method="BFGS")$estimate
+   loc  scale  shape 
+1.1060 1.5433 0.6353 
+>  
+> fbvlog(bvdata, start = list(loc1=1, scale1=1, loc2=1, scale2=1, dep=0.75), shape1 = 0, shape2 = 0, method = "BFGS")
+
+Call: fbvlog(x = bvdata, start = list(loc1 = 1, scale1 = 1, loc2 = 1,      scale2 = 1, dep = 0.75), shape1 = 0, shape2 = 0, method = "BFGS") 
+Deviance: 1015 
+
+Estimates
+  loc1  scale1    loc2  scale2     dep  
+ 1.791   2.378   1.744   2.350   0.721  
+
+Standard Errors
+  loc1  scale1    loc2  scale2     dep  
+0.2426  0.1914  0.2413  0.1898  0.0568  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 63 
+  Gradient Evaluations: 19 
+
+> fbvlog(bvdata, start = list(mar2 = c(1,1,0), dep = 0.75), loc1 = 1, scale1 = 1.5, shape1 = 0.5, method = "BFGS")
+
+Call: fbvlog(x = bvdata, start = list(mar2 = c(1, 1, 0), dep = 0.75),      loc1 = 1, scale1 = 1.5, shape1 = 0.5, method = "BFGS") 
+Deviance: 886.1 
+
+Estimates
+  loc2  scale2  shape2     dep  
+ 1.055   1.483   0.539   0.582  
+
+Standard Errors
+  loc2  scale2  shape2     dep  
+0.1422  0.1378  0.0740  0.0482  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 62 
+  Gradient Evaluations: 17 
+
+> 
+> fbvalog(bvdata, start = list(mar1 = c(1,1,0), mar2 = c(1,1,0), asy = c(.7,.7), dep = 0.75), method = "BFGS")
+
+Call: fbvalog(x = bvdata, start = list(mar1 = c(1, 1, 0), mar2 = c(1,      1, 0), asy = c(0.7, 0.7), dep = 0.75), method = "BFGS") 
+Deviance: 888 
+
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2    asy1    asy2     dep  
+ 1.066   1.424   0.618   1.052   1.535   0.585   0.799   0.999   0.493  
+
+Standard Errors
+    loc1    scale1    shape1      loc2    scale2    shape2      asy1      asy2  
+0.164552  0.147482  0.089816  0.172271  0.187742  0.096488  0.192797  0.000002  
+     dep  
+0.062376  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 129 
+  Gradient Evaluations: 15 
+
+> fbvalog(bvdata, start = list(mar1 = c(0.9,1.2,0.2), mar2 = c(1,1.2,0.3), asy2 = .72, dep = 0.58), asy1 = 1, method = "BFGS")
+
+Call: fbvalog(x = bvdata, start = list(mar1 = c(0.9, 1.2, 0.2), mar2 = c(1,      1.2, 0.3), asy2 = 0.72, dep = 0.58), asy1 = 1, method = "BFGS") 
+Deviance: 889.4 
+
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2    asy2     dep  
+ 1.034   1.544   0.599   1.024   1.464   0.492   0.999   0.570  
+
+Standard Errors
+    loc1    scale1    shape1      loc2    scale2    shape2      asy2       dep  
+0.168674  0.188583  0.108806  0.160067  0.164947  0.079559  0.000002  0.055221  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 112 
+  Gradient Evaluations: 11 
+
+> # CHANGE: std.err = FALSE
+> fbvalog(bvdata, start = list(mar1 = c(0.9,1.2,0.2), mar2 = c(1,1.2,0.3), asy = c(.99,.72), dep = 0.58), method = "L-BFGS-B", lower = c(rep(-Inf, 6), 0, 0, -Inf), upper = c(rep(Inf, 6), 1, 1, 1), std.err = FALSE)
+
+Call: fbvalog(x = bvdata, start = list(mar1 = c(0.9, 1.2, 0.2), mar2 = c(1,      1.2, 0.3), asy = c(0.99, 0.72), dep = 0.58), lower = c(rep(-Inf,      6), 0, 0, -Inf), upper = c(rep(Inf, 6), 1, 1, 1), std.err = FALSE,      method = "L-BFGS-B") 
+Deviance: 883.4 
+
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2    asy1    asy2     dep  
+ 1.202   1.534   0.508   1.163   1.557   0.537   1.000   1.000   0.589  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 24 
+  Gradient Evaluations: 24 
+  Message: CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH 
+
+> fbvalog(bvdata, start = list(mar1 = c(1.5,1.4,0.1), mar2 = c(1.4,1.4,0.2), 
++ dep = 0.73), asy1 = 1, asy2 = 1, method="BFGS")
+
+Call: fbvalog(x = bvdata, start = list(mar1 = c(1.5, 1.4, 0.1), mar2 = c(1.4,      1.4, 0.2), dep = 0.73), asy1 = 1, asy2 = 1, method = "BFGS") 
+Deviance: 883.4 
+
+Estimates
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+ 1.202   1.535   0.508   1.163   1.558   0.537   0.589  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+0.1714  0.1687  0.0812  0.1755  0.1806  0.0907  0.0548  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 63 
+  Gradient Evaluations: 18 
+
+> 
+> # Subsection: A Univariate Example
+> 
+> data(oxford)
+> sqrt(6 * var(oxford))/pi
+[1] 3.326
+> mean(oxford) - 0.58 * sqrt(6 * var(oxford))/pi
+[1] 83.4
+> oxford.fit <- fgev(oxford, start = list(loc=83.5, scale=3.5, shape=0))
+> oxford.fit
+
+Call: fgev(x = oxford, start = list(loc = 83.5, scale = 3.5, shape = 0)) 
+Deviance: 457.8 
+
+Estimates
+   loc   scale   shape  
+83.839   4.260  -0.287  
+
+Standard Errors
+   loc   scale   shape  
+0.5231  0.3659  0.0683  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 42 
+  Gradient Evaluations: 14 
+
+> fgev(oxford, start = list(loc=83.8, scale=4.25), shape = 0)$deviance - oxford.fit$deviance
+[1] 12
+> 
+> mle <- oxford.fit$estimate
+> as.vector(mle[1] - mle[2]/mle[3])
+[1] 98.67
+> range(oxford)
+[1] 75 95
+> 
+> fext(oxford, start = list(mean = 40, sd = 1), distn = "norm", mlen = 365)
+
+Call: fext(x = oxford, start = list(mean = 40, sd = 1), distn = "norm",      mlen = 365) 
+Deviance: 464.2 
+
+Estimates
+mean    sd  
+48.8  12.4  
+
+Standard Errors
+ mean     sd  
+2.720  0.993  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 51 
+
+> fext(oxford, start = list(scale = 1, shape = 1), distn = "gamma", mlen = 365)
+
+Call: fext(x = oxford, start = list(scale = 1, shape = 1), distn = "gamma",      mlen = 365) 
+Deviance: 465.9 
+
+Estimates
+scale  shape  
+ 1.63  32.94  
+
+Standard Errors
+scale  shape  
+0.241  6.038  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 353 
+
+> 
+> # Subsection: A Bivariate Example
+> 
+> data(sealevel)
+> sl <- sealevel
+> # CHANGE: na.rm = TRUE
+> sqrt(6 * c(var(sl[,1], na.rm = TRUE), var(sl[,2], na.rm = TRUE)))/pi
+[1] 0.1995 0.2467
+> c(mean(sl[,1], na.rm = TRUE), mean(sl[,2], na.rm = TRUE)) - 0.58 * c(0.21, 0.24)
+[1] 3.583 2.551
+> 
+> tmp <- fbvlog(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), dep = 1, method = "BFGS")
+> tmp <- fbvalog(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), asy1 = 1, asy2 = 1, dep = 1, method = "BFGS")
+> # CHANGE: dependence parameter fixed at lower limit
+> tmp <- fbvhr(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), dep = 0.2, method = "BFGS")
+> tmp$estimate
+     loc1    scale1    shape1      loc2    scale2    shape2 
+ 3.592515  0.201954 -0.021077  2.553020  0.241505 -0.002815 
+> 
+> sl.fit <- fbvalog(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0), asy = c(0.8, 0.8), dep = 0.6), method = "BFGS", control = list(trace=1))
+initial  value -3.152236 
+iter  10 value -5.656805
+iter  20 value -6.603483
+final  value -6.603500 
+converged
+> sl.fit
+
+Call: fbvalog(x = sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6,      0.25, 0), asy = c(0.8, 0.8), dep = 0.6), control = list(trace = 1),      method = "BFGS") 
+Deviance: -13.21 
+
+Estimates
+   loc1   scale1   shape1     loc2   scale2   shape2     asy1     asy2  
+ 3.5931   0.2093  -0.1077   2.5578   0.2373  -0.0164   0.5379   0.4301  
+    dep  
+ 0.1925  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2    asy1    asy2     dep  
+0.0275  0.0202  0.0709  0.0354  0.0228  0.0699  0.2095  0.1432  0.1114  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 146 
+  Gradient Evaluations: 25 
+
+> 
+> fbvalog(sl, start = list(loc1 = 3.6, scale1 = 0.19, loc2 = 2.6, scale2 = 0.2, asy = c(0.7, 0.45), dep = 0.24), shape1 = 0, shape2 = 0, method = "BFGS")$deviance - sl.fit$deviance
+[1] 2.930
+> tmp$deviance - sl.fit$deviance
+[1] 23.32
+> 
+> # CHANGE: na.rm = TRUE
+> mle <- sl.fit$estimate
+> as.vector(mle[1] - mle[2]/mle[3])
+[1] 5.535
+> range(sl[,1], na.rm = TRUE)
+[1] 3.24 4.57
+> as.vector(mle[4] - mle[5]/mle[6])
+[1] 17.01
+> range(sl[,2], na.rm = TRUE)
+[1] 2.16 3.99
+> 
+> sl.fit2 <- fbvalog(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 0.6), asy1 = 1, asy2 = 1, method = "BFGS")
+> sl.fit2 <- fbvlog(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 0.6), method = "BFGS")
+> sl.fit2$estimate
+    loc1   scale1   shape1     loc2   scale2   shape2      dep 
+ 3.58745  0.20464 -0.07656  2.55383  0.23865 -0.02558  0.63220 
+> sl.fit2$deviance
+[1] -9.676
+> sl.fit2$deviance - sl.fit$deviance
+[1] 3.531
+> abvalog(dep = 0.24316, asy = c(0.69554, 0.44967))
+[1] 0.7884
+> abvlog(dep = 0.62474)
+[1] 0.771
+> 
+> fbvhr(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09),  dep = 1), method = "BFGS", control = list(trace=1))
+initial  value 5.767495 
+iter  10 value -3.909563
+final  value -4.032986 
+converged
+
+Call: fbvhr(x = sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6,      0.2, 0.09), dep = 1), control = list(trace = 1), method = "BFGS") 
+Deviance: -8.066 
+
+Estimates
+   loc1   scale1   shape1     loc2   scale2   shape2      dep  
+ 3.5877   0.2035  -0.0687   2.5554   0.2399  -0.0356   1.2272  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+0.0266  0.0198  0.0752  0.0350  0.0255  0.0642  0.2453  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 50 
+  Gradient Evaluations: 15 
+
+> abvhr(dep = 1.253410)
+[1] 0.7875
+> fbvaneglog(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 1, asy = c(0.8,0.8)), method = "BFGS", control = list(trace=1))
+initial  value 4.330513 
+iter  10 value -4.628613
+iter  20 value -6.580824
+iter  30 value -6.595496
+final  value -6.595509 
+converged
+
+Call: fbvaneglog(x = sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6,      0.2, 0.09), dep = 1, asy = c(0.8, 0.8)), control = list(trace = 1),      method = "BFGS") 
+Deviance: -13.19 
+
+Estimates
+   loc1   scale1   shape1     loc2   scale2   shape2      dep     asy1  
+ 3.5935   0.2095  -0.1092   2.5580   0.2373  -0.0179   4.7513   0.5265  
+   asy2  
+ 0.4233  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2     dep    asy1    asy2  
+0.0274  0.0201  0.0700  0.0354  0.0227  0.0693  2.8416  0.1978  0.1346  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 158 
+  Gradient Evaluations: 34 
+
+> abvaneglog(dep = 3.44762, asy = c(0.69796,0.44601))
+[1] 0.7892
+> fbvaneglog(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 1), asy1 = 1, asy2 = 1, method = "BFGS", control = list(trace=1))
+initial  value 5.805994 
+iter  10 value -4.219442
+final  value -4.424986 
+converged
+
+Call: fbvaneglog(x = sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6,      0.2, 0.09), dep = 1), asy1 = 1, asy2 = 1, control = list(trace = 1),      method = "BFGS") 
+Deviance: -8.85 
+
+Estimates
+   loc1   scale1   shape1     loc2   scale2   shape2      dep  
+ 3.5872   0.2043  -0.0708   2.5549   0.2398  -0.0292   0.8469  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+0.0266  0.0200  0.0752  0.0348  0.0254  0.0645  0.2292  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 48 
+  Gradient Evaluations: 16 
+
+> abvneglog(dep = 0.87394)
+[1] 0.7738
+> 
+> fbvalog(sl, start = list(mar1 = c(3.63, 0.18, -0.04), mar2 = c(2.63, 0.2, 0.09), dep = 0.24), asy1 = 0.4492, asy2 = 0.4492, method = "BFGS")
+
+Call: fbvalog(x = sl, start = list(mar1 = c(3.63, 0.18, -0.04), mar2 = c(2.63,      0.2, 0.09), dep = 0.24), asy1 = 0.4492, asy2 = 0.4492, method = "BFGS") 
+Deviance: -12.53 
+
+Estimates
+   loc1   scale1   shape1     loc2   scale2   shape2      dep  
+ 3.6024   0.2125  -0.1187   2.5445   0.2326  -0.0196   0.1781  
+
+Standard Errors
+  loc1  scale1  shape1    loc2  scale2  shape2     dep  
+0.0251  0.0197  0.0670  0.0312  0.0219  0.0670  0.0778  
+
+Optimization Information
+  Convergence: successful 
+  Function Evaluations: 124 
+  Gradient Evaluations: 26 
+
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 

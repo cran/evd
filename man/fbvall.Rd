@@ -1,5 +1,9 @@
 \name{fbvall}
 \alias{fbvall}
+\alias{print.bvall}
+\alias{fitted.bvall}
+\alias{deviance.bvall}
+\alias{std.errors.bvall}
 \title{Simultaneous Maximum-likelihood Fitting of Bivariate Extreme
   Value Distributions}
 \description{
@@ -8,38 +12,42 @@
   of the marginal location parameters. 
 }
 \usage{
-fbvall(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE, 
-    std.err = TRUE, orderby = c("AIC", "BIC", "SC"),
+fbvall(x, \dots, nsloc1 = NULL, nsloc2 = NULL, which = NULL,
+    boxcon = TRUE, std.err = TRUE, orderby = c("AIC", "BIC", "SC"),
     control = list(maxit = 250)) 
 }
 \arguments{
   \item{x}{A matrix or data frame with two columns, which may contain
     missing values.}
-  \item{nsloc1, nsloc2}{A data frame with the same number of rows as the
-    length of \code{x}, to be passed to the individual fitting
+  \item{\dots}{Marginal parameters that are set to fixed values
+    within each optimization (e.g. if Gumbel margins are required,
+    use \code{shape1 = 0} and \code{shape2 = 0}).}
+  \item{nsloc1, nsloc2}{A data frame with the same number of rows as 
+    \code{x}, to be passed to the individual fitting
     functions, for linear modelling of the location parameter on the
     first/second margin.
     The data frames are treated as covariate matrices (excluding the
     intercept).
     A numeric vector can be given as an alternative to a single column
     data frame.}
-  \item{omit}{A character vector giving the models which are not to
+  \item{which}{A character vector giving the models to
     be fit, containing any of ``log'', ``alog'', ``hr'', ``neglog'',
     ``aneglog'', ``bilog'', ``negbilog'' or ``ct'' for the logistic,
     asymmetric logistic, Husler-Reiss, negative logistic, asymmetric
     negative logistic, bilogistic, negative bilogistic and Coles-Tawn
-    models respectively.}
+    models respectively. By default, all models are fitted.}
   \item{boxcon}{Logical; if \code{TRUE} (the default), the
     \code{L-BFGS-B} optimization method is used, which includes box
     constraints. If \code{FALSE} the \code{BFGS} method is used.
-    The \code{BFGS} method is much faster, and should be preferred
+    The \code{BFGS} method is faster, and should be preferred
     if the estimates are known to lie in the interior of the parameter
     space.}
   \item{std.err}{Logical; if \code{TRUE} (the default), the ``standard
     errors'' are returned. A logical vector can also be given. This
     should be the same length as the number of models being fitted.}
-  \item{orderby}{The (column) order of the models in the returned list
-    components. The models are ordered by best fit, as measured by
+  \item{orderby}{The (column) order of the models in the components
+    of the returned object.
+    The models are ordered by best fit, as measured by
     Akaike's information criterion (the default), Bayesian information
     criterion or Schwarz's criterion.}
   \item{control}{To be passed to \code{\link{optim}}. Only options
@@ -49,12 +57,12 @@ fbvall(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE,
     argument (see above).}
 }
 \details{
-  Maximization of the log-likelihood for every bivariate model is performed.
-  The \code{std.err} component of the returned list is taken from the
-  observed information, calculated by a numerical approximation.
-  The ``standard errors'' must be interpreted with caution because
-  the usual asymptotic properties of maximum likelihood estimators
-  may not hold (Smith, 1985).
+  Maximization of the log-likelihood is performed.
+  The ``standard errors'' in the returned
+  object are taken from the observed information, calculated by a
+  numerical approximation.
+  They must be interpreted with caution because the usual asymptotic
+  properties of maximum likelihood estimators may not hold (Smith, 1985).
 
   Any bivariate extreme value distribution can be written as
   \deqn{G(z_1,z_2) = \exp\left[-(y_1+y_2)A\left(
@@ -75,25 +83,24 @@ fbvall(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE,
     <= A(x) <= 1} for all \eqn{0\leq x\leq1}{0 <= x <= 1}.
   \eqn{A(\cdot)}{A()} does not depend on the marginal parameters.
 
-  The component \code{dep.summary} of the returned list contains
-  three values summarizing the dependence structure for each fitted
-  model, based on \eqn{A(\cdot)}{A()}.
-  There are two measures of dependence.
+  For each fitted model there are three summaries of the dependence
+  structure in the returned object, based on \eqn{A(\cdot)}{A()}.
+  Two are measures of dependence.
   The first is given by \eqn{2(1-A(1/2))}.
   The second is the integral of \eqn{4(1 - A(x))}, taken over
   \eqn{0\leq x\leq1}{0 <= x <= 1}.
-  These appear in the rows of \code{dep.summary} labelled by \code{dep}
-  and \code{intdep} respectively.
+  These appear in the rows labelled by \code{dep} and \code{intdep}
+  respectively.
   Both measures are zero at independence and one at complete dependence.
   
-  The final row of \code{dep.summary}, labelled \code{intasy}, contains
+  The final row, labelled \code{intasy}, contains
   a measure of asymmetry given by the integral of
   \eqn{4(A(x) - A(1-x))/(3 - 2\sqrt2)}{
   4(A(x) - A(1-x))/(3 - 2 sqrt(2))},
   taken over \eqn{0 \leq x \leq 0.5}{0 <= x <= 0.5}.
   This integral lies in the closed interval [-1,1] (conjecture), with
   larger absolute values representing stronger asymmetry.
-  As a rough guide, any value within the interval \eqn{(-0.25,0.25)}
+  As a rough guide, any value within the interval \eqn{(-0.2,0.2)}
   suggests that the dependence structure is close to symmetric.
   For the symmetric models \eqn{A(x) = A(1-x)} for all
   \eqn{0 \leq x \leq 0.5}{0 <= x <= 0.5}, so the integral will be zero.
@@ -101,14 +108,22 @@ fbvall(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE,
 \note{
   The measure \eqn{2(1-A(1/2))} is standard theory but the two integral
   measures of dependence and asymmetry are not.
-  I have proposed a second measure of dependence because a comparison
-  of \eqn{2(1-A(1/2))} across symmetric and strongly asymmetric models
-  may not be very enlightening.
   I am open to suggestions of other simple one-number summaries of
   the dependence structure (where simple excludes bivariate integrals).
 }
 \value{
-  A list with with components
+  Returns an object of class \code{"bvall"}.
+
+  The generic accessor functions \code{\link{fitted}} (or
+  \code{\link{fitted.values}}), \code{\link{std.errors}} and
+  \code{\link{deviance}} extract various features of the returned
+  object. Each can be passed the argument \code{which} to restrict
+  access to a particular subset of models. This should be a character
+  vector containing character strings representing particular models,
+  as described in \code{which}.
+  
+  An object of class \code{"bvall"} is a list containing
+  the following components
   \item{estimate}{A matrix containing the maximum likelihood estimates.}
   \item{std.err}{A matrix containing the ``standard errors'' (if
     \eqn{\code{std.err} = \code{TRUE}}).}
@@ -119,6 +134,9 @@ fbvall(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE,
     fitted model.}
   \item{dep.summary}{A matrix containing three values summarizing the
     dependence structure for each fitted model (see \bold{Details}).}
+  \item{call}{The call of the current function.}
+  \item{data}{The data passed to the argument \code{x}.}
+  \item{n}{The number of rows in \code{x}.}
 }
 \references{
   Smith, R. L. (1985)
@@ -134,5 +152,5 @@ fbvall(x, nsloc1 = NULL, nsloc2 = NULL, omit = NULL, boxcon = TRUE,
 \dontrun{fbvall(sealevel, nsloc1 = (-40:40)/100)}
 }
 
-\keyword{distribution}
+\keyword{models}
 

@@ -54,10 +54,9 @@ rmvlog(n, dep, d = 2, mar = c(0, 1, 0))
   a multidimensional integral and one parameter for each bivariate
   margin.
   Multivariate extensions for the negative logistic model can be derived
-  but are considerably more complex and appear to be less flexible. The
-  obvious multivariate extension, which parallels that for the logistic
-  model, is often called the multivariate negative logistic model
-  (e.g Kotz \emph{et al}, 2000), but it is not a valid distribution
+  but are considerably more complex and appear to be less flexible.
+  The ``multivariate negative logistic model'' often presented in the
+  literature (e.g. Kotz \emph{et al}, 2000) is not a valid distribution
   function and should not be used.
 
   \code{rmvlog} uses Algorithm 2.1 in Stephenson(2002).
