@@ -88,6 +88,24 @@
 \alias{atvalog}
 \alias{atvlog}
 
+\alias{fbvcpot}
+\alias{fbvppot}
+\alias{bvtpost.optim}
+
+\alias{fbvclog}
+\alias{fbvcalog}
+\alias{fbvcaneglog}
+\alias{fbvcbilog}
+\alias{fbvcct}
+\alias{fbvcnegbilog}
+\alias{fbvcneglog}
+
+\alias{fbvplog}
+\alias{fbvpbilog}
+\alias{fbvpct}
+\alias{fbvpnegbilog}
+\alias{fbvpneglog}
+
 \title{Internal Functions}
 
 \description{
@@ -128,6 +146,12 @@
   are used in the fitting of bivariate models. The function
   \code{mvalog.check} checks and transforms the \code{asy} argument
   for the multivariate asymmetric model.
+
+  For fitting bivariate threshold models, internal functions exist
+  for the censored and (currently unimplemented) point process
+  likelihoods, and each of these calls a further internal function
+  corresponding to the specified model. The internal function
+  \code{bvtpost.optim} is then used for post optimization processing.
 }
 
 \keyword{internal}

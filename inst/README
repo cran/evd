@@ -2,7 +2,7 @@ The evd package extends simulation, distribution, quantile and
 density functions to parametric extreme value distributions, 
 and provides fitting functions which calculate maximum 
 likelihood estimates for univariate and bivariate maxima 
-models, and for univariate threshold models.
+models, and for univariate and bivariate threshold models.
 
 The file CHANGES documents changes from previous versions.
 The users guide (in pdf) is in the `doc' directory.
@@ -26,7 +26,7 @@ Stochastic Processes:
   evmc  marma  mar  mma  clusters  exi
 
 Fitting Models:  
-  fbvevd  fgev  fpot forder  fextreme
+  fbvevd  fgev  fpot  fbvpot  forder  fextreme
 
 Threshold Identification:
   mrlplot  tcplot
