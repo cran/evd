@@ -1,3 +1,9 @@
+CHANGES FROM VERSION 2.1-2 ARE AS FOLLOWS
+
+  The function dextreme errored when the argument
+  largest was FALSE. This has been fixed. The
+  maintainer thanks Brian Tolley for reporting this.
+
 CHANGES FROM VERSION 2.1-1 ARE AS FOLLOWS
   
   The function fbvevd now has arguments cshape, cscale
@@ -70,7 +76,8 @@ CHANGES FROM VERSION 2.0-0 ARE AS FOLLOWS
   The tests directory has been removed.
 
   The function evmc unintentionally reversed asymmetric 
-  dependence structures. This has been fixed.  
+  dependence structures. This has been fixed. The
+  maintainer thanks Chris Ferro for reporting this. 
 
 CHANGES FROM VERSION 1.2-3 ARE AS FOLLOWS
 

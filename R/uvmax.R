@@ -287,7 +287,6 @@ function(x, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE, log = FALSE
     if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
         stop("`mlen' must be a non-negative integer")
-    if(!largest) j <- mlen + 1 - j
     if(missing(densfun))
         densfun <- get(paste("d", distn, sep=""), mode="function")
     if(missing(distnfun))
