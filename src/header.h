@@ -33,12 +33,12 @@ void rmvalog_tawn(int *n, int *d, int *nb, double *alpha, double *asy,
                   double *sim);
 double rpstable(double cexp);
 double maximum_n(int n, double *x);
-void rbvhr(double *n, double *dep, double *sim);
-void rbvneglog(double *n, double *dep, double *sim);
-void rbvaneglog(double *n, double *dep, double *asy, double *sim);
-void rbvbilog(double *n, double *alpha, double *beta, double *sim);
-void rbvnegbilog(double *n, double *alpha, double *beta, double *sim);
-void rbvct(double *n, double *alpha, double *beta, double *sim);
+void rbvhr(int *n, double *dep, double *sim);
+void rbvneglog(int *n, double *dep, double *sim);
+void rbvaneglog(int *n, double *dep, double *asy, double *sim);
+void rbvbilog(int *n, double *alpha, double *beta, double *sim);
+void rbvnegbilog(int *n, double *alpha, double *beta, double *sim);
+void rbvct(int *n, double *alpha, double *beta, double *sim);
 
 /* from fit.c */
 

@@ -79,8 +79,8 @@ fgev(data2, start = list(loc=0.13,scale=1.1,shape=0), method="BFGS")
 
 data3 <- rext(100, qnorm, mean = 0.56, mlen = 365)
 fext(data3, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
-fext(data3, list(rate = 1), distn = "exp", mlen = 365)
-fext(data3, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365)
+fext(data3, list(rate = 1), distn = "exp", mlen = 365, method="L-BFGS-B", lower = 0.01)
+fext(data3, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365, method="L-BFGS-B", lower = 0.01)
 
 # Subsection: Bivariate Fitting
 

@@ -145,7 +145,7 @@ function(q, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
     if(length(shape) != 1) stop("invalid shape")
     q <- (q - loc)/scale
     if(shape == 0) p <- exp(-exp(-q))
-    else p <- exp( - pmax((1 + shape * q),0)^(-1/shape))
+    else p <- exp( - pmax(1 + shape * q, 0)^(-1/shape))
     if(!lower.tail) p <- 1 - p
     p
 }
@@ -227,6 +227,28 @@ function(x, loc = 0, scale = 1, shape = 1, log = FALSE)
     d[x<0 | is.na(x)] <- log(shape/scale) + (shape-1) * log(-xneg) -
         (-xneg)^shape
     d[x>=0 & !is.na(x)] <- -Inf
+    if(!log) d <- exp(d)
+    d
+}
+
+"dgev"<-
+function(x, loc = 0, scale = 1, shape = 0, log = FALSE)
+{
+    if(min(scale) <= 0) stop("invalid scale")
+    if(length(shape) != 1) stop("invalid shape")
+    x <- (x - loc)/scale
+    if(shape == 0)
+        d <- log(1/scale) - x - exp(-x) 
+    else {
+        nn <- length(x)
+        xx <- 1 + shape*x
+        xxpos <- xx[xx>0 | is.na(xx)]
+        scale <- rep(scale, length.out = nn)[xx>0 | is.na(xx)]
+        d <- numeric(nn)
+        d[xx>0 | is.na(xx)] <- log(1/scale) - xxpos^(-1/shape) -
+            (1/shape + 1)*log(xxpos)
+        d[xx<=0 & !is.na(xx)] <- -Inf
+    }  
     if(!log) d <- exp(d)
     d
 }
@@ -468,18 +490,11 @@ function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BF
         }
         else loc <- rep(loc, length.out = length(x))
         .C("nlgev",
-            x, n,
-            as.double(loc), as.double(scale),
-            as.double(shape), dns = double(1),
+            x, n, loc, scale, shape, dns = double(1),
             PACKAGE = "evd")$dns
     }
     if(!is.null(nsloc)) {
-        if(is.vector(nsloc))
-            nsloc <- data.frame(trend = nsloc)
-        if(!is.data.frame(nsloc))
-            stop("`nsloc' must be a vector or data frame")
-        if(nrow(nsloc) != length(x))
-            stop("`nsloc' and `x' are not compatible")
+        nsloc <- nsloc.transform(x, nsloc)
         nsloc <- nsloc[!is.na(x), ,drop = FALSE]
         nslocmat <- cbind(1,as.matrix(nsloc))
     }
@@ -558,7 +573,7 @@ function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BF
 }
 
 "fgev.quantile"<-
-function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method = "Nelder-Mead", warn.inf = TRUE)
+function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
         stop("`x' must be a non-empty numeric vector")
@@ -575,19 +590,14 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
                 ns[i] <- get(loc.param[i+1])
             loc <- drop(nslocmat %*% ns) + loc
         }
+        if(any(is.infinite(loc))) return(1e6)
         .C("nlgev",
             x, n,
-            as.double(loc), as.double(scale),
-            as.double(shape), dns = double(1),
+            loc, scale, shape, dns = double(1),
             PACKAGE = "evd")$dns
     }
     if(!is.null(nsloc)) {
-        if(is.vector(nsloc))
-            nsloc <- data.frame(trend = nsloc)
-        if(!is.data.frame(nsloc))
-            stop("`nsloc' must be a vector or data frame")
-        if(nrow(nsloc) != length(x))
-            stop("`nsloc' and `x' are not compatible")
+        nsloc <- nsloc.transform(x, nsloc)
         nsloc <- nsloc[!is.na(x), ,drop = FALSE]
         nslocmat <- as.matrix(nsloc)
     }
@@ -900,7 +910,7 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
     invisible(list(x = xvec, y = dens))
 }
 
-"profile.evd" <-  function(fitted, which = names(fitted$estimate), conf = 0.999, mesh = fitted$std.err[which]/2, xmin = rep(-Inf, length(which)), xmax = rep(Inf, length(which)), convergence = FALSE, control = list(maxit = 5000), ...)
+"profile.evd" <-  function(fitted, which = names(fitted$estimate), conf = 0.999, mesh = fitted$std.err[which]/2, xmin = rep(-Inf, length(which)), xmax = rep(Inf, length(which)), convergence = FALSE, method = "BFGS", control = list(maxit = 500), ...)
 {
     if (!inherits(fitted, "evd")) 
         stop("Use only with `evd' objects")
@@ -920,6 +930,7 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
        stop("fitted model must contain standard errors")
     prof.list <- as.list(numeric(length(which)))
     names(xmin) <- names(xmax) <- names(prof.list) <- which
+    if(is.null(names(mesh))) names(mesh) <- which
     mles <- fitted$estimate[which]                   
     for(j in which) {
         print(paste("profiling",j))
@@ -932,7 +943,7 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
             parvec2 <- c(parvec2[parvec2 > xmin[j]], xmin[j])
         start <- as.list(fitted$estimate[!names(fitted$estimate) %in% j])
         call.args <- c(list(fitted$data, start, 0), as.list(fitted$fixed),
-           list(FALSE, FALSE, "Nelder-Mead", FALSE, control))
+           list(FALSE, FALSE, method, FALSE, control))
         names(call.args) <- c("x", "start", j, names(fitted$fixed),
            "std.err", "corr", "method", "warn.inf", "control")
         dimnames(prof) <- list(NULL, c(j, "deviance", names(start)))
@@ -957,10 +968,10 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
               break;
             if(parvec1[i] == xmax[j]) break;
         }
+        call.args[["start"]] <-
+              as.list(fitted$estimate[!names(fitted$estimate) %in% j])
         for(i in 1:32) {
             call.args[[j]] <- parvec2[i]
-            call.args[["start"]] <-
-              as.list(fitted$estimate[!names(fitted$estimate) %in% j])
             fit.mod <- do.call(call.fn, call.args)
             if(convergence) print(fit.mod$convergence)
             call.args[["start"]] <- as.list(fit.mod$estimate)
@@ -1133,7 +1144,19 @@ UseMethod("profile2d")
     invisible(x)
 }
 
-
+"nsloc.transform" <- 
+function(x, nsloc)
+{
+    if(is.vector(nsloc))
+        nsloc <- data.frame(trend = nsloc)
+    if(!is.data.frame(nsloc))
+        stop("`nsloc' must be a vector or data frame")
+    if(is.null(dim(x))) ndat <- length(x)
+    else ndat <- nrow(x)
+    if(nrow(nsloc) != ndat)
+        stop("`nsloc' and data are not compatible")
+    nsloc
+}
 
 
 

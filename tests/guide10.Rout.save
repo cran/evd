@@ -1,6 +1,6 @@
 
-R : Copyright 2002, The R Development Core Team
-Version 1.4.1  (2002-01-30)
+R : Copyright 2001, The R Development Core Team
+Version 1.3.1  (2001-08-31)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -254,9 +254,9 @@ Optimization Information
   Convergence: successful 
   Function Evaluations: 63 
 
-> fext(data3, list(rate = 1), distn = "exp", mlen = 365)
+> fext(data3, list(rate = 1), distn = "exp", mlen = 365, method="L-BFGS-B", lower = 0.01)
 
-Call: fext(x = data3, start = list(rate = 1), distn = "exp", mlen = 365) 
+Call: fext(x = data3, start = list(rate = 1), lower = 0.01, distn = "exp",      mlen = 365, method = "L-BFGS-B") 
 Deviance: 123.0 
 
 Estimates
@@ -269,11 +269,13 @@ Standard Errors
 
 Optimization Information
   Convergence: successful 
-  Function Evaluations: 28 
+  Function Evaluations: 9 
+  Gradient Evaluations: 9 
+  Message: CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH 
 
-> fext(data3, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365)
+> fext(data3, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365, method="L-BFGS-B", lower = 0.01)
 
-Call: fext(x = data3, start = list(scale = 1), shape = 0.5, distn = "gamma",      mlen = 365) 
+Call: fext(x = data3, start = list(scale = 1), shape = 0.5, lower = 0.01,      distn = "gamma", mlen = 365, method = "L-BFGS-B") 
 Deviance: 148.7 
 
 Estimates
@@ -286,7 +288,9 @@ Standard Errors
 
 Optimization Information
   Convergence: successful 
-  Function Evaluations: 28 
+  Function Evaluations: 7 
+  Gradient Evaluations: 7 
+  Message: CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH 
 
 > 
 > # Subsection: Bivariate Fitting

@@ -8,8 +8,8 @@ underneath wherever the package is installed.
 It can also be downloaded directly (in postscript or pdf) from 
 http://www.maths.lancs.ac.uk/~stephena/.
 
-The evd/doc/ directory also contains a `changes' file that
-documents the changes from the previous (minor) version.
+The evd/doc/ directory also contains a CHANGES file that
+documents the changes from previous versions.
 
 A reference manual containing the help files (in pdf) can be 
 downloaded from CRAN or from the URL given above.

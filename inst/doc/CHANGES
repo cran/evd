@@ -1,3 +1,14 @@
+CHANGES FROM VERSION 1.2-0 ARE AS FOLLOWS
+
+  The profile.evd function now has a method argument to specify 
+  the optimization method. The default method is now BFGS.
+  
+  A bug existed in profile.evd; a fatal error would result if 
+  the mesh argument did not have a names attribute. This has 
+  been fixed.
+
+  Internal: General code cleaning/optimizing. New internal 
+  functions have been created.
 
 CHANGES FROM VERSION 1.1-0 ARE AS FOLLOWS
 

@@ -5,6 +5,10 @@
 \alias{ccop}
 \alias{mtransform}
 \alias{na.vals}
+\alias{bvpost.optim}
+\alias{bvstart.vals}
+\alias{nsloc.transform}
+\alias{sep.bvdata}
 
 \title{Internal Functions}
 

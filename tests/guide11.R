@@ -65,7 +65,7 @@ fgev(data, loc = 0, scale = 1)
 
 data2 <- rext(100, qnorm, mean = 0.56, mlen = 365)
 fext(data2, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
-fext(data2, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365)
+fext(data2, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365, method="L-BFGS-B", lower = 0.01)
 
 # Section: Fitting Bivariate Distributions by Maximum Likelihood
 
