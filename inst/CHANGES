@@ -1,3 +1,14 @@
+CHANGES FROM VERSION 2.0-0 ARE AS FOLLOWS
+
+  Internal change to avoid warnings under R version 1.7.0 when
+  calling the multivariate asymmetric logistic distribution,
+  density, quantile and generation functions.
+
+  The tests directory has been removed.
+
+  The evmc function unintentionally reversed asymmetric
+  dependence structures. This has been fixed.  
+
 CHANGES FROM VERSION 1.2-3 ARE AS FOLLOWS
 
   The function fgev.quantile is now internal; the functionality
