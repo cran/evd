@@ -17,6 +17,7 @@
 \alias{bvdepfn}
 \alias{tvdepfn}
 \alias{mvalog.check}
+\alias{subsets}
 
 \alias{ccop}
 \alias{mtransform}
@@ -146,7 +147,10 @@
   \code{bvpost.optim}, \code{bvstart.vals} and \code{sep.bvdata}
   are used in the fitting of bivariate models. The function
   \code{mvalog.check} checks and transforms the \code{asy} argument
-  for the multivariate asymmetric model.
+  for the multivariate asymmetric model. The function
+  \code{subsets} lists all subsets of \code{1:n}; it is
+  called by \code{mvalog.check} and multivariate distribution
+  functions.
 
   For fitting bivariate threshold models, internal functions exist
   for the censored and (currently unimplemented) point process

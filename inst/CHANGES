@@ -1,3 +1,9 @@
+CHANGES FROM VERSION 2.1-4 ARE AS FOLLOWS
+
+  The lower.tail argument for pbvevd and pmvevd did not
+  properly produce survivor functions when set to FALSE.
+  This has been fixed. 
+
 CHANGES FROM VERSION 2.1-3 ARE AS FOLLOWS
 
   A file was accidently included in Version 2.1-3 which

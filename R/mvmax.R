@@ -39,32 +39,52 @@ function(n, dep, asy, model = c("log", "alog"), d = 2, mar = c(0,1,0))
 "pmvlog"<- 
 function(q, dep, d = 2, mar = c(0,1,0), lower.tail = TRUE)
 {
-    if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0 ||
+    if(lower.tail) {
+      if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0 ||
         dep > 1) stop("invalid argument for `dep'")
-    if(is.null(dim(q))) dim(q) <- c(1,d)
-    if(ncol(q) != d) stop("`q' and `d' are not compatible")
-    q <- mtransform(q, mar)
-    pp <- exp(-apply(q^(1/dep),1,sum)^dep)
-    if(!lower.tail) pp <- 1 - pp
+      if(is.null(dim(q))) dim(q) <- c(1,d)
+      if(ncol(q) != d) stop("`q' and `d' are not compatible")
+      q <- mtransform(q, mar)
+      pp <- exp(-apply(q^(1/dep),1,sum)^dep)
+    } else {
+      pp <- numeric(1)
+      ss <- c(list(numeric(0)), subsets(d))
+      ssl <- d - sapply(ss, length)
+      for(i in 1:(2^d)) {
+        tmpq <- q
+        tmpq[, ss[[i]]] <- Inf
+        pp <- (-1)^ssl[i] * Recall(tmpq, dep, d, mar) + pp
+      }
+    }
     pp
 }
 
 "pmvalog"<-
 function(q, dep, asy, d = 2, mar = c(0,1,0), lower.tail = TRUE)
 {
-    nb <- 2^d-1
-    dep <- rep(dep, length.out = nb-d)
-    asy <- mvalog.check(asy, dep, d = d)
-    dep <- c(rep(1,d), dep)
-    if(is.null(dim(q))) dim(q) <- c(1,d)
-    if(ncol(q) != d) stop("`q' and `d' are not compatible")
-    q <- mtransform(q, mar)
-    inner <- function(par)
+    if(lower.tail) {
+      nb <- 2^d-1
+      dep <- rep(dep, length.out = nb-d)
+      asy <- mvalog.check(asy, dep, d = d)
+      dep <- c(rep(1,d), dep)
+      if(is.null(dim(q))) dim(q) <- c(1,d)
+      if(ncol(q) != d) stop("`q' and `d' are not compatible")
+      q <- mtransform(q, mar)
+      inner <- function(par)
         apply((rep(par[1:d], rep(nrow(q),d))*q)^(1/par[d+1]), 1, sum)^par[d+1]
-    comps <- apply(cbind(asy,dep),1,inner)
-    if(is.null(dim(comps))) dim(comps) <- c(1,nb)
-    pp <- exp(-apply(comps,1,sum))
-    if(!lower.tail) pp <- 1 - pp
+      comps <- apply(cbind(asy,dep),1,inner)
+      if(is.null(dim(comps))) dim(comps) <- c(1,nb)
+      pp <- exp(-apply(comps,1,sum))
+    } else {
+      pp <- numeric(1)
+      ss <- c(list(numeric(0)), subsets(d))
+      ssl <- d - sapply(ss, length)
+      for(i in 1:(2^d)) {
+        tmpq <- q
+        tmpq[, ss[[i]]] <- Inf
+        pp <- (-1)^ssl[i] * Recall(tmpq, dep, asy, d, mar) + pp
+      }
+    }
     pp
 }
 
@@ -479,14 +499,6 @@ mvalog.check <- function(asy, dep, d, ss = FALSE)
     if(mode(asy) != "list" || length(asy) != nb)
       stop(paste("`asy' should be a list of length", nb))
 
-    subsets <- function(d) {
-        x <- 1:d
-        k <- NULL
-        for(m in x) 
-            k <- rbind(cbind(TRUE, k), cbind(FALSE, k))
-        pset <- apply(k, 1, function(z) x[z])
-        pset[sort.list(unlist(lapply(pset,length)))[-1]] 
-    }
     tasy <- function(theta, b) {
         trans <- matrix(0, nrow=nb, ncol=d)
         for(i in 1:nb) trans[i,(1:d %in% b[[i]])] <- theta[[i]]
@@ -508,5 +520,12 @@ mvalog.check <- function(asy, dep, d, ss = FALSE)
     asy
 }
 
-
+subsets <- function(d) {
+    x <- 1:d
+    k <- NULL
+    for(m in x) 
+    k <- rbind(cbind(TRUE, k), cbind(FALSE, k))
+    pset <- apply(k, 1, function(z) x[z])
+    pset[sort.list(unlist(lapply(pset,length)))[-1]] 
+}
   

@@ -1,6 +1,6 @@
 Package: evd
-Version: 2.1-4
-Date: 2004-07-28
+Version: 2.1-5
+Date: 2004-08-15
 Title: Functions for extreme value distributions
 Author: Alec Stephenson. Function fbvpot by Chris Ferro.
 Maintainer: Alec Stephenson <alec_stephenson@hotmail.com>
@@ -13,4 +13,4 @@ Description: Extends simulation, distribution, quantile and
   bivariate threshold models.
 License: GPL (Version 2 or above)
 URL: http://www.maths.lancs.ac.uk/~stephena/
-Packaged: Wed Jul 28 12:25:10 2004; stephena
+Packaged: Fri Aug 13 13:44:53 2004; stephena

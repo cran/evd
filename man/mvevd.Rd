@@ -42,8 +42,9 @@ dmvevd(x, dep, asy, model = c("log", "alog"), d = 2, mar = c(0,1,0),
     \eqn{i}th element represents the marginal parameters on the
     \eqn{i}th margin.}
   \item{log}{Logical; if \code{TRUE}, the log density is returned.}
-  \item{lower.tail}{Logical; if \code{TRUE} (default), probabilities
-    are P[X <= x], otherwise, P[X > x]}
+  \item{lower.tail}{Logical; if \code{TRUE} (default), the
+    distribution function is returned; the survivor function
+    is returned otherwise.}
 }
 \details{
   Define
