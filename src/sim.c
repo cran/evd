@@ -1,10 +1,7 @@
 #include "header.h"
 
-/* 
-   All simulation functions produce standard Frechet margins 
-   unless explicitly stated otherwise.
-*/
 
+/* produces standard Frechet margins */
 void rbvlog_shi(int *n, double *alpha, double *sim)
 {
   double u,z;
@@ -22,6 +19,7 @@ void rbvlog_shi(int *n, double *alpha, double *sim)
   RANDOUT;
 }
 
+/* produces standard Frechet margins */
 void rbvalog_shi(int *n, double *alpha, double *asy, double *sim)
 {
   double v1_1,v2_2,v1_12,v2_12,u,z;
@@ -48,6 +46,7 @@ void rbvalog_shi(int *n, double *alpha, double *asy, double *sim)
   RANDOUT;
 }
 
+/* produces standard Frechet margins */
 void rmvlog_tawn(int *n, int *d, double *alpha, double *sim)
 {
   double s;
@@ -63,6 +62,7 @@ void rmvlog_tawn(int *n, int *d, double *alpha, double *sim)
   RANDOUT;
 }
 
+/* produces standard Frechet margins */
 void rmvalog_tawn(int *n, int *d, int *nb, double *alpha, double *asy, 
                   double *sim)
 {
@@ -118,6 +118,80 @@ double maximum_n(int n, double *x)
   for(i=1;i<n;i++)
     if(x[0] < x[i]) x[0] = x[i];
   return x[0];
+}
+
+/* produces uniform margins; needed for evmc */
+void rbvlog(int *n, double *dep, double *sim)
+{
+  double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
+  int i,j;
+
+  for(i=0;i<*n;i++) 
+  {
+    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    ulim = 1 - llim;
+    ilen = 1;
+    midpt = 0.5;
+    lval = ccbvlog(llim, sim[2*i+1], sim[2*i+0], *dep);
+    uval = ccbvlog(ulim, sim[2*i+1], sim[2*i+0], *dep);
+    if(!(sign(lval) != sign(uval))) 
+      error("values at end points are not of opposite sign");
+    for(j=0;j<DOUBLE_DIGITS;j++) {
+      ilen = ilen/2;
+      midpt = llim + ilen;
+      midval = ccbvlog(midpt, sim[2*i+1], sim[2*i+0], *dep);
+      if(fabs(midval) < eps || fabs(ilen) < delta) 
+        break;
+      if(sign(lval) != sign(midval)) {
+        ulim = midpt;
+        uval = midval;
+      }
+      else {
+        llim = midpt;
+        lval = midval;
+      }
+      if(j == DOUBLE_DIGITS-1) 
+        error("numerical problem in root finding algorithm");
+    }
+    sim[2*i+0] = midpt;
+  }
+}
+
+/* produces uniform margins; needed for evmc */
+void rbvalog(int *n, double *dep, double *asy, double *sim)
+{
+  double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
+  int i,j;
+
+  for(i=0;i<*n;i++) 
+  {
+    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    ulim = 1 - llim;
+    ilen = 1;
+    midpt = 0.5;
+    lval = ccbvalog(llim, sim[2*i+1], sim[2*i+0], *dep,asy[0],asy[1]);
+    uval = ccbvalog(ulim, sim[2*i+1], sim[2*i+0], *dep,asy[0],asy[1]);
+    if(!(sign(lval) != sign(uval))) 
+      error("values at end points are not of opposite sign");
+    for(j=0;j<DOUBLE_DIGITS;j++) {
+      ilen = ilen/2;
+      midpt = llim + ilen;
+      midval = ccbvalog(midpt, sim[2*i+1], sim[2*i+0], *dep,asy[0],asy[1]);
+      if(fabs(midval) < eps || fabs(ilen) < delta) 
+        break;
+      if(sign(lval) != sign(midval)) {
+        ulim = midpt;
+        uval = midval;
+      }
+      else {
+        llim = midpt;
+        lval = midval;
+      }
+      if(j == DOUBLE_DIGITS-1) 
+        error("numerical problem in root finding algorithm");
+    }
+    sim[2*i+0] = midpt;
+  }
 }
 
 /* produces uniform margins */

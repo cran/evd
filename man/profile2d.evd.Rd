@@ -1,20 +1,20 @@
 \name{profile2d.evd}
+\alias{profile2d}
 \alias{profile2d.evd}
 
-\title{Method for Profiling evd Objects}
+\title{Method for Profiling EVD Objects}
 \description{
-  Investigates behavior of objective function near the solution
-  represented by \code{fitted}.
+  Calculate joint profile traces for fitted models.
 }
 \usage{
-\method{profile2d}{evd}(fitted, prof, which,  pts = 20,
-    convergence = FALSE, control = list(maxit = 5000), \dots)
+\method{profile2d}{evd}(fitted, prof, which, pts = 20, convergence =
+    FALSE, method = "Nelder-Mead", control = list(maxit = 10000), \dots)
 }
 \arguments{
-  \item{fitted}{The original fitted model object.}
+  \item{fitted}{An object of class \code{"evd"}.}
   \item{prof}{An object of class \code{"profile.evd"}, created using
     \code{\link{profile.evd}} with argument \code{fitted}.
-    The object must contain the (marginal) profiles for the two
+    The object must contain the (marginal) profile traces for the two
     parameters specified in \code{which}.}
   \item{which}{A character vector of length two containing the original 
      model parameters that are to be jointly profiled.}
@@ -22,22 +22,23 @@
      parameter in \code{which}.
     There are \code{pts^2} optimizations performed in total.}
   \item{convergence}{Logical; print convergence code after each
-    optimization?}
+    optimization? (A warning is given for each non-zero convergence
+    code, irrespective of the value of \code{convergence}.)}
+  \item{method}{The optimization method.}
   \item{control}{Passed to \code{optim}. See \code{\link{optim}} for
     details.}
   \item{\dots}{Ignored.}
 }
 \value{
-  An object of class \code{"profile2d.evd"};
-  a list with three elements.
+  An object of class \code{"profile2d.evd"}, which is a list with three
+  elements.
   The first element, a matrix named \code{trace}, has the same structure
   as the elements of an object of class \code{"profile.evd"}.
   The last two elements give the distinct values used for each profiled
   parameter in \code{which}.
 }
 
-\seealso{\code{\link{profile}}, \code{\link{profile.evd}},
-  \code{\link{profile2d}}}
+\seealso{\code{\link{profile.evd}}, \code{\link{plot.profile2d.evd}}}
 
 \examples{
 uvdata <- rgev(100, loc = 0.13, scale = 1.1, shape = 0.2)

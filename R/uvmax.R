@@ -43,7 +43,7 @@ function(n, quantfun, ..., distn,  mlen = 1, j = 1, largest = TRUE)
     quantfun(rbeta(n, mlen+1-j, j), ...)
 }
 
-"rext"<-
+"rextreme"<-
 function(n, quantfun, ..., distn, mlen = 1, largest = TRUE)
 {
     if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
@@ -95,7 +95,7 @@ function(p, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
     else return(loc + scale * ((-log(p))^(-shape) - 1)/shape)
 }
 
-"qext"<-
+"qextreme"<-
 function(p, quantfun, ..., distn, mlen = 1, largest = TRUE, lower.tail = TRUE)
 {
     if(min(p, na.rm = TRUE) <= 0 || max(p, na.rm = TRUE) >=1)
@@ -176,7 +176,7 @@ function(q, distnfun, ..., distn, mlen = 1, j = 1, largest = TRUE,
     p
 }
 
-"pext"<-
+"pextreme"<-
 function(q, distnfun, ..., distn, mlen = 1, largest = TRUE, lower.tail = TRUE)
 {
     if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
@@ -253,28 +253,6 @@ function(x, loc = 0, scale = 1, shape = 0, log = FALSE)
     d
 }
 
-"dgev"<-
-function(x, loc = 0, scale = 1, shape = 0, log = FALSE)
-{
-    if(min(scale) <= 0) stop("invalid scale")
-    if(length(shape) != 1) stop("invalid shape")
-    x <- (x - loc)/scale
-    if(shape == 0)
-        d <- log(1/scale) - x - exp(-x) 
-    else {
-        nn <- length(x)
-        xx <- 1 + shape*x
-        xxpos <- xx[xx>0 | is.na(xx)]
-        scale <- rep(scale, length.out = nn)[xx>0 | is.na(xx)]
-        d <- numeric(nn)
-        d[xx>0 | is.na(xx)] <- log(1/scale) - xxpos^(-1/shape) -
-            (1/shape + 1)*log(xxpos)
-        d[xx<=0 & !is.na(xx)] <- -Inf
-    }  
-    if(!log) d <- exp(d)
-    d
-}
-
 "dorder"<-
 function(x, densfun, distnfun, ..., distn, mlen = 1, j = 1, largest = TRUE,
          log = FALSE)
@@ -302,7 +280,7 @@ function(x, densfun, distnfun, ..., distn, mlen = 1, j = 1, largest = TRUE,
     d
 }
 
-"dext"<-
+"dextreme"<-
 function(x, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE, log = FALSE)
 {
     if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
@@ -324,7 +302,7 @@ function(x, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE, log = FALSE
     d
 }
 
-"fext"<-
+"fextreme"<-
 function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE,
          std.err = TRUE, corr = FALSE, method = "Nelder-Mead")
 {
@@ -357,9 +335,9 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE,
     formals(densfun) <- c(f1[c(1, mtch)], f1[-c(1, mtch)])
     formals(distnfun) <- c(f2[c(1, mtch)], f2[-c(1, mtch)])
     dens <- function(p, x, densfun, distnfun, ...)
-                dext(x, densfun, distnfun, p, ...)
+                dextreme(x, densfun, distnfun, p, ...)
     if(l > 1)
-        body(dens) <- parse(text = paste("dext(x, densfun, distnfun,",
+        body(dens) <- parse(text = paste("dextreme(x, densfun, distnfun,",
                             paste("p[",1:l,"]", collapse = ", "), ", ...)"))
     opt <- optim(start, nllh, x = x, hessian = TRUE, ...,
                  densfun = densfun, distnfun = distnfun, mlen = mlen,
@@ -392,8 +370,7 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE,
         deviance = 2*opt$value, corr = corr,
         convergence = opt$convergence, counts = opt$counts,
         message = opt$message, call = call, data = x,
-        n = length(x), model = "ext"),
-        class = "evd")
+        n = length(x)), class = c("extreme", "evd"))
 }
 
 "forder"<-
@@ -465,20 +442,16 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, j = 1,
         deviance = 2*opt$value, corr = corr,
         convergence = opt$convergence, counts = opt$counts,
         message = opt$message, call = call, data = x,
-        n = length(x), model = "order"),
-        class = "evd")
+        n = length(x)), class = c("extreme", "evd"))
 }
 
 "fgumbel" <- function (...) .Defunct()
 "frweibull" <- function (...) .Defunct()
 "ffrechet" <- function (...) .Defunct()
 
-"fgev"<-
+"fgev.norm"<-
 function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
-        stop("`x' must be a non-empty numeric vector")
-    call <- match.call()
     nlgev <- function(loc, scale, shape)
     { 
         if(scale <= 0) return(1e6)
@@ -563,25 +536,24 @@ function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BF
         x2 <- x - trend
     }
     else x2 <- x
-    structure(list(estimate = opt$par, std.err = std.err,
+    list(estimate = opt$par, std.err = std.err,
         fixed = unlist(fixed.param), param = param,
         deviance = 2*opt$value, corr = corr,
         convergence = opt$convergence, counts = opt$counts,
         message = opt$message,
-        call = call, data = x, tdata = x2, nsloc = nsloc,
-        n = length(x), model = "gev"), class = "evd")
+        data = x, tdata = x2, nsloc = nsloc,
+        n = length(x), prob = NULL, loc = param["loc"])
 }
 
 "fgev.quantile"<-
-function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc = NULL, prob, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
-        stop("`x' must be a non-empty numeric vector")
-    call <- match.call()
     nlgev <- function(quantile, scale, shape)
     {
         if(scale <= 0) return(1e6)
         quantile <- rep(quantile, length.out = length(x))
+        if(prob == 0 && shape >= 0) return(1e6)
+        if(prob == 1 && shape <= 0) return(1e6)
         if(shape == 0) loc <- quantile + scale * log(-log(1-prob))
         else loc <- quantile + scale/shape * (1 - (-log(1-prob))^(-shape))
         if(!is.null(nsloc)) {
@@ -596,6 +568,31 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
             loc, scale, shape, dns = double(1),
             PACKAGE = "evd")$dns
     }
+    if(is.null(nsloc)) loc.param <- "quantile"
+    else loc.param <- c("quantile", paste("loc", names(nsloc), sep=""))
+    param <- c(loc.param, "scale", "shape")
+    if(missing(start)) {
+        start <- as.list(numeric(length(param)))
+        names(start) <- param
+        start$scale <- sqrt(6 * var(x, na.rm = TRUE))/pi
+        start.loc <- mean(x, na.rm = TRUE) - 0.58 * start$scale
+        start$quantile <- start.loc - start$scale * log(-log(1-prob))
+        if(prob == 0) {
+          fpft <- fgev(x = x, ..., nsloc = nsloc, prob = 0.001, std.err =
+            std.err, corr = corr, method = method, warn.inf = warn.inf)
+          start <- as.list(fitted(fpft))
+        }
+        if(prob == 1) {
+          fpft <- fgev(x = x, ..., nsloc = nsloc, prob = 0.999, std.err =
+            std.err, corr = corr, method = method, warn.inf = warn.inf)
+          start <- as.list(fitted(fpft))
+        }
+        start <- start[!(param %in% names(list(...)))]
+    }
+    if(!is.list(start)) 
+        stop("`start' must be a named list")
+    if(!length(start))
+        stop("there are no parameters left to maximize over")
     if(!is.null(nsloc)) {
         nsloc <- nsloc.transform(x, nsloc)
         nsloc <- nsloc[!is.na(x), ,drop = FALSE]
@@ -603,21 +600,6 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
     }
     x <- as.double(x[!is.na(x)])
     n <- as.integer(length(x))
-    if(is.null(nsloc)) loc.param <- "quantile"
-    else loc.param <- c("quantile", paste("loc", names(nsloc), sep=""))
-    param <- c(loc.param, "scale", "shape")
-    if(missing(start)) {
-        start <- as.list(numeric(length(param)))
-        names(start) <- param
-        start$scale <- sqrt(6 * var(x))/pi
-        start.loc <- mean(x) - 0.58 * start$scale
-        start$quantile <- start.loc - start$scale * log(-log(1-prob))
-        start <- start[!(param %in% names(list(...)))]
-    }
-    if(!is.list(start)) 
-        stop("`start' must be a named list")
-    if(!length(start))
-        stop("there are no parameters left to maximize over")
     nm <- names(start)
     l <- length(nm)
     f <- c(as.list(numeric(length(loc.param))), formals(nlgev)[2:3])
@@ -675,13 +657,32 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
     else
         loc <- param["quantile"] + param["scale"]/param["shape"] *
           (1 - (-log(1-prob))^(-param["shape"]))
-    structure(list(estimate = opt$par, std.err = std.err,
+    list(estimate = opt$par, std.err = std.err,
         fixed = unlist(fixed.param), param = param,
         deviance = 2*opt$value, corr = corr, convergence = opt$convergence,
         counts = opt$counts, message = opt$message,
-        call = call, data = x, tdata = x2,
-        nsloc = nsloc, n = length(x), model = "gev.quantile"),
-        prob = prob, loc = loc, class = "evd")
+        data = x, tdata = x2, nsloc = nsloc, n = length(x),
+        prob = prob, loc = loc)
+}
+
+"fgev"<-
+function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
+{
+  call <- match.call()
+  if(missing(x) || length(x) == 0 || mode(x) != "numeric") 
+    stop("`x' must be a non-empty numeric vector")
+  if(is.null(prob)) {
+    ft <- fgev.norm(x = x, start = start, ..., nsloc = nsloc, std.err =
+      std.err, corr = corr, method = method, warn.inf = warn.inf)
+  }
+  else {
+    if(length(prob) != 1 || mode(prob) != "numeric" || prob < 0 || prob > 1)
+      stop("`prob' should be a probability in [0,1]")
+    ft <- fgev.quantile(x = x, start = start, ..., nsloc = nsloc, prob = prob,
+      std.err = std.err, corr = corr, method = method, warn.inf = warn.inf)
+  }
+  structure(c(ft, call = call), class = c("gev", "evd"))
 }
 
 "print.evd" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
@@ -712,9 +713,14 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
 }
 
 "fitted.evd" <- function (object, ...) object$estimate
-"deviance.evd" <- function (object, ...) object$deviance
 "std.errors" <- function (object, ...) UseMethod("std.errors")
 "std.errors.evd" <- function (object, ...) object$std.err
+"logLik.evd" <- function(object, ...) {
+    val <- -deviance(object)/2
+    attr(val, "df") <- length(fitted(object))
+    class(val) <- "logLik"
+    val
+}
 
 "anova.evd" <- function (object, object2, ...) 
 {
@@ -753,17 +759,15 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
               class = c("anova", "data.frame"))
 }
 
-"plot.evd" <-  function(x, which = 1:4, main = c("Probability Plot",
+"plot.gev" <-  function(x, which = 1:4, main = c("Probability Plot",
      "Quantile Plot", "Density Plot", "Return Level Plot"),
      ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
      adjust = 1, jitter = FALSE, nplty = 2, ...) 
 {
-    if (!inherits(x, "evd")) 
-        stop("Use only with `evd' objects")
+    if (!inherits(x, "gev")) 
+        stop("Use only with `gev' objects")
     if (!is.numeric(which) || any(which < 1) || any(which > 4)) 
         stop("`which' must be in 1:4")
-    if(x$model %in% c("ext","order"))
-        stop("diagnostic plots not implemented for this model")
     show <- rep(FALSE, 4)
     show[which] <- TRUE
     nb.fig <- prod(par("mfcol"))
@@ -789,18 +793,14 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
 
 "qq" <-  function(x, ci = TRUE, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
 {
-    if(!(x$model %in% c("gev","gev.quantile")))
-        stop("qq plot not implemented for this model")
-    if(x$model == "gev") loc <- x$param["loc"]
-    if(x$model == "gev.quantile") loc <- attributes(x)$loc
-    quant <- qgev(ppoints(x$tdata), loc = loc,
+    quant <- qgev(ppoints(x$tdata), loc = x$loc,
                  scale = x$param["scale"], shape = x$param["shape"])
     if(!ci) {
       plot(quant, sort(x$tdata), main = main, xlab = xlab, ylab = ylab, ...)
       abline(0, 1)
     }
     else {
-      samp <- rgev(x$n*99, loc = loc,
+      samp <- rgev(x$n*99, loc = x$loc,
                  scale = x$param["scale"], shape = x$param["shape"])
       samp <- matrix(samp, x$n, 99)
       samp <- apply(samp, 2, sort)
@@ -820,27 +820,23 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
 
 "pp" <-  function(x, ci = TRUE, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 {
-    if(!(x$model %in% c("gev","gev.quantile")))
-        stop("pp plot not implemented for this model")
     ppx <- ppoints(x$n)
-    if(x$model == "gev") loc <- x$param["loc"]
-    if(x$model == "gev.quantile") loc <- attributes(x)$loc
-    probs <- pgev(sort(x$tdata), loc = loc,
+    probs <- pgev(sort(x$tdata), loc = x$loc,
                  scale = x$param["scale"], shape = x$param["shape"])
     if(!ci) {
         plot(ppx, probs, main = main, xlab = xlab, ylab = ylab, ...)
         abline(0, 1)
     }
     else {
-        samp <- rgev(x$n*99, loc = loc,
+        samp <- rgev(x$n*99, loc = x$loc,
                    scale = x$param["scale"], shape = x$param["shape"])
         samp <- matrix(samp, x$n, 99)
         samp <- apply(samp, 2, sort)
         samp <- apply(samp, 1, sort)
         env <- t(samp[c(3,97),])
-        env[,1] <- pgev(env[,1], loc = loc,
+        env[,1] <- pgev(env[,1], loc = x$loc,
                     scale = x$param["scale"], shape = x$param["shape"])
-        env[,2] <- pgev(env[,2], loc = loc,
+        env[,2] <- pgev(env[,2], loc = x$loc,
                     scale = x$param["scale"], shape = x$param["shape"])
         matplot(ppx, cbind(probs, env), main = main, xlab = xlab,
                 ylab = ylab, type = "pnn", pch = 4, ...)
@@ -853,16 +849,12 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
     invisible(list(x = ppoints(x$n), y = probs))
 }
 
-"rl" <-  function(x, ci = TRUE, main = "Return Level Plot", xlab = "-1/log(1-1/Return Period)", ylab = "Return Level", ...)
+"rl" <-  function(x, ci = TRUE, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
 {
-    if(!(x$model %in% c("gev","gev.quantile")))
-        stop("return level plot not implemented for this model")
     ppx <- ppoints(x$tdata)
-    if(x$model == "gev") loc <- x$param["loc"]
-    if(x$model == "gev.quantile") loc <- attributes(x)$loc
     rps <- c(1.001,10^(seq(0,3,len=200))[-1])
     p.upper <- 1/rps
-    rlev <- qgev(p.upper, loc = loc, scale = x$param["scale"],
+    rlev <- qgev(p.upper, loc = x$loc, scale = x$param["scale"],
               shape = x$param["shape"], lower.tail = FALSE)
     if(!ci) {
         plot(-1/log(ppx), sort(x$tdata),log = "x", main = main,
@@ -870,7 +862,7 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
         lines(-1/log(1-p.upper), rlev)
     }
     else {
-        samp <- rgev(x$n*99, loc = loc,
+        samp <- rgev(x$n*99, loc = x$loc,
                    scale = x$param["scale"], shape = x$param["shape"])
         samp <- matrix(samp, x$n, 99)
         samp <- apply(samp, 2, sort)
@@ -892,15 +884,11 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
 
 "dens" <-  function(x, adjust = 1, nplty = 2, jitter = FALSE, main = "Density Plot", xlab = "Quantile", ylab = "Density", ...)
 {
-    if(!(x$model %in% c("gev","gev.quantile")))
-        stop("density plot not implemented for this model")
-    if(x$model == "gev") loc <- x$param["loc"]
-    if(x$model == "gev.quantile") loc <- attributes(x)$loc
     xlimit <- range(x$tdata)
     xlimit[1] <- xlimit[1] - diff(xlimit) * 0.075
     xlimit[2] <- xlimit[2] + diff(xlimit) * 0.075
     xvec <- seq(xlimit[1], xlimit[2], length = 100)
-    dens <- dgev(xvec, loc = loc, scale = x$param["scale"],
+    dens <- dgev(xvec, loc = x$loc, scale = x$param["scale"],
                 shape = x$param["shape"])
     plot(spline(xvec, dens), main = main, xlab = xlab, ylab = ylab,
          type = "l", ...)
@@ -910,11 +898,11 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
     invisible(list(x = xvec, y = dens))
 }
 
-"profile.evd" <-  function(fitted, which = names(fitted$estimate), conf = 0.999, mesh = fitted$std.err[which]/2, xmin = rep(-Inf, length(which)), xmax = rep(Inf, length(which)), convergence = FALSE, method = "BFGS", control = list(maxit = 500), ...)
+"profile.evd" <-  function(fitted, which = names(fitted$estimate), conf = 0.999, mesh = fitted$std.err[which]/4, xmin = rep(-Inf, length(which)), xmax = rep(Inf, length(which)), convergence = FALSE, method = "BFGS", control = list(maxit = 500), ...)
 {
-    if (!inherits(fitted, "evd")) 
+    if(!inherits(fitted, "evd")) 
         stop("Use only with `evd' objects")
-    if(fitted$model %in% c("ext","order"))
+    if(inherits(fitted, "extreme"))
         stop("profiles not implemented for this model")
     if(length(xmin) != length(which))
         stop("`xmin' and `which' must have the same length")
@@ -934,62 +922,78 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
     mles <- fitted$estimate[which]                   
     for(j in which) {
         print(paste("profiling",j))
-        prof <- matrix(NA, nrow = 64, ncol = length(fitted$estimate) + 1)
-        parvec1 <- seq(mles[j] + mesh[j], mles[j] + 16*mesh[j], length = 32) 
-        parvec2 <- seq(mles[j] - mesh[j], mles[j] - 16*mesh[j], length = 32)
-        if(any(parvec1 >= xmax[j]))
-            parvec1 <- c(parvec1[parvec1 < xmax[j]], xmax[j])
-        if(any(parvec2 <= xmin[j]))
-            parvec2 <- c(parvec2[parvec2 > xmin[j]], xmin[j])
-        start <- as.list(fitted$estimate[!names(fitted$estimate) %in% j])
+        prof1 <- prof2 <- matrix(nrow = 0, ncol = length(fitted$estimate) + 1)
+        npmles <- fitted$estimate[!names(fitted$estimate) %in% j]
+        start <- as.list(npmles)
         call.args <- c(list(fitted$data, start, 0), as.list(fitted$fixed),
            list(FALSE, FALSE, method, FALSE, control))
         names(call.args) <- c("x", "start", j, names(fitted$fixed),
            "std.err", "corr", "method", "warn.inf", "control")
-        dimnames(prof) <- list(NULL, c(j, "deviance", names(start)))
-        call.fn <- paste("f", fitted$model, sep="")
-        if(!is.na(pmatch("gev", fitted$model)))
+        dimnames(prof1) <- dimnames(prof2) <- list(NULL, c(j, "deviance",
+          names(start)))
+        call.fn <- paste("f", class(fitted)[1], sep="")
+        if(inherits(fitted, "gev")) {
             call.args$nsloc <- fitted$nsloc
-        if(!is.na(pmatch("bv", fitted$model))) {
+            call.args$prob <- fitted$prob
+        }
+        if(inherits(fitted, "bvevd")) {
             call.args$nsloc1 <- fitted$nsloc1
             call.args$nsloc2 <- fitted$nsloc2
+            call.args$model <- fitted$model
+            call.args$dsm <- FALSE
         }
-        if(fitted$model == "gev.quantile")
-            call.args$prob <- attributes(fitted)$prob
-        for(i in 1:32) {
-            call.args[[j]] <- parvec1[i]
+        lcnt <- TRUE; ppar <- mles[j]
+        while(lcnt) {
+            ppar <- as.vector(ppar + mesh[j])
+            if(ppar >= xmax[j]) ppar <- as.vector(xmax[j])      
+            call.args[[j]] <- ppar
             fit.mod <- do.call(call.fn, call.args)
             if(convergence) print(fit.mod$convergence)
             call.args[["start"]] <- as.list(fit.mod$estimate)
-            prof[i+32,1] <- parvec1[i]
-            prof[i+32,2] <- fit.mod$deviance
-            prof[i+32,-(1:2)] <- fit.mod$estimate
-            if(abs(fit.mod$deviance - fitted$deviance) > qchisq(0.999,1))
-              break;
-            if(parvec1[i] == xmax[j]) break;
+            rop <- c(ppar, fit.mod$deviance, fit.mod$estimate)
+            prof1 <- rbind(prof1, rop)
+            ddf <- fit.mod$deviance - fitted$deviance
+            lcnt <- (ddf <= qchisq(conf, 1)) && (ppar != xmax[j])
         }
-        call.args[["start"]] <-
-              as.list(fitted$estimate[!names(fitted$estimate) %in% j])
-        for(i in 1:32) {
-            call.args[[j]] <- parvec2[i]
+        call.args[["start"]] <- as.list(npmles)
+        lcnt <- TRUE; ppar <- mles[j]
+        while(lcnt) {
+            ppar <- as.vector(ppar - mesh[j])
+            if(ppar <= xmin[j]) ppar <- as.vector(xmin[j])
+            call.args[[j]] <- ppar
             fit.mod <- do.call(call.fn, call.args)
             if(convergence) print(fit.mod$convergence)
             call.args[["start"]] <- as.list(fit.mod$estimate)
-            prof[33-i,1] <- parvec2[i]
-            prof[33-i,2] <- fit.mod$deviance
-            prof[33-i,-(1:2)] <- fit.mod$estimate
-            if(abs(fit.mod$deviance - fitted$deviance) > qchisq(0.999,1))
-              break;
-            if(parvec2[i] == xmin[j]) break;
+            rop <- c(ppar, fit.mod$deviance, fit.mod$estimate)
+            prof2 <- rbind(prof2, rop)
+            ddf <- fit.mod$deviance - fitted$deviance
+            lcnt <- (ddf <= qchisq(conf, 1)) && (ppar != xmin[j])
         }
-        prof <- na.omit(prof)
-        attributes(prof)$na.action <- NULL
+        rop <- c(mles[j], fitted$deviance, npmles)
+        prof2 <- prof2[nrow(prof2):1, ,drop = FALSE]
+        prof <- rbind(prof2, rop, prof1)
+        rownames(prof) <- NULL
+        
+        rdev <- qchisq(conf, 1) + fitted$deviance
+        if(prof[1, "deviance"] == 2e6)  {
+          prof <- prof[-1, ,drop = FALSE]
+          if(prof[1,"deviance"] <= rdev)
+            warning(paste("If", j, "is to satisfy `conf',",
+              "`mesh' must be smaller"))
+        }
+        if(prof[nrow(prof), "deviance"] == 2e6) {
+          prof <- prof[-nrow(prof), ,drop = FALSE]
+          if(prof[nrow(prof),"deviance"] <= rdev)
+            warning(paste("If", j, "is to satisfy `conf',",
+              "`mesh' must be smaller"))
+        }
         prof.list[[j]] <- prof
     }
     structure(prof.list, deviance = fitted$deviance,
               xmin = xmin, xmax = xmax, class = "profile.evd")
 }
 
+# Assumes profile trace is unimodal
 "pcint" <- function(prof, which = names(prof), ci = 0.95)
 {
     if (!inherits(prof, "profile.evd")) 
@@ -998,39 +1002,49 @@ function(x, start, ..., prob, nsloc = NULL, std.err = TRUE, corr = FALSE, method
         stop("`which' must be a character vector")
     if(!all(which %in% names(prof)))
         stop("`which' contains unprofiled parameters")
-    rdev <- attributes(prof)$deviance + qchisq(ci, df = 1)
-    ci <- as.list(which)
-    names(ci) <- which
+    rdevs <- attributes(prof)$deviance + qchisq(ci, df = 1)
+    civals <- as.list(which)
+    names(civals) <- which
     for(i in which) {
-        x <- prof[[i]]
-        n <- nrow(x)
-        ulim <- min(x[1,"deviance"],x[n,"deviance"])
-        llim <- min(x[1,"deviance"],x[n,"deviance"])
-        th.l <- x[1, i] == attributes(prof)$xmin[i]
-        th.u <- x[n, i] == attributes(prof)$xmax[i]
-        if(x[1,"deviance"] <= rdev && !th.l)
-           stop("confidence coefficient is too high")
-        if(x[n,"deviance"] <= rdev && !th.u)
-           stop("confidence coefficient is too high")
-        halves <- c(diff(x[,"deviance"]) < 0, FALSE)
-        if(x[1,"deviance"] <= rdev && th.l)
-            lower <- x[1, i]
-        else lower <- approx(x[halves,2], x[halves,1], xout = rdev)$y
-        if(x[n,"deviance"] <= rdev && th.u)
-            upper <- x[n, i]
-        else upper <- approx(x[!halves,2], x[!halves,1], xout = rdev)$y
-        ci[[i]] <- c(lower,upper)
+      x <- prof[[i]]
+      n <- nrow(x)
+      ulim <- min(x[1,"deviance"],x[n,"deviance"])
+      llim <- min(x[1,"deviance"],x[n,"deviance"])
+      th.l <- x[1, i] == attributes(prof)$xmin[i]
+      th.u <- x[n, i] == attributes(prof)$xmax[i]
+      halves <- c(diff(x[,"deviance"]) < 0, FALSE)
+      cisfi <- matrix(0, nrow = length(ci), ncol = 2, dimnames =
+        list(ci, c("lower", "upper")))
+      for(j in 1:length(ci)) {  
+        if(x[1,"deviance"] <= rdevs[j] && !th.l) {
+            warning(paste("cannot calculate lower confidence limit for", i))
+            cisfi[j,1] <- NA
+        }
+        if(x[1,"deviance"] <= rdevs[j] && th.l) cisfi[j,1] <- x[1, i]
+        if(x[1,"deviance"] > rdevs[j])
+          cisfi[j,1] <- approx(x[halves,2], x[halves,1], xout = rdevs[j])$y
+        if(x[n,"deviance"] <= rdevs[j] && !th.u) {
+            warning(paste("cannot calculate upper confidence limit for", i))
+            cisfi[j,2] <- NA
+        }
+        if(x[n,"deviance"] <= rdevs[j] && th.u) cisfi[j,2] <- x[n, i]
+        if(x[n,"deviance"] > rdevs[j])
+          cisfi[j,2] <- approx(x[!halves,2], x[!halves,1], xout = rdevs[j])$y
+        civals[[i]] <- drop(cisfi)
+      }
     }
-    ci
+    civals
 }
     
 profile2d <- function (fitted, ...) {
-UseMethod("profile2d")
+    UseMethod("profile2d")
 }
 
-"profile2d.evd" <-  function(fitted, prof, which, pts = 20, convergence = FALSE, control = list(maxit = 5000), ...)
+"profile2d.evd" <-  function(fitted, prof, which, pts = 20, convergence = FALSE, method = "Nelder-Mead", control = list(maxit = 5000), ...)
 {
-    if(fitted$model %in% c("ext","order"))
+    if(!inherits(fitted, "evd")) 
+        stop("Use only with `evd' objects")
+    if(inherits(fitted, "extreme"))
         stop("profiles not implemented for this model")
     if (!inherits(prof, "profile.evd")) 
         stop("`prof' must be a `profile.evd' object")
@@ -1045,7 +1059,7 @@ UseMethod("profile2d")
     if(is.null(fitted$std.err))
        stop("fitted model must contain standard errors")
     prof.list <- as.list(numeric(3))
-    names(prof.list) <- c("trace",which)
+    names(prof.list) <- c("trace", which)
     limits1 <- range(prof[[which[1]]][,1])
     limits2 <- range(prof[[which[2]]][,1])
     mles <- fitted$estimate[which]                   
@@ -1056,21 +1070,25 @@ UseMethod("profile2d")
     prof.list[[which[2]]] <- parvec2
     pars <- expand.grid(parvec1, parvec2)
     start <- as.list(fitted$estimate[!names(fitted$estimate) %in% which])
+    # if method unspecified supress optim 1d warnings
+    if(missing(method) && length(start) == 1) oldopt <- options(warn = -1)
     call.args <- c(list(fitted$data, start, 0, 0), as.list(fitted$fixed),
-       list(FALSE, FALSE, "Nelder-Mead", FALSE, control))
+       list(FALSE, FALSE, method, FALSE, control))
     names(call.args) <- c("x", "start", which[1], which[2],
        names(fitted$fixed), "std.err", "corr", "method",
        "warn.inf", "control")
     dimnames(prof) <- list(NULL, c(which, "deviance", names(start)))
-    call.fn <- paste("f", fitted$model, sep="")
-    if(!is.na(pmatch("gev", fitted$model)))
-            call.args$nsloc <- fitted$nsloc
-    if(!is.na(pmatch("bv", fitted$model))) {
-            call.args$nsloc1 <- fitted$nsloc1
-            call.args$nsloc2 <- fitted$nsloc2
+    call.fn <- paste("f", class(fitted)[1], sep="")
+    if(inherits(fitted, "gev")) {
+        call.args$nsloc <- fitted$nsloc
+        call.args$prob <- fitted$prob
     }
-    if(fitted$model == "gev.quantile")
-        call.args$prob <- attributes(fitted)$prob
+    if(inherits(fitted, "bvevd")) {
+        call.args$nsloc1 <- fitted$nsloc1
+        call.args$nsloc2 <- fitted$nsloc2
+        call.args$model <- fitted$model
+        call.args$dsm <- FALSE
+    }
     for(i in 1:pts^2) {
         call.args[[which[1]]] <- pars[i,1]
         call.args[[which[2]]] <- pars[i,2]
@@ -1082,6 +1100,7 @@ UseMethod("profile2d")
         prof[i,-(1:3)] <- fit.mod$estimate
     }
     prof.list[["trace"]] <- prof
+    if(missing(method) && length(start) == 1) oldopt <- options(oldopt)
     if(any(prof[,"deviance"] == 2e6))
         warning("non-convergence present in profile2d object")
     structure(prof.list, deviance = fitted$deviance, class = "profile2d.evd")
@@ -1102,8 +1121,12 @@ UseMethod("profile2d")
         op <- par(ask = TRUE)
         on.exit(par(op))
     }
-    if(is.null(main))
-        main <- paste("Profile Deviance of", which, "Parameter")
+    if(is.null(main)) {
+        fls <- toupper(substr(which, 1, 1))
+        ols <- substr(which, 2, nchar(which))
+        cwhich <- paste(fls, ols, sep = "")
+        main <- paste("Profile Deviance of", cwhich)
+    }
     for(i in which) {
         plot(spline(x[[i]][,1], x[[i]][,2], n = 75), type = "l",
              xlab = i, ylab = "profile deviance",
@@ -1111,26 +1134,37 @@ UseMethod("profile2d")
         cdist <- attributes(x)$deviance + qchisq(ci, df = 1)
         abline(h = cdist, lty = clty)
     }
-    invisible(x)
+    invisible(pcint(prof = x, which = which, ci = ci))
 }
 
-"plot.profile2d.evd" <-  function(x, main = NULL, ci = c(0.5,0.8,0.9,0.95,0.975, 0.99, 0.995), col = heat.colors(8), intpts = 75, ...) 
+"plot.profile2d.evd" <-  function(x, main = NULL, ci = c(0.5,0.8,0.9,0.95,0.975, 0.99, 0.995), col = heat.colors(8), intpts = 75, xaxs = "r", yaxs = "r", ...)
 {
     if (!inherits(x, "profile2d.evd")) 
         stop("Use only with `profile2d.evd' objects")
     which <- names(x)[2:3]
-    if(is.null(main))
-        main <- paste("Profile Deviance of", which[1],
-                      "and", which[2])
+    if(is.null(main)) {
+        fls <- toupper(substr(which, 1, 1))
+        ols <- substr(which, 2, nchar(which))
+        cwhich <- paste(fls, ols, sep = "")
+        main <- paste("Profile Deviance of", cwhich[1], "and", cwhich[2])
+    }
     br.pts <- attributes(x)$deviance + qchisq(c(0,ci), df = 2)
     prof <- x$trace[,"deviance"]
     if(any(prof == 2e6))
         warning("non-convergence present in profile2d object")
-    if(!require(akima)) {
+    lbak <- TRUE
+    if (is.na(match("package:akima", search()))) {
+        oldop <- options(warn = -1)
+        lbak <- library("akima", char = TRUE, logical = TRUE)
+        options(oldop)
+        if(lbak) cat("Loaded package akima", "\n")
+    }
+    if(!lbak) {
         image(x[[which[1]]], x[[which[2]]],
               matrix(prof, nrow = length(x[[which[1]]])),
               col = col, breaks = c(br.pts, 2e6+1),
-              main = main, xlab = which[1], ylab = which[2], ...)
+              main = main, xlab = which[1], ylab = which[2], xaxs = xaxs,
+              yaxs = yaxs, ...)
     }
     else {
         lim1 <- range(x[[which[1]]])
@@ -1139,7 +1173,8 @@ UseMethod("profile2d")
             xo = seq(lim1[1], lim1[2], length = intpts),
             yo = seq(lim2[1], lim2[2], length = intpts))
         image(prof.interp, col = col, breaks = c(br.pts, max(prof)),
-              main = main, xlab = which[1], ylab = which[2], ...)
+              main = main, xlab = which[1], ylab = which[2], xaxs = xaxs,
+              yaxs = yaxs, ...)
     }
     invisible(x)
 }
@@ -1158,7 +1193,41 @@ function(x, nsloc)
     nsloc
 }
 
+"marma" <-
+function(n, p = 0, q = 0, psi, theta, init = rep(0, p), n.start = p,
+    rand.gen = rfrechet, ...)
+{
+    if(missing(psi)) psi <- numeric(0)
+    if(missing(theta)) theta <- numeric(0)
+    if(length(psi) != p || mode(psi) != "numeric" || any(psi < 0))
+      stop("`par' must be a non-negative vector of length `p'")
+    if(length(theta) != q || mode(theta) != "numeric" || any(theta < 0))
+      stop("`theta' must be a non-negative vector of length `q'")
+    if(length(init) != p || mode(init) != "numeric" || any(init < 0))
+      stop("`init' must be a non-negative vector of length `p'")
+    
+    marma <- c(init, numeric(n + n.start - p))
+    theta <- c(1, theta)
+    innov <- rand.gen(n.start + n + q, ...)
+    for(i in 1:(n + n.start - p))
+      marma[i+p] <- max(c(psi * marma[(i+p-1):i], theta * innov[(i+q):i]))
+    if(n.start) marma <- marma[-(1:n.start)]
+    marma
+}
 
+"mma" <-
+function(n, q = 1, theta, rand.gen = rfrechet, ...)
+{
+    marma(n = n, q = q, theta = theta, rand.gen = rand.gen, ...)
+}
+
+"mar" <-
+function(n, p = 1, psi, init = rep(0, p), n.start = p, rand.gen =
+         rfrechet, ...)
+{
+    marma(n = n, p = p, psi = psi, init = init, n.start = n.start,
+          rand.gen = rand.gen, ...)
+}
 
 
 

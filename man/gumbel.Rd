@@ -5,9 +5,9 @@
 \alias{rgumbel}
 \title{The Gumbel Distribution}
 \description{
-  Density, distribution function, quantile function and random
-  generation for the gumbel distribution with location and scale
-  parameters. 
+  Density function, distribution function, quantile function and
+  random generation for the Gumbel distribution with location and
+  scale parameters. 
 }
 \usage{
 dgumbel(x, loc=0, scale=1, log = FALSE) 
@@ -21,21 +21,21 @@ rgumbel(n, loc=0, scale=1)
   \item{n}{Number of observations.}
   \item{loc, scale}{Location and scale parameters (can be given
     as vectors).}
-  \item{log}{Logical; if TRUE, the log density is returned.}
-  \item{lower.tail}{Logical; if TRUE (default), probabilities are
-    P[X <= x], otherwise, P[X > x]}
+  \item{log}{Logical; if \code{TRUE}, the log density is returned.}
+  \item{lower.tail}{Logical; if \code{TRUE} (default), probabilities
+    are P[X <= x], otherwise, P[X > x]}
 }
 \details{
-  The gumbel distribution function with parameters
+  The Gumbel distribution function with parameters
   \eqn{\code{loc} = a} and \eqn{\code{scale} = b} is
   \deqn{G(z) = \exp\left\{-\exp\left[-\left(\frac{z-a}{b}\right)
     \right]\right\}}{G(x) = exp{-exp[-(z-a)/b]}}
-  for real \eqn{z}, where \eqn{b > 0}.
+  for all real \eqn{z}, where \eqn{b > 0}.
 }
 \value{
-  \code{dgumbel} gives the density, \code{pgumbel} gives the
-  distribution function, \code{qgumbel} gives the quantile function,
-  and \code{rgumbel} generates random deviates.
+  \code{dgumbel} gives the density function, \code{pgumbel} gives
+  the distribution function, \code{qgumbel} gives the quantile
+  function, and \code{rgumbel} generates random deviates.
 }
 \section{Interesting Fact}{
   Gumbel is the name of my teddy bear.

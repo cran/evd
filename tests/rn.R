@@ -8,9 +8,9 @@ set.seed(50)
 
 data(sealevel) ; sl <- sealevel
 tt <- (1912:1992 - 1950)/100
-lg <- fbvlog(sl, nsloc1 = tt, nsloc2 = tt)
+lg <- fbvevd(sl, model = "log", nsloc1 = tt, nsloc2 = tt)
 lg
-lg2 <- fbvlog(sl)
+lg2 <- fbvevd(sl, model = "log")
 lg2
 anova(lg, lg2) 
 pr <- profile(lg, "dep", xmax = 1)

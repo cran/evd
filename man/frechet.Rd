@@ -5,9 +5,9 @@
 \alias{rfrechet}
 \title{The Frechet Distribution}
 \description{
-  Density, distribution function, quantile function and random
-  generation for the Frechet distribution with location,
-  scale and shape parameters. 
+  Density function, distribution function, quantile function
+  and random generation for the Frechet distribution with
+  location, scale and shape parameters. 
 }
 \usage{
 dfrechet(x, loc=0, scale=1, shape=1, log = FALSE) 
@@ -21,9 +21,9 @@ rfrechet(n, loc=0, scale=1, shape=1)
   \item{n}{Number of observations.}
   \item{loc, scale, shape}{Location, scale and shape parameters (can be
     given as vectors).}
-  \item{log}{Logical; if TRUE, the log density is returned.}
-  \item{lower.tail}{Logical; if TRUE (default), probabilities are
-    P[X <= x], otherwise, P[X > x]}
+  \item{log}{Logical; if \code{TRUE}, the log density is returned.}
+  \item{lower.tail}{Logical; if \code{TRUE} (default), probabilities
+    are P[X <= x], otherwise, P[X > x]}
 }
 \details{
   The Frechet distribution function with parameters
@@ -35,9 +35,9 @@ rfrechet(n, loc=0, scale=1, shape=1)
   \eqn{s > 0}.
 }
 \value{
-  \code{dfrechet} gives the density, \code{pfrechet} gives the
-  distribution function, \code{qfrechet} gives the quantile function,
-  and \code{rfrechet} generates random deviates.
+  \code{dfrechet} gives the density function, \code{pfrechet} gives
+  the distribution function, \code{qfrechet} gives the quantile
+  function, and \code{rfrechet} generates random deviates.
 }
 
 \seealso{\code{\link{rgev}}, \code{\link{rgumbel}}, \code{\link{rrweibull}}}

@@ -1,15 +1,16 @@
 \name{plot.profile2d.evd}
 \alias{plot.profile2d.evd}
 
-\title{Plot Joint Profile Devaince}
+\title{Plot Joint Profile Devainces}
 \description{
   Displays an image plot of the joint profile deviance from a
-  model profiled with \code{\link{profile2d.evd}}.
+  model profiled with \code{\link{profile.evd}} and
+  \code{\link{profile2d.evd}}.
 }
 \usage{
 \method{plot}{profile2d.evd}(x, main = NULL,
     ci = c(0.5, 0.8, 0.9, 0.95, 0.975, 0.99, 0.995),
-    col = heat.colors(8), intpts = 75, \dots)
+    col = heat.colors(8), intpts = 75, xaxs = "r", yaxs = "r", \dots)
 }
 \arguments{
   \item{x}{An object of class \code{"profile2d.evd"}.}
@@ -25,21 +26,19 @@
     interpolation is performed using \code{intpts} points
     for each parameter. The function is interpolated at
     \code{intpts^2} points in total.}
+  \item{xaxs,yaxs}{Graphics parameters (see \code{\link{par}}).
+    The default, \code{"r"}, overrides the default set by
+    \code{image}.}
   \item{\dots}{Other parameters to be passed to \code{image}.}
-}
-\details{
-  The joint profile deviance function is minus twice the logarithm of
-  the joint profile likelihood. 
 }
 \section{Warning}{
   The sets represented by different colours may not be
-  confidence sets with (asymptotic) confidence coefficients
-  \code{ci}, because the usual asymptotic properties of maximum
-  likelihood estimators may not hold!
-  The usual asymptotic properties hold when the shape parameter(s)
-  is(are) greater than \eqn{-0.5}, and when
-  the parameters are not on the edge of the parameter space
-  (Smith, 1985). Fortunately, this is usually the case.
+  confidence sets with confidence coefficients \code{ci}, because
+  the usual asymptotic properties of maximum likelihood estimators
+  may not hold.
+  For the GEV model, the usual asymptotic properties hold when the
+  shape parameter is greater than \eqn{-0.5} (Smith, 1985).
+  Fortunately, this is usually the case.
 }
 \references{
   Smith, R. L. (1985)

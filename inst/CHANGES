@@ -1,6 +1,100 @@
+CHANGES FROM VERSION 1.2-3 ARE AS FOLLOWS
+
+  The function fgev.quantile is now internal; the functionality
+  has been absorbed into fgev.
+
+  It is now possible to parameterize gev model fits using the
+  endpoint of the distribution by setting prob to zero or one 
+  in fgev.
+
+  New functions for generating stochastic processes associated
+  with extreme value theory. marma, mar and mma generate max 
+  autoregressive moving average processes. evmc generates first 
+  order Markov chains with bivariate extreme value dependence 
+  structures.
+
+  The functions fbvlog, fbvalog, etc are now internal. The new 
+  function fbvevd should be used for the fitting of all bivariate
+  models.
+
+  The rbvevd, dbvevd and pbvevd functions replace individual 
+  functions for bivariate models. Similarly, rmvevd and dmvevd 
+  functions replace individual functions for multivariate models. 
+
+  The function abvpar replaces individual functions for 
+  plotting and calculating the dependence functions of 
+  parametric bivariate models. 
+
+  New functions atvnonpar and atvpar, which calculate and plot 
+  dependence functions of trivariate extreme value distributions,
+  using non-parametric estimates and parametric models (at given 
+  parameter values).
+
+  Fitted bivariate models (i.e. objects of class bvevd) now 
+  include Akaike's Information Criterion and, optionally, 
+  various dependence structure summaries. The argument dsm
+  controls this option. 
+
+  New lower.tail argument in bivariate and multivariate 
+  distribution functions.
+
+  The function pcint is now internal. Profile confidence intervals 
+  are now invisibly returned from plot.profile.evd. Also, the
+  argument ci of plot.profile.evd can now be a vector.
+
+  Functions called from plot.evd (dens, pp, qq, rl) and plot.bvevd
+  (bvdens, bvdp, bvcpp) are now internal.
+
+  The default labelling of the x-axis for the return level plot 
+  has been changed from the technically correct 
+  "-1/log(1-1/Return Period)" to the more widely used 
+  "Return Period".
+
+  There now exists a density function for the multivariate asymmetric 
+  logistic model. The density function can be calculated by calling 
+  dmvevd with model = "alog".
+  
+  The argument mar of rmvevd, pmvevd and dmvevd can now be a list
+  with d elements, where d is the dimension of the distribution.
+
+  An extraction function logLik.evd has been added so that the 
+  function AIC.default in R base can be used.
+
+  The function profile2d.evd has a new method argument (to be
+  consistent with profile.evd) and new arguments xaxs and
+  yaxs (to override the default behaviour of the function image).
+
+  The function plot.bvevd has new arguments blty (border 
+  line type) and grid.
+
+  In the function abvnonpar the logical argument convex replaces 
+  the numeric argument modify.
+  
+  The functions fext, rext, etc are now called fextreme, 
+  rextreme, etc.
+
+  The objects formery of class "evd" are now of class 
+  c("gev","evd") or c("extreme","evd"). The plot.evd function 
+  is now plot.gev.
+
+  The row names of all data.frame datasets are now the years of
+  observation. Furthermore, the period of observation for the 
+  venice data has been corrected in the help file.
+
+  The arguments mesh and conf in profile.evd now work as 
+  documented.
+ 
+  The fbvall function is defunct.
+  
+  New datasets: failure, fox, lisbon, ocmulgee, oldage, sask  
+  and uccle. 
+  
+  The CHANGES file has been moved to the top-level directory.
+
+
 CHANGES FROM VERSION 1.2-2 ARE AS FOLLOWS
 
-  Two more datasets - venice and porotpirie, intended for use
+  Two more datasets - venice and portpirie, intended for use
   in the evdbayes package.
 
   Fixed minor problem with extraction functions for bvall objects
@@ -10,6 +104,7 @@ CHANGES FROM VERSION 1.2-2 ARE AS FOLLOWS
   the contour function.
 
   Error messages in internal functions are more informative.
+
 
 CHANGES FROM VERSION 1.2-1 ARE AS FOLLOWS
 
@@ -26,6 +121,7 @@ CHANGES FROM VERSION 1.2-1 ARE AS FOLLOWS
   Extra graphical arguments have been included in the abv[...]
   functions. 
 
+
 CHANGES FROM VERSION 1.2-0 ARE AS FOLLOWS
 
   The profile.evd function now has a method argument to specify 
@@ -37,6 +133,7 @@ CHANGES FROM VERSION 1.2-0 ARE AS FOLLOWS
 
   Internal: General code cleaning/optimizing. New internal 
   functions have been created.
+
 
 CHANGES FROM VERSION 1.1-0 ARE AS FOLLOWS
 

@@ -1,7 +1,7 @@
 \name{anova.evd}
 \alias{anova.evd}
 
-\title{Compare Nested evd Objects}
+\title{Compare Nested EVD Objects}
 \description{
   Compute an analysis of deviance table for two or more nested
   evd objects.
@@ -11,8 +11,8 @@
 }
 \arguments{
   \item{object}{An object of class \code{"evd"}.}
-  \item{object2}{An object of class \code{"evd"} that should
-    represent a model nested within \code{object}.}
+  \item{object2}{An object of class \code{"evd"} that
+    represents a model nested within \code{object}.}
   \item{\dots}{Further successively nested objects.}
 }
 \value{
@@ -36,7 +36,7 @@
   to the user recognize this, and to interpret the output correctly.
 }
 
-\seealso{\code{\link{fbvlog}}, \code{\link{fext}},
+\seealso{\code{\link{fbvevd}}, \code{\link{fextreme}},
   \code{\link{fgev}}, \code{\link{forder}}}
 
 \examples{
@@ -46,9 +46,10 @@ M1 <- fgev(uvdata, nsloc = trend)
 M2 <- fgev(uvdata)
 M3 <- fgev(uvdata, shape = 0)
 anova(M1, M2, M3)
-bvdata <- rbvlog(100, dep = 0.75)
-M1 <- fbvlog(bvdata)
-M2 <- fbvlog(bvdata, dep = 0.75)
+
+bvdata <- rbvevd(100, dep = 0.75, model = "log")
+M1 <- fbvevd(bvdata, model = "log")
+M2 <- fbvevd(bvdata, model = "log", dep = 0.75)
 anova(M1, M2)
 }
 

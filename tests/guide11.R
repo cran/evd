@@ -16,13 +16,13 @@ pfrechet(2:6, 2, 0.5, 1, low = FALSE)
 drweibull(-1:3, 2, 0.5, log = TRUE)
 dgumbel(-1:3, 0, 1)
 
-rext(4, qexp, rate = 1, mlen = 5)
-rext(4, distn = "exp", rate = 1, mlen = 5)
-rext(4, distn = "exp", mlen = 5)
-rext(1, distn = "norm", sd = 2, mlen = 20, largest = FALSE)
+rextreme(4, qexp, rate = 1, mlen = 5)
+rextreme(4, distn = "exp", rate = 1, mlen = 5)
+rextreme(4, distn = "exp", mlen = 5)
+rextreme(1, distn = "norm", sd = 2, mlen = 20, largest = FALSE)
 min(rnorm(20, mean = 0, sd = 2))
-pext(c(.4, .5), distn = "norm", mean = 0.5, sd = c(1, 2), mlen = 4)
-dext(c(1, 4), distn = "gamma", shape = 1, scale = 0.3, mlen = 100)
+pextreme(c(.4, .5), distn = "norm", mean = 0.5, sd = c(1, 2), mlen = 4)
+dextreme(c(1, 4), distn = "gamma", shape = 1, scale = 0.3, mlen = 100)
 
 rorder(1, distn = "norm", mlen = 20, j = 2)
 rorder(1, distn = "norm", mlen = 20, j = 19, largest = FALSE)
@@ -63,23 +63,23 @@ data <- rgev(1000, loc = 0.13, scale = 1.1, shape = 0.2)
 fgev(data)
 fgev(data, loc = 0, scale = 1)
 
-data2 <- rext(100, qnorm, mean = 0.56, mlen = 365)
-fext(data2, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
-fext(data2, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365, method="L-BFGS-B", lower = 0.01)
+data2 <- rextreme(100, qnorm, mean = 0.56, mlen = 365)
+fextreme(data2, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
+fextreme(data2, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365, method="L-BFGS-B", lower = 0.01)
 
 # Section: Fitting Bivariate Distributions by Maximum Likelihood
 
 bvdata <- rbvlog(100, dep = 0.6, mar1 = c(1.2,1.4,0), mar2 = c(1,1.6,0.1))
-fbvlog(bvdata)
-fbvlog(bvdata, dep = 1)
-fbvlog(bvdata, shape1 = 0, shape2 = 0)
+fbvevd(bvdata, model = "log")
+fbvevd(bvdata, model = "log", dep = 1)
+fbvevd(bvdata, model = "log", shape1 = 0, shape2 = 0)
 pchisq(748.4 - 728, df = 2, lower.tail = FALSE)
 
 # Boundary Problems
 
-fbvalog(bvdata)
-fbvalog(bvdata, asy2 = 1)$estimate
-fbvalog(bvdata, method = "L-BFGS-B", lower = c(rep(-Inf, 6), 0, 0, -Inf), upper = c(rep(Inf, 6), 1, 1, Inf))$estimate
+fbvevd(bvdata, model = "alog")
+fbvevd(bvdata, model = "alog", asy2 = 1)$estimate
+fbvevd(bvdata, model = "alog", method = "L-BFGS-B", lower = c(rep(-Inf, 6), 0, 0, -Inf), upper = c(rep(Inf, 6), 1, 1, Inf))$estimate
 
 # Section: Extended Example: Oxford Data
 
@@ -96,17 +96,17 @@ mle <- oxford.fit$estimate
 as.vector(mle[1] - mle[2]/mle[3])
 range(oxford)
 
-fext(oxford, start = list(mean = 40, sd = 1), distn = "norm", mlen = 365)
-fext(oxford, start = list(scale = 1, shape = 1), distn = "gamma", mlen = 365)
+fextreme(oxford, start = list(mean = 40, sd = 1), distn = "norm", mlen = 365)
+fextreme(oxford, start = list(scale = 1, shape = 1), distn = "gamma", mlen = 365)
 
 # Section: Extended Example: Sea Level Data
 
 data(sealevel)
 sl <- sealevel
 tvec <- (1912:1992 - 1950)/100
-m1 <- fbvlog(sl, nsloc1 = tvec, nsloc2 = tvec)
-m2 <- fbvlog(sl, nsloc1 = tvec)
-m3 <- fbvlog(sl)
+m1 <- fbvevd(sl, model = "log", nsloc1 = tvec, nsloc2 = tvec)
+m2 <- fbvevd(sl, model = "log", nsloc1 = tvec)
+m3 <- fbvevd(sl, model = "log")
 
 pchisq(m3$deviance - m2$deviance, df = 1, lower.tail = FALSE)
 pchisq(m2$deviance - m1$deviance, df = 1, lower.tail = FALSE)
@@ -117,17 +117,17 @@ as.vector(mle[1] + tvec * mle[2] - mle[3]/mle[4])
 as.vector(mle[5] + tvec * mle[6] - mle[7]/mle[8])
 
 tdframe <- data.frame(linear = tvec, quad = tvec^2)
-m4 <- fbvlog(sl, nsloc1 = tdframe, nsloc2 = tvec)
+m4 <- fbvevd(sl, model = "log", nsloc1 = tdframe, nsloc2 = tvec)
 m4$estimate[1:3]
 m4$std.err[1:3]
 pchisq(m1$deviance - m4$deviance, df = 1, lower.tail = FALSE)
 
-fbvlog(sl, nsloc1 = tvec, nsloc2 = tvec)
-fbvlog(sl, nsloc1 = tdframe, nsloc2 = tvec, loc1quad = 0)
+fbvevd(sl, model = "log", nsloc1 = tvec, nsloc2 = tvec)
+fbvevd(sl, model = "log", nsloc1 = tdframe, nsloc2 = tvec, loc1quad = 0)
 
-m5 <- fbvlog(sl, nsloc1 = tvec, nsloc2 = tvec, shape1 = 0, shape2 = 0)
+m5 <- fbvevd(sl, model = "log", nsloc1 = tvec, nsloc2 = tvec, shape1 = 0, shape2 = 0)
 pchisq(m5$deviance - m1$deviance, df = 2, lower.tail = FALSE)
-m6 <- fbvlog(sl, nsloc1 = tvec, nsloc2 = tvec, dep = 1)
+m6 <- fbvevd(sl, model = "log", nsloc1 = tvec, nsloc2 = tvec, dep = 1)
 m6$deviance - m1$deviance
 
 #fbvall(sl, nsloc1 = tvec, nsloc2 = tvec)

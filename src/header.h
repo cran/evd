@@ -33,6 +33,8 @@ void rmvalog_tawn(int *n, int *d, int *nb, double *alpha, double *asy,
                   double *sim);
 double rpstable(double cexp);
 double maximum_n(int n, double *x);
+void rbvlog(int *n, double *dep, double *sim);
+void rbvalog(int *n, double *dep, double *asy, double *sim);
 void rbvhr(int *n, double *dep, double *sim);
 void rbvneglog(int *n, double *dep, double *sim);
 void rbvaneglog(int *n, double *dep, double *asy, double *sim);

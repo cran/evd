@@ -5,9 +5,9 @@
 \alias{rrweibull}
 \title{The Reversed Weibull Distribution}
 \description{
-  Density, distribution function, quantile function and random
-  generation for the reversed Weibull distribution with location,
-  scale and shape parameters. 
+  Density function, distribution function, quantile function and
+  random generation for the reversed Weibull distribution with
+  location, scale and shape parameters. 
 }
 \usage{
 drweibull(x, loc=0, scale=1, shape=1, log = FALSE) 
@@ -21,9 +21,9 @@ rrweibull(n, loc=0, scale=1, shape=1)
   \item{n}{Number of observations.}
   \item{loc, scale, shape}{Location, scale and shape parameters (can be
     given as vectors).}
-  \item{log}{Logical; if TRUE, the log density is returned.}
-  \item{lower.tail}{Logical; if TRUE (default), probabilities are
-    P[X <= x], otherwise, P[X > x]}
+  \item{log}{Logical; if \code{TRUE}, the log density is returned.}
+  \item{lower.tail}{Logical; if \code{TRUE} (default), probabilities
+    are P[X <= x], otherwise, P[X > x]}
 }
 \details{
   The reversed Weibull distribution function with parameters
@@ -42,9 +42,9 @@ rrweibull(n, loc=0, scale=1, shape=1)
   change of sign to the distribution given above.
 }
 \value{
-  \code{drweibull} gives the density, \code{prweibull} gives the
-  distribution function, \code{qrweibull} gives the quantile function,
-  and \code{rrweibull} generates random deviates.
+  \code{drweibull} gives the density function, \code{prweibull}
+  gives the distribution function, \code{qrweibull} gives the
+  quantile function, and \code{rrweibull} generates random deviates.
 }
 
 \seealso{\code{\link{rfrechet}}, \code{\link{rgev}}, \code{\link{rgumbel}}}

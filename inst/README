@@ -3,21 +3,42 @@ density functions parametric extreme value distributions, and
 provides fitting functions which calculate maximum likelihood 
 estimates for univariate and bivariate models.
 
-The users guide (in pdf) will be in the directory evd/doc/  
-underneath wherever the package is installed.
+The file CHANGES documents changes from previous versions.
+The users guide (in pdf) is in the `doc' directory.
 It can also be downloaded directly (in postscript or pdf) from 
 http://www.maths.lancs.ac.uk/~stephena/.
+A reference manual containing the help files can be downloaded 
+(in postscript or pdf) from the same location.
 
-The evd/doc/ directory also contains a CHANGES file that
-documents the changes from previous versions.
+The package contains the following (user-level) functions.
+All comments, criticisms and queries are gratefully received.
 
-A reference manual containing the help files (in pdf) can be 
-downloaded from CRAN or from the URL given above.
+Univariate Distributions:  
+  [rpqd]gev  [rpqd]gumbel  [rpqd]rweibull  [rpqd]frechet
+  [rpqd]extreme  [rpd]order
 
-All comments, criticisms and queries on the package or 
-associated documentation are gratefully received.
+Bivariate/Multivariate EVDs:
+  [rpd]bvevd  [rpd]mvevd 
 
+Dependence Functions for Bivariate/Trivariate EVDs:  
+  abvnonpar  abvpar  atvnonpar  atvpar
 
+Stochastic Processes:
+  evmc  marma  mar  mma
+
+Fitting Models:  
+  fbvevd  fgev  forder  fextreme
+
+Model Diagnostics:  
+  plot.gev  plot.bvevd  anova.evd
+
+Profile Likelihoods:
+  profile.evd  plot.profile.evd  profile2d.evd  
+  plot.profile2d.evd 
+
+The following datasets are also included:
+  failure  fox  lisbon  ocmulgee  oldage  oxford 
+  portpirie  sask  sealevel  uccle  venice
 
 
 

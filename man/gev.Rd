@@ -5,9 +5,9 @@
 \alias{rgev}
 \title{The Generalized Extreme Value Distribution}
 \description{
-  Density, distribution function, quantile function and random
-  generation for the generalized extreme value (GEV) distribution
-  with location, scale and shape parameters. 
+  Density function, distribution function, quantile function and
+  random generation for the generalized extreme value (GEV)
+  distribution with location, scale and shape parameters. 
 }
 \usage{
 dgev(x, loc=0, scale=1, shape=0, log = FALSE) 
@@ -21,9 +21,9 @@ rgev(n, loc=0, scale=1, shape=0)
   \item{n}{Number of observations.}
   \item{loc, scale, shape}{Location, scale and shape parameters; the 
     \code{shape} argument cannot be a vector (must have length one).}
-  \item{log}{Logical; if TRUE, the log density is returned.}
-  \item{lower.tail}{Logical; if TRUE (default), probabilities are
-    P[X <= x], otherwise, P[X > x]}
+  \item{log}{Logical; if \code{TRUE}, the log density is returned.}
+  \item{lower.tail}{Logical; if \code{TRUE} (default), probabilities
+    are P[X <= x], otherwise, P[X > x]}
 }
 \details{
   The GEV distribution function with parameters
@@ -33,13 +33,17 @@ rgev(n, loc=0, scale=1, shape=0)
     G(x) = exp[-{1+s(z-a)/b}^(-1/s)]}
   for \eqn{1+s(z-a)/b > 0}, where \eqn{b > 0}.
   If \eqn{s = 0} the distribution is defined by continuity.
+  If \eqn{1+s(z-a)/b \leq 0}{1+s(z-a)/b <= 0}, the value \eqn{z} is
+  either greater than the upper end point (if \eqn{s < 0}), or less
+  than the lower end point (if \eqn{s > 0}).
+  
   The parametric form of the GEV encompasses that of the Gumbel,
   Frechet and reversed Weibull distributions, which are obtained
   for \eqn{s = 0}, \eqn{s > 0} and \eqn{s < 0} respectively.
   It was first introduced by Jenkinson (1955).
 }
 \value{
-  \code{dgev} gives the density, \code{pgev} gives the
+  \code{dgev} gives the density function, \code{pgev} gives the
   distribution function, \code{qgev} gives the quantile function,
   and \code{rgev} generates random deviates.
 }
