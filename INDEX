@@ -1,0 +1,26 @@
+bvalog                   The Bivariate Asymmetric Logistic Distribution
+bvaneglog                The Bivariate Asymmetric Negative Logistic
+                         Distribution
+bvdepfns                 Dependence Functions for Bivariate Extreme Value
+                         Distributions
+bvhr                     The Husler-Reiss Distribution
+bvlog                    The Bivariate Logistic Distribution
+bvmle                    Maximum-likelihood Fitting of Bivariate Extreme
+                         Value Distributions
+bvneglog                 The Bivariate Negative Logistic Distribution
+evd-internal             Internal Functions
+ext                      Distributions of Maxima and Minima
+extmle                   Maximum-likelihood Fitting of Maxima/Minima
+frechet                  The Frechet Distribution
+gev                      The Generalized Extreme Value Distribution
+gumbel                   The Gumbel Distribution
+mvalog                   The Multivariate Asymmetric Logistic
+                         Distribution
+mvlog                    The Multivariate Logistic Distribution
+order                    Distributions of Order Statistics
+ordermle                 Maximum-likelihood Fitting of Order Statistics
+oxford                   Annual maximum temperatures at Oxford, England.
+rweibull                 The Reversed Weibull Distribution
+sealevel                 Annual Sea Level Maxima at Dover and Harwich
+uvmle                    Maximum-likelihood Fitting of Univariate Extreme
+                         Value Distributions
