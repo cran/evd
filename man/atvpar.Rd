@@ -37,8 +37,8 @@ atvpar(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
     dimensions) in \code{\link{rmvevd}}.}
   \item{plot}{Logical; if \code{TRUE} the function is plotted. The
     minimum (evaluated) value is returned invisibly.
-    If \code{FALSE} (the default), the following arguments, excluding
-    \code{ord}, are ignored.}
+    If \code{FALSE} (the default), the following arguments are
+    ignored.}
   \item{col}{A list of colours (see \code{\link{image}}). The first
     colours in the list represent smaller values, and hence
     stronger dependence. Each colour represents an equally spaced
@@ -55,13 +55,10 @@ atvpar(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
     minimum of the dependence function of the trivariate extreme
     value distribution.}
   \item{ord}{A vector of length three, which should be a permutation
-    of the set \eqn{\{1,2,3\}}{{1,2,3}}. For plotting, the points
+    of the set \eqn{\{1,2,3\}}{{1,2,3}}. The points
     \eqn{(1,0,0)}, \eqn{(0,1,0)} and \eqn{(0,0,1)} (the vertices of
     the simplex) are depicted clockwise from the top in
-    the order defined by \code{ord}. For calculation, the
-    columns/elements of the matrix/vector \code{x} are
-    arguments to the margins of \code{A} in the order defined by
-    \code{ord}.}
+    the order defined by \code{ord}.}
   \item{lab}{A character vector of length three, in which case the
     \code{i}th margin is labelled using the \code{i}th component,
     or \code{NULL}, in which case no labels are given. The actual

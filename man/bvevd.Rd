@@ -318,7 +318,7 @@ rbvevd(n, dep, asy = c(1, 1), alpha, beta, model = "log",
   
   Stephenson, A. G. (2003)
   Simulating multivariate extreme value distributions of logistic type.
-  To be published - available on request.
+  \emph{Extremes}, \bold{6}(1), 49--60.
 
   Tawn, J. A. (1988)
   Bivariate extreme value theory: models and estimation.

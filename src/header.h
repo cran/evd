@@ -6,6 +6,15 @@
 #define UNIF unif_rand()
 #define EXP exp_rand()
 
+/* from pot.c */
+
+void nlgpd(double *data, int *n, double *loc, double *scale, 
+	   double *shape, double *dns);
+void nlpp(double *exceed, int *nhigh, double *loc, double *scale, 
+          double *shape, double *thresh, double *nop, double *dns);
+void clusters(double *high, double *high2, int *n, int *r, 
+	      int *rlow, double *clstrs);
+
 /* from ccop.c */
 
 double ccbvlog(double m1, double m2, double oldm1, double dep);

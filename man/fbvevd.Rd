@@ -96,7 +96,7 @@ fbvevd(x, model = "log", start, \dots, nsloc1 = NULL, nsloc2 = NULL,
   \eqn{4(A(x) - A(1-x))/(3 - 2\sqrt2)}{
   4(A(x) - A(1-x))/(3 - 2 sqrt(2))},
   taken over \eqn{0 \leq x \leq 0.5}{0 <= x <= 0.5}.
-  This lies in the closed interval [-1,1] (conjecture), with
+  This lies in the closed interval [-1,1], with
   larger absolute values representing stronger asymmetry.
   For the logistic, Husler-Reiss and negative logistic models
   \eqn{A(x) = A(1-x)} for all \eqn{0 \leq x \leq 0.5}{0 <= x <= 0.5},
@@ -165,10 +165,11 @@ bvdata <- rbvevd(100, dep = 0.6, model = "log", mar1 = c(1.2,1.4,0.4))
 M1 <- fbvevd(bvdata, model = "log")
 M2 <- fbvevd(bvdata, model = "log", dep = 0.75)
 anova(M1, M2)
-\dontrun{plot(M1)}
-\dontrun{plot(M1, mar = 1)}
-\dontrun{plot(M1, mar = 2)}
-\dontrun{plot(M2)}
+par(mfrow = c(2,2))
+plot(M1)
+plot(M1, mar = 1)
+plot(M1, mar = 2)
+\dontrun{par(mfrow = c(1,1))}
 \dontrun{M1P <- profile(M1, which = "dep")}
 \dontrun{plot(M1P)}
 

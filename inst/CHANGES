@@ -1,3 +1,35 @@
+CHANGES FROM VERSION 2.0-1 ARE AS FOLLOWS
+
+  Univariate threshold models are now implemented. The main
+  new function is fpot, which calculates maximum likelihood
+  estimates under the generalized Pareto and point process
+  representations.
+
+  Density, distribution, quantile and simulation functions
+  for the generalized Pareto distribution have been added.
+
+  The new function clusters identifies extreme clusters. A
+  related function exi calculates estimates of a quantity
+  known as the extremal index.
+  
+  The new plotting functions mrlplot and tcplot aid
+  threshold selection.
+
+  The class structure has changed slightly.
+  Models fitted using fextreme and forder still have class
+  c("extreme", "evd"). Models fitted using fbvevd still have 
+  class c("bvevd", "evd"). Models fitted using the new 
+  function fpot have class c("pot", "uvevd", "evd").  Models 
+  fitted using fgev now have class c("gev", "uvevd", "evd").
+
+  The method function plot.gev is now plot.uvevd. This 
+  operates on both the gev and pot classes, due to the new 
+  class structure.
+
+  The defunct functions fgumbel, frweibull, ffrechet (each
+  defunct since version 1.2-0) and fbvall (defunct since 
+  version 2.0-0) have been removed.
+
 CHANGES FROM VERSION 2.0-0 ARE AS FOLLOWS
 
   Internal change to avoid warnings under R version 1.7.0 when
@@ -6,7 +38,7 @@ CHANGES FROM VERSION 2.0-0 ARE AS FOLLOWS
 
   The tests directory has been removed.
 
-  The evmc function unintentionally reversed asymmetric
+  The function evmc unintentionally reversed asymmetric 
   dependence structures. This has been fixed.  
 
 CHANGES FROM VERSION 1.2-3 ARE AS FOLLOWS

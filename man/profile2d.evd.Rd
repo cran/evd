@@ -8,7 +8,7 @@
 }
 \usage{
 \method{profile2d}{evd}(fitted, prof, which, pts = 20, convergence =
-    FALSE, method = "Nelder-Mead", control = list(maxit = 10000), \dots)
+    FALSE, method = "Nelder-Mead", control = list(maxit = 5000), \dots)
 }
 \arguments{
   \item{fitted}{An object of class \code{"evd"}.}

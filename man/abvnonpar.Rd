@@ -144,7 +144,7 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
   to \code{TRUE}.
 }
 \note{
-  Appendix B of the User's Guide contains a short simulation
+  Appendix A of the User's Guide contains a short simulation
   study that compares the estimators defined above.
   The estimators \eqn{A_p(\cdot)}{A_p()}, \eqn{A_d(\cdot)}{A_d()}
   and \eqn{A_h(\cdot)}{A_h()} are very similar, and may not be
@@ -185,7 +185,7 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
 \examples{
 bvdata <- rbvevd(100, dep = 0.7, model = "log")
 abvnonpar(seq(0, 1, length = 10), data = bvdata, convex = TRUE)
-\dontrun{abvnonpar(data = bvdata, method = "d", plot = TRUE)}
+abvnonpar(data = bvdata, method = "d", plot = TRUE)
 
 M1 <- fitted(fbvevd(bvdata, model = "log"))
 abvpar(dep = M1["dep"], model = "log", plot = TRUE)

@@ -1795,8 +1795,6 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
   structure(c(ft, call = call), class = c("bvevd","evd"))
 }
 
-"fbvall" <- function (...) .Defunct()
-
 "print.bvevd" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
 {
     cat("\nCall:", deparse(x$call), "\n")
@@ -1848,7 +1846,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
         param <- x$param[indx]
         names(param) <- c("loc","scale","shape")
         gev.mar <- structure(list(param = param, tdata = tdata, n = n,
-           loc = param["loc"]), class = c("gev", "evd"))
+           loc = param["loc"]), class = c("gev", "uvevd", "evd"))
         if(missing(which)) which <- 1:4
         if(missing(main)) main <- c("Probability Plot", "Quantile Plot",
            "Density Plot", "Return Level Plot")

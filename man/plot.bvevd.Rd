@@ -22,7 +22,7 @@
     are given for the first or second genereralized extreme
     value margin respectively. The values of the remaining
     parameters are then passed to the plot method
-    \code{\link{plot.gev}}.}
+    \code{\link{plot.uvevd}}.}
   \item{which}{If a subset of the plots is required, specify a
     subset of the numbers \code{1:4}.}
   \item{main}{Title of each plot.}
@@ -76,7 +76,7 @@
   margin given the first. 
 }
 
-\seealso{\code{\link{plot.gev}}, \code{\link{contour}},
+\seealso{\code{\link{plot.uvevd}}, \code{\link{contour}},
   \code{\link{jitter}}, \code{\link{abvnonpar}}}
 
 \examples{

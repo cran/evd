@@ -9,45 +9,52 @@ atvnonpar               Non-parametric Estimates for Dependence
                         Distribution
 atvpar                  Parametric Dependence Functions of Trivariate
                         Extreme Value Models
-bvevd                   Parametric Bivariate Extreme Value
+clusters                Identify Clusters of Exceedences
+dbvevd                  Parametric Bivariate Extreme Value
                         Distributions
-evd-defunct             Defunct Functions
-evd-internal            Internal Functions
+dextreme                Distributions of Maxima and Minima
+dfrechet                The Frechet Distribution
+dgev                    The Generalized Extreme Value Distribution
+dgpd                    The Generalized Pareto Distribution
+dgumbel                 The Gumbel Distribution
+dorder                  Distributions of Order Statistics
+drweibull               The Reversed Weibull Distribution
 evmc                    Simulate Markov Chains With Extreme Value
                         Dependence Structures
-extreme                 Distributions of Maxima and Minima
+exi                     Estimates of the Extremal Index
 failure                 Failure Times
-fbvevd                  Maximum-likelihood Fitting of Bivariate Extreme
-                        Value Distributions
-fextreme                Maximum-likelihood Fitting of Maxima and Minima
+fbvevd                  Maximum-likelihood Fitting of Bivariate
+                        Extreme Value Distributions
+fextreme                Maximum-likelihood Fitting of Maxima and
+                        Minima
 fgev                    Maximum-likelihood Fitting of the Generalized
                         Extreme Value Distribution
 forder                  Maximum-likelihood Fitting of Order Statistics
 fox                     Maximum Annual Flood Discharges of the Fox
                         River
-frechet                 The Frechet Distribution
-gev                     The Generalized Extreme Value Distribution
-gumbel                  The Gumbel Distribution
+fpot                    Peaks Over Threshold Modelling using the
+                        Generalized Pareto or Point Process
+                        Representation
 lisbon                  Annual Maximum Wind Speeds at Lisbon
 marma                   Simulate MARMA(p,q) Processes
-mvevd                   Parametric Multivariate Extreme Value
-                        Distributions
-ocmulgee                Maximum Annual Flood Discharges of the Ocmulgee
-                        River
+mrlplot                 Empirical Mean Residual Life Plot
+ocmulgee                Maximum Annual Flood Discharges of the
+                        Ocmulgee River
 oldage                  Oldest Ages for Swedish Males and Females
-order                   Distributions of Order Statistics
 oxford                  Annual Maximum Temperatures at Oxford
 plot.bvevd              Plot Diagnostics for a Bivariate EVD Object
-plot.gev                Plot Diagnostics for a GEV Object
+plot.profile2d.evd      Plot Joint Profile Devainces
 plot.profile.evd        Plot Profile Deviances and Calculate Profile
                         Confidence Intervals
-plot.profile2d.evd      Plot Joint Profile Devainces
+plot.uvevd              Plot Diagnostics for a Univariate EVD Object
+pmvevd                  Parametric Multivariate Extreme Value
+                        Distributions
 portpirie               Annual Maximum Sea Levels at Port Pirie
-profile.evd             Method for Profiling EVD Objects
 profile2d.evd           Method for Profiling EVD Objects
-rweibull                The Reversed Weibull Distribution
+profile.evd             Method for Profiling EVD Objects
 sask                    Maximum Annual Flood Discharges of the North
                         Saskachevan River
 sealevel                Annual Sea Level Maxima at Dover and Harwich
+tcplot                  Threshold Choice Plot
 uccle                   Rainfall Maxima at Uccle, Belguim
 venice                  Largest Sea Levels in Venice

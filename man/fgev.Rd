@@ -105,7 +105,7 @@ fgev(x, start, \dots, nsloc = NULL, prob = NULL, std.err = TRUE,
 }
 
 \value{
-  Returns an object of class \code{c("gev","evd")}.
+  Returns an object of class \code{c("gev","uvevd","evd")}.
 
   The generic accessor functions \code{\link{fitted}} (or
   \code{\link{fitted.values}}), \code{\link{std.errors}},
@@ -120,8 +120,8 @@ fgev(x, start, \dots, nsloc = NULL, prob = NULL, std.err = TRUE,
   The function \code{anova} compares nested models.
   The function \code{plot} produces diagnostic plots.
   
-  An object of class \code{c("gev","evd")} is a list containing
-  at most the following components
+  An object of class \code{c("gev","uvevd","evd")} is a list
+  containing at most the following components
   \item{estimate}{A vector containing the maximum likelihood estimates.}
   \item{std.err}{A vector containing the standard errors.}
   \item{fixed}{A vector containing the parameters of the model that
@@ -157,7 +157,7 @@ fgev(x, start, \dots, nsloc = NULL, prob = NULL, std.err = TRUE,
 }
 
 \seealso{\code{\link{anova.evd}}, \code{\link{optim}},
-  \code{\link{plot.gev}}, \code{\link{profile.evd}},
+  \code{\link{plot.uvevd}}, \code{\link{profile.evd}},
   \code{\link{profile2d.evd}}}
 
 \examples{
@@ -168,7 +168,8 @@ M2 <- fgev(uvdata)
 M3 <- fgev(uvdata, shape = 0)
 M4 <- fgev(uvdata, scale = 1, shape = 0)
 anova(M1, M2, M3, M4)
-\dontrun{plot(M2)}
+par(mfrow = c(2,2))
+plot(M2)
 \dontrun{M2P <- profile(M2)}
 \dontrun{plot(M2P)}
 

@@ -1,19 +1,19 @@
-\name{plot.gev}
-\alias{plot.gev}
+\name{plot.uvevd}
+\alias{plot.uvevd}
 
-\title{Plot Diagnostics for a GEV Object}
+\title{Plot Diagnostics for a Univariate EVD Object}
 \description{
   Four plots (selectable by \code{which}) are currently provided:
   a P-P plot, a Q-Q plot, a density plot and a return level plot.
 }
 \usage{
-\method{plot}{gev}(x, which = 1:4, main = c("Probability Plot",
+\method{plot}{uvevd}(x, which = 1:4, main = c("Probability Plot",
     "Quantile Plot", "Density Plot", "Return Level Plot"),
     ask = nb.fig < length(which) && dev.interactive(),
     ci = TRUE, adjust = 1, jitter = FALSE, nplty = 2, \dots)
 }
 \arguments{
-  \item{x}{An object of class \code{"gev"}.}
+  \item{x}{An object that inherits from class \code{"uvevd"}.}
   \item{which}{If a subset of the plots is required, specify a
     subset of the numbers \code{1:4}.}
   \item{main}{Title of each plot.}
@@ -38,32 +38,35 @@
 }
 \details{
   The following discussion assumes that the fitted model is
-  stationary. For non-stationary models the data are transformed
-  to stationarity. The plot then corresponds to the distribution
-  obtained when all covariates are zero.
+  stationary. For non-stationary generalized extreme value
+  models the data are transformed to stationarity. The plot
+  then corresponds to the distribution obtained when all
+  covariates are zero.
 
   The P-P plot consists of the points
   \deqn{\{(G_n(z_i), G(z_i)), i = 1,\ldots,m\}}{
     {(G_n(z_i), G(z_i)), i = 1,\ldots,m}}
-  where \eqn{G_n} is the empirical
-  distribution function (defined using \code{\link{ppoints}}),
-  G is the model based estimate of the generalized extreme
-  value distribution, and \eqn{z_1,\ldots,z_m} are the data
+  where \eqn{G_n} is the empirical distribution function
+  (defined using \code{\link{ppoints}}), G is the model based
+  estimate of the distribution (generalized extreme value
+  or generalized Pareto), and \eqn{z_1,\ldots,z_m} are the data
   used in the fitted model, sorted into ascending order.
 
   The Q-Q plot consists of the points
   \deqn{\{(G^{-1}(p_i), z_i), i = 1,\ldots,m\}}{
     {(G^{-1}(p_i), z_i), i = 1,\ldots,m}}
-  where \eqn{G^{-1}} is the model based
-  estimate of the generalized extreme value quantile function,
+  where \eqn{G^{-1}} is the model based estimate of the quantile
+  function (generalized extreme value or generalized Pareto),
   \eqn{p_1,\ldots,p_m} are plotting points defined by
   \code{\link{ppoints}}, and \eqn{z_1,\ldots,z_m} are the data
   used in the fitted model, sorted into ascending order.
 
-  The return level plot is defined as follows.
-  Let \eqn{G} be the generalized extreme value distribution function,
-  with location, scale and shape parameters \eqn{a}, \eqn{b}
-  and \eqn{s} respectively.
+  The return level plot for generalized extreme value models
+  is defined as follows.
+  
+  Let \eqn{G} be the generalized extreme value distribution
+  function, with location, scale and shape parameters \eqn{a},
+  \eqn{b} and \eqn{s} respectively.
   Let \eqn{z_t} be defined by \eqn{G(z_t) = 1 - 1/t}.
   In common terminology, \eqn{z_t} is the return level
   associated with the return period \eqn{t}.
@@ -89,8 +92,34 @@
   where \eqn{p_1,\ldots,p_m} are plotting points defined by
   \code{\link{ppoints}}, and \eqn{z_1,\ldots,z_m} are the data
   used in the fitted model, sorted into ascending order.
-  For a good fit the points should lie ``close'' to the curve
-  defined by \eqn{(z_t,\log(y_t))}{(z_t,\log(y_t))}.
+  For a good fit the points should lie ``close'' to the curve.
+
+  The return level plot for peaks over threshold models is
+  defined as follows.
+  
+  Let \eqn{G} be the generalized Pareto distribution function,
+  with location, scale and shape parameters \eqn{u}, \eqn{b}
+  and \eqn{s} respectively, where \eqn{u} is the model threshold.
+  Let \eqn{z_m} denote the \eqn{m} period return level
+  (see \code{\link{fpot}} and the notation therein).
+  It follows that 
+  \deqn{z_m = u + b((pmN)^s - 1)/s.}{
+    z_m = u + b((pmN)^s - 1)/s.}
+  When \eqn{s = 0}, \eqn{z_m} is defined by continuity, so that
+  \deqn{z_m = u + b\log(pmN).}{
+    z_m = u + b log(pmN).}
+  The curve within the return level plot is \eqn{z_m} plotted
+  against \eqn{m} on a logarithmic scale, using maximum likelihood
+  estimates of \eqn{(b,s,p)}. If the estimate of \eqn{s} is zero,
+  the curve will be linear.  
+
+  The points on the plot are  
+  \deqn{\{(1/(pN(1-p_i)), z_i), i = 1,\ldots,m\}}{
+    {(1/(pN(1-p_i)), z_i), i = 1,\ldots,m}}
+  where \eqn{p_1,\ldots,p_m} are plotting points defined by
+  \code{\link{ppoints}}, and \eqn{z_1,\ldots,z_m} are the data
+  used in the fitted model, sorted into ascending order.
+  For a good fit the points should lie ``close'' to the curve.
 }
 
 \seealso{\code{\link{plot.bvevd}}, \code{\link{density}},
@@ -99,6 +128,11 @@
 \examples{
 uvdata <- rgev(100, loc = 0.13, scale = 1.1, shape = 0.2)
 M1 <- fgev(uvdata)
+\dontrun{par(mfrow = c(2,2))}
+\dontrun{plot(M1)}
+
+uvdata <- rgpd(100, loc = 0, scale = 1.1, shape = 0.2)
+M1 <- fpot(uvdata, 1)
 \dontrun{par(mfrow = c(2,2))}
 \dontrun{plot(M1)}
 }
