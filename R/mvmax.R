@@ -1,20 +1,20 @@
 "rmvlog"<-
 # Uses Algorithm 2.1 in Stephenson(2002)
-function(n, dep, d = 2, mar = c(1,1,0))
+function(n, dep, d = 2, mar = c(0,1,0))
 {
     if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0 ||
        dep > 1) stop("invalid argument for `dep'")
     #ptm <- proc.time()
     sim <- .C("rmvlog_tawn",
               as.integer(n), as.integer(d), as.double(dep),
-              sim = double(d*n))$sim
+              sim = double(d*n), PACKAGE = "evd")$sim
     #return(proc.time()-ptm)
     mtransform(matrix(1/sim, ncol=d, byrow=TRUE), mar, inv = TRUE)
 }
 
 "rmvalog"<-
 # Uses Algorithm 2.2 in Stephenson(2002)
-function(n, dep, asy, d = 2, mar = c(1,1,0))
+function(n, dep, asy, d = 2, mar = c(0,1,0))
 {
     nb <- 2^d-1
     dep <- rep(dep, length.out = nb-d)
@@ -53,13 +53,13 @@ function(n, dep, asy, d = 2, mar = c(1,1,0))
     #ptm <- proc.time()
     sim <- .C("rmvalog_tawn",
               as.integer(n), as.integer(d), as.integer(nb), as.double(dep),
-              as.double(t(asy)), sim = double(n*d))$sim
+              as.double(t(asy)), sim = double(n*d), PACKAGE = "evd")$sim
     #return(proc.time()-ptm)
     mtransform(matrix(1/sim, ncol=d, byrow=TRUE), mar, inv = TRUE)
 }
 
 "pmvlog"<- 
-function(q, dep, d = 2, mar = c(1,1,0))
+function(q, dep, d = 2, mar = c(0,1,0))
 {
     if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0 ||
         dep > 1) stop("invalid argument for `dep'")
@@ -70,7 +70,7 @@ function(q, dep, d = 2, mar = c(1,1,0))
 }
 
 "pmvalog"<-
-function(q, dep, asy, d = 2, mar = c(1,1,0))
+function(q, dep, asy, d = 2, mar = c(0,1,0))
 {
     nb <- 2^d-1
     dep <- rep(dep, length.out = nb-d)
@@ -115,6 +115,14 @@ function(q, dep, asy, d = 2, mar = c(1,1,0))
     if(is.null(dim(comps))) dim(comps) <- c(1,nb)
     exp(-apply(comps,1,sum))
 }
+
+
+
+
+
+
+
+
 
 
 

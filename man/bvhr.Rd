@@ -2,10 +2,10 @@
 \alias{dbvhr}
 \alias{pbvhr}
 \alias{rbvhr}
-\title{The Husler-Reiss Distribution}
+\title{The Husler-Reiss Model}
 \description{
   Density, distribution function and random generation for the
-  Husler-Reiss distribution. 
+  Husler-Reiss model. 
 }
 \usage{
 dbvhr(x, dep, mar1 = c(0, 1, 0), mar2 = mar1, log = FALSE) 
@@ -13,18 +13,20 @@ pbvhr(q, dep, mar1 = c(0, 1, 0), mar2 = mar1)
 rbvhr(n, dep, mar1 = c(0, 1, 0), mar2 = mar1) 
 }
 \arguments{
-  \item{x, q}{a vector of length two or a matrix with two columns,
+  \item{x, q}{A vector of length two or a matrix with two columns,
     in which case the density/distribution is evaluated across
     the rows.}
-  \item{n}{number of observations.}
-  \item{dep}{dependence parameter.}
-  \item{mar1, mar2}{vectors of length three containing marginal
-    parameters.}
-  \item{log}{logical; if \code{TRUE}, the log density is returned.}
+  \item{n}{Number of observations.}
+  \item{dep}{Dependence parameter.}
+  \item{mar1, mar2}{Vectors of length three containing marginal
+    parameters, or matrices with three columns where each
+    column represents a vector of values to be passed to the
+    corresponding marginal parameter.}
+  \item{log}{Logical; if \code{TRUE}, the log density is returned.}
 }
 \details{
-  The Husler-Reiss distribution function with parameter
-  \eqn{\code{dep} = r} is
+  The Husler-Reiss distribution function (Husler and Reiss, 1989)
+  with parameter \eqn{\code{dep} = r} is
   \deqn{G(z_1,z_2) = \exp\left(-y_1\Phi\{r^{-1}+{\textstyle\frac{1}{2}}
     r[\log(y_1/y_2)]\} - y_2\Phi\{r^{-1}+{\textstyle\frac{1}{2}}r
     [\log(y_2/y_1)]\}\right)}{
@@ -43,14 +45,19 @@ rbvhr(n, dep, mar1 = c(0, 1, 0), mar2 = mar1)
   continuity.
   The univariate marginal distributions are generalized extreme
   value.
+
+  Independence is obtained in the limit as \eqn{r} approaches zero.
+  Complete dependence is obtained as \eqn{r} tends to infinity.
 }
 \value{
   \code{dbvhr} gives the density, \code{pbvhr} gives the
   distribution function and \code{rbvhr} generates random deviates.
 }
-\note{
-  \code{rbvhr} uses a root-finding algorithm for each realization,
-  and is therefore relatively slow.
+\references{ 
+  Husler, J. and Reiss, R.-D. (1989)
+  Maxima of normal random vectors: between independence 
+  and complete dependence.
+  \emph{Statist. Probab. Letters}, \bold{7}, 283--286.
 }
 
 \seealso{\code{\link{abvhr}}, \code{\link{rgev}}}

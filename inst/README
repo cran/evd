@@ -1,0 +1,29 @@
+The evd package extends simulation, distribution, quantile and 
+density functions parametric extreme value distributions, and 
+provides fitting functions which calculate maximum likelihood 
+estimates for univariate and bivariate models.
+
+The users guide (in pdf) will be in the directory evd/doc/  
+underneath wherever the package is installed.
+It can also be downloaded directly (in postscript or pdf) from 
+http://www.maths.lancs.ac.uk/~stephena/.
+
+The evd/doc/ directory also contains a `changes' file that
+documents the changes from the previous (minor) version.
+
+A reference manual containing the help files (in pdf) can be 
+downloaded from CRAN or from the URL given above.
+
+All comments, criticisms and queries on the package or 
+associated documentation are gratefully received.
+
+
+
+
+
+
+
+
+
+
+

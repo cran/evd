@@ -1,10 +1,10 @@
 \name{evd-internal}
 
 \alias{bvmtransform}
-\alias{fdensfun}
 \alias{bvdep}
 \alias{mtransform}
-  
+\alias{na.vals}
+
 \title{Internal Functions}
 
 \description{

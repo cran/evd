@@ -1,27 +1,29 @@
 \name{mvalog}
 \alias{pmvalog}
 \alias{rmvalog}
-\title{The Multivariate Asymmetric Logistic Distribution}
+\title{The Multivariate Asymmetric Logistic Model}
 \description{
   Distribution function and random generation for the
-  multivariate asymmetric logistic distribution. 
+  multivariate asymmetric logistic model. 
 }
 \usage{
-pmvalog(q, dep, asy, d = 2, mar = c(1, 1, 0)) 
-rmvalog(n, dep, asy, d = 2, mar = c(1, 1, 0))
+pmvalog(q, dep, asy, d = 2, mar = c(0, 1, 0)) 
+rmvalog(n, dep, asy, d = 2, mar = c(0, 1, 0))
 }
 \arguments{
-  \item{q}{a vector of length \code{d} or a matrix with \code{d}
+  \item{q}{A vector of length \code{d} or a matrix with \code{d}
     columns, in which case the distribution is evaluated across
     the rows.}
-  \item{n}{number of observations.}
-  \item{dep}{a vector of length \eqn{2^d-d-1} containing the dependence
+  \item{n}{Number of observations.}
+  \item{dep}{A vector of length \eqn{2^d-d-1} containing the dependence
     parameters.}
-  \item{asy}{a list with \eqn{2^d-1} vector elements containing
+  \item{asy}{A list with \eqn{2^d-1} vector elements containing
     asymmetry parameters for each separate component.}
-  \item{d}{dimension.}
-  \item{mar}{a vector of length three containing the marginal
-    parameters for every univariate margin.}
+  \item{d}{Dimension.}
+  \item{mar}{A vector of length three containing marginal parameters
+    for every univariate margin, or a matrix with three columns where
+    each column represents a vector of values to be passed to the
+    corresponding marginal parameter on every univariate margin.}
 }
 \details{
   Let \eqn{z = (z_1,z_2,\ldots,z_d)}{z = (z1,z2,\ldots,zd)}.
@@ -50,7 +52,7 @@ rmvalog(n, dep, asy, d = 2, mar = c(1, 1, 0))
   \eqn{\sum_{b \in B_{(i)}}t_{i,b}=1}{sum{b in B(i)} t{i,b}=1} for
   \eqn{i = 1,\ldots,d}
   ensure that the marginal distributions are generalized extreme value.
-  More subtle constraints exist and can be found in the help manual.
+  More subtle constraints exist and can be found in the user's guide.
 
   \code{dep} should be a vector of length \eqn{2^d-d-1} which contains
   \eqn{\{r_b:b\in B \setminus B_1\}}{{r{b}:b in B\B1}}, with
@@ -69,33 +71,27 @@ rmvalog(n, dep, asy, d = 2, mar = c(1, 1, 0))
   \eqn{\{1,\ldots,d\}}{{1,\ldots,d}}.
   \code{asy} must be constructed to ensure that all constraints are
   satisfied or an error will occur.
-  See the help manual for detailed examples.
+  See the user's guide for detailed examples.
   The univariate marginal distributions are generalized extreme value.
+  The model was first introduced in full generality by Tawn (1990).
 }
 \value{
   \code{pmvalog} gives the distribution function and \code{rmvalog}
   generates random deviates.
 }
 \note{
-  The interface for \code{rmvalog} and \code{pmvalog} is not
-  particularly good. 
-  (In particular, the set-up time is large in high dimensions even if a
-  large number of the asymmetry parameters are zero.)
-  If anybody uses \code{rmvalog} or \code{pmvalog} above about five
-  dimensions it may inspire me to make improvements. Possibly.
-
   Multivariate extensions of other bivariate models are more complex.
   A multivariate extension of the Husler-Reiss model exists, involving
   a multidimensional integral and one parameter for each bivariate
   margin.
   Multivariate extensions for the negative logistic model can be derived
-  but are considerably more complex and appear to be less flexible (the
+  but are considerably more complex and appear to be less flexible. The
   obvious multivariate extension, which parallels that for the logistic
-  model, is often called the multivariate negative logistic distribution
-  (e.g Kotz \emph{et al}, 2000) but it is not a valid distribution function and
-  should not be used).
+  model, is often called the multivariate negative logistic model
+  (e.g Kotz \emph{et al}, 2000), but it is not a valid distribution
+  function and should not be used.
 
-  \code{rmvalog} uses Algorithm 2.2 in Stephenson(2002).
+  \code{rmvalog} uses Algorithm 2.2 in Stephenson (2002).
 }
 \references{
   Kotz, S. and Balakrishnan, N. and Johnson, N. L. (2000)
@@ -105,6 +101,10 @@ rmvalog(n, dep, asy, d = 2, mar = c(1, 1, 0))
   Stephenson, A. G. (2002)
   Simulating multivariate extreme value distributions of logistic type.
   To be published - available on request.
+
+  Tawn, J. A. (1990)
+  Modelling multivariate extreme value distributions.
+  \emph{Biometrika}, \bold{77}, 245--253.
 }
 
 \seealso{\code{\link{rbvalog}}, \code{\link{rmvlog}},

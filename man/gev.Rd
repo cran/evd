@@ -16,12 +16,13 @@ qgev(p, loc=0, scale=1, shape=0, lower.tail = TRUE)
 rgev(n, loc=0, scale=1, shape=0)
 }
 \arguments{
-  \item{x, q}{vector of quantiles.}
-  \item{p}{vector of probabilities.}
-  \item{n}{number of observations.}
-  \item{loc, scale, shape}{location, scale and shape parameters.}
-  \item{log}{logical; if TRUE, the log density is returned.}
-  \item{lower.tail}{logical; if TRUE (default), probabilities are
+  \item{x, q}{Vector of quantiles.}
+  \item{p}{Vector of probabilities.}
+  \item{n}{Number of observations.}
+  \item{loc, scale, shape}{Location, scale and shape parameters; the 
+    \code{shape} argument cannot be a vector (must have length one).}
+  \item{log}{Logical; if TRUE, the log density is returned.}
+  \item{lower.tail}{Logical; if TRUE (default), probabilities are
     P[X <= x], otherwise, P[X > x]}
 }
 \details{
@@ -35,12 +36,19 @@ rgev(n, loc=0, scale=1, shape=0)
   The parametric form of the GEV encompasses that of the Gumbel,
   Frechet and reversed Weibull distributions, which are obtained
   for \eqn{s = 0}, \eqn{s > 0} and \eqn{s < 0} respectively.
+  It was first introduced by Jenkinson (1955).
 }
 \value{
   \code{dgev} gives the density, \code{pgev} gives the
   distribution function, \code{qgev} gives the quantile function,
   and \code{rgev} generates random deviates.
 }
+\references{ 
+  Jenkinson, A. F. (1955)
+  The frequency distribution of the annual maximum (or minimum) of
+  meteorological elements.
+  \emph{Quart. J. R. Met. Soc.}, \bold{81}, 158--171.
+}	
 
 \seealso{\code{\link{rfrechet}}, \code{\link{rgumbel}}, \code{\link{rrweibull}}}
 
