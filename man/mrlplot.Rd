@@ -7,7 +7,7 @@
 \usage{
 mrlplot(data, tlim, nt = max(100, length(data)), lty = c(2,1,2),
     col = 1, conf = 0.95, main = "Mean Residual Life Plot", xlab =
-    "Theshold", ylab = "Mean Excess", \dots)
+    "Threshold", ylab = "Mean Excess", \dots)
 }
 \arguments{
   \item{data}{A numeric vector.}

@@ -99,6 +99,7 @@
 \alias{fbvcct}
 \alias{fbvcnegbilog}
 \alias{fbvcneglog}
+\alias{fbvchr}
 
 \alias{fbvplog}
 \alias{fbvpbilog}

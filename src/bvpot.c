@@ -759,6 +759,92 @@ void nllbvcct(double *data1, double *data2, int *nn, int *n, double *thid, doubl
   *dns = *dns - (*n - *nn) * zdn;
 }
 
+void nllbvchr(double *data1, double *data2, int *nn, int *n, double *thid, double *lambda, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+{
+  int i;
+  double *dvec, *t1, *t2, *v, *v1, *v2, *v12;
+  double lambda2[2], zdn, idep;
+
+  dvec = (double *)R_alloc(*nn, sizeof(double));
+  t1 = (double *)R_alloc(*nn, sizeof(double));
+  t2 = (double *)R_alloc(*nn, sizeof(double));
+  v = (double *)R_alloc(*nn, sizeof(double));
+  v1 = (double *)R_alloc(*nn, sizeof(double));
+  v2 = (double *)R_alloc(*nn, sizeof(double));
+  v12 = (double *)R_alloc(*nn, sizeof(double));
+
+  if(*scale1 < 0.01 || *scale2 < 0.01 || *dep < 0.2 || *dep > 10) {
+     *dns = 1e6;
+     return;
+  }
+
+  idep = 1/ *dep;
+  lambda2[0] = -1/log(1 - lambda[0]);
+  lambda2[1] = -1/log(1 - lambda[1]);
+  zdn = -1/lambda2[0] * pnorm(idep + *dep * (log(lambda2[1]) - 
+    log(lambda2[0]))/2, 0, 1, 1, 0) - 1/lambda2[1] * pnorm(idep + 
+    *dep * (log(lambda2[0]) - log(lambda2[1]))/2, 0, 1, 1, 0);
+
+  for(i=0;i<*nn;i++)  {
+
+    data1[i] = data1[i] / *scale1;
+    data2[i] = data2[i] / *scale2;
+    
+    if(*shape1 == 0) 
+      t1[i] = exp(-data1[i]);       
+    else {
+      t1[i] = 1 + *shape1 * data1[i];
+      if(t1[i] <= 0) {
+        *dns = 1e6;
+        return;
+      }
+      t1[i] = R_pow(t1[i], -1 / *shape1);
+    }
+    data1[i] = -1/log(1 - lambda[0] * t1[i]);
+    
+    if(*shape2 == 0) 
+      t2[i] = exp(-data2[i]);       
+    else {
+      t2[i] = 1 + *shape2 * data2[i];
+      if(t2[i] <= 0) {
+        *dns = 1e6;
+        return;
+      }
+      t2[i] = R_pow(t2[i], -1 / *shape2);
+    }
+    data2[i] = -1/log(1 - lambda[1] * t2[i]);
+
+    t1[i] = R_pow(data1[i], 2) * R_pow(t1[i], 1 + *shape1) /
+      (1 - lambda[0] * t1[i]);
+    t1[i] = lambda[0] * t1[i] / *scale1;
+    t2[i] = R_pow(data2[i], 2) * R_pow(t2[i], 1 + *shape2) /
+      (1 - lambda[1] * t2[i]);
+    t2[i] = lambda[1] * t2[i] / *scale2;
+    
+    idep = 1/ *dep;
+    v[i] = 1/data1[i] * pnorm(idep + *dep * (log(data2[i]) - 
+      log(data1[i]))/2, 0, 1, 1, 0) + 1/data2[i] * pnorm(idep + 
+      *dep * (log(data1[i]) - log(data2[i]))/2, 0, 1, 1, 0);
+    v1[i] = -1/R_pow(data1[i], 2) *
+      pnorm(idep + *dep * (log(data2[i]) - log(data1[i]))/2, 0, 1, 1, 0);
+    v2[i] = -1/R_pow(data2[i], 2) *
+      pnorm(idep + *dep * (log(data1[i]) - log(data2[i]))/2, 0, 1, 1, 0);
+    v12[i] = - *dep / (2 * data1[i] * data2[i]) / data1[i] *
+      dnorm(idep + *dep * (log(data2[i]) - log(data1[i]))/2, 0, 1, 0);
+    
+    if(thid[i] < 1.5) 
+      dvec[i] = log(-v1[i]) + log(t1[i]) - v[i];
+    if(thid[i] >= 1.5 && thid[i] < 2.5)
+      dvec[i] = log(-v2[i]) + log(t2[i]) - v[i];
+    if(thid[i] >= 2.5) dvec[i] = log(v1[i] * v2[i] - v12[i]) + 
+      log(t1[i]) + log(t2[i]) - v[i];
+  }
+
+  for(i=0;i<*nn;i++) 
+    *dns = *dns - dvec[i];
+  *dns = *dns - (*n - *nn) * zdn;
+}
+
 /* Point Process Likelihood Routines */
 
 void nllbvplog(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)

@@ -29,7 +29,7 @@ Fitting Models:
   fbvevd  fgev  fpot  fbvpot  forder  fextreme
 
 Threshold Identification:
-  mrlplot  tcplot
+  mrlplot  tcplot  chiplot
 
 Model Diagnostics:  
   plot.gev  plot.bvevd  anova.evd

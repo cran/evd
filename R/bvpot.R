@@ -1,83 +1,100 @@
 
 ################## bivariate threshold fitting routines #################
 
-fbvpot <- function(x, threshold, model = c("log", "bilog", "alog", "neglog", "negbilog", "aneglog", "ct"), likelihood = c("censored","poisson"), start, ..., sym = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvpot <- function(x, threshold, model = c("log", "bilog", "alog", "neglog", "negbilog", "aneglog", "ct", "hr"), likelihood = c("censored","poisson"), start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
   call <- match.call()
   likelihood <- match.arg(likelihood)
   ft <- switch(likelihood,
     censored = fbvcpot(x = x, u = threshold, model = model, start = start, ...,
-      sym = sym, std.err = std.err, dsm = dsm, corr = corr,
-      method = method, warn.inf = warn.inf),
+      sym = sym, cshape = cshape, cscale = cscale, std.err =
+      std.err, dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
     poisson = fbvppot(x = x, u = threshold, model = model, start = start, ...,
-      sym = sym, std.err = std.err, dsm = dsm, corr = corr,
-      method = method, warn.inf = warn.inf))
+      sym = sym, cshape = cshape, cscale = cscale, std.err =
+      std.err, dsm = dsm, corr = corr, method = method, warn.inf = warn.inf))
   structure(c(ft, call = call), class = c("bvpot", "evd"))
 }
 
-fbvcpot <- function(x, u, model = c("log", "bilog", "alog", "neglog", "negbilog", "aneglog", "ct"), start, ..., sym = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvcpot <- function(x, u, model = c("log", "bilog", "alog", "neglog", "negbilog", "aneglog", "ct", "hr"), start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
   model <- match.arg(model)
   if(sym && !(model %in% c("alog","aneglog","ct")))
     warning("Argument `sym' was ignored")
   switch(model,
-    log = fbvclog(x = x, u = u, start = start, ..., std.err = std.err,
-      dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
-    bilog = fbvcbilog(x = x, u = u, start = start, ..., std.err = std.err,
-      dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
+    log = fbvclog(x = x, u = u, start = start, ..., cshape = cshape,
+      cscale = cscale, std.err = std.err, dsm = dsm,
+      corr = corr, method = method, warn.inf = warn.inf),
+    bilog = fbvcbilog(x = x, u = u, start = start, ..., cshape = cshape,
+      cscale = cscale, std.err = std.err, dsm = dsm,
+      corr = corr, method = method, warn.inf = warn.inf),
     alog = fbvcalog(x = x, u = u, start = start, ..., sym = sym,
-      std.err = std.err, dsm = dsm, corr = corr, method = method, warn.inf =
-      warn.inf),
-    neglog = fbvcneglog(x = x, u = u, start = start, ..., std.err = std.err,
+      cshape = cshape, cscale = cscale, std.err = std.err,
       dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
-    negbilog = fbvcnegbilog(x = x, u = u, start = start, ..., std.err =
-      std.err, dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
-    aneglog = fbvcaneglog(x = x, u = u, start = start, ..., sym =
-      sym, std.err = std.err, dsm = dsm, corr = corr, method = method,
-      warn.inf = warn.inf),
-    ct = fbvcct(x = x, u = u, start = start, ..., sym = sym,
-      std.err = std.err, dsm = dsm, corr = corr, method = method, warn.inf =
-      warn.inf))
+    neglog = fbvcneglog(x = x, u = u, start = start, ..., cshape =
+      cshape, cscale = cscale, std.err = std.err,
+      dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
+    negbilog = fbvcnegbilog(x = x, u = u, start = start, ..., cshape =
+      cshape, cscale = cscale, std.err = std.err, dsm = dsm,
+      corr = corr, method = method, warn.inf = warn.inf),
+    aneglog = fbvcaneglog(x = x, u = u, start = start, ..., sym = sym,
+      cshape = cshape, cscale = cscale, std.err = std.err,
+      dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
+    ct = fbvcct(x = x, u = u, start = start, ..., sym = sym, cshape =
+      cshape, cscale = cscale, std.err = std.err, dsm = dsm,
+      corr = corr, method = method, warn.inf = warn.inf),
+    hr = fbvchr(x = x, u = u, start = start, ..., cshape = cshape,
+      cscale = cscale, std.err = std.err, dsm = dsm, corr =
+      corr, method = method, warn.inf = warn.inf))
 }
 
-fbvppot <- function(x, u, model = c("log", "bilog", "alog", "neglog", "negbilog", "aneglog", "ct"), start, ..., sym = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvppot <- function(x, u, model = c("log", "bilog", "alog", "neglog", "negbilog", "aneglog", "ct", "hr"), start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
   model <- match.arg(model)
-  if(model %in% c("alog","aneglog"))
+  if(model %in% c("alog","aneglog","hr"))
     stop("This model is not implemented for poisson likelihood")
   if(sym && (model != "ct"))
     warning("Argument `sym' was ignored")
   switch(model,
-    log = fbvplog(x = x, u = u, start = start, ..., std.err = std.err,
+    log = fbvplog(x = x, u = u, start = start, ..., cshape = cshape,
+      cscale = cscale, std.err = std.err, dsm = dsm,
+      corr = corr, method = method, warn.inf = warn.inf),
+    bilog = fbvpbilog(x = x, u = u, start = start, ..., cshape = cshape,
+      cscale = cscale, std.err = std.err, dsm = dsm, corr =
+      corr, method = method, warn.inf = warn.inf),
+    neglog = fbvpneglog(x = x, u = u, start = start, ..., cshape =
+      cshape, cscale = cscale, std.err = std.err,
       dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
-    bilog = fbvpbilog(x = x, u = u, start = start, ..., std.err = std.err,
-      dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
-    neglog = fbvpneglog(x = x, u = u, start = start, ..., std.err = std.err,
-      dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
-    negbilog = fbvpnegbilog(x = x, u = u, start = start, ..., std.err =
-      std.err, dsm = dsm, corr = corr, method = method, warn.inf = warn.inf),
-    ct = fbvpct(x = x, u = u, start = start, ..., sym = sym,
-      std.err = std.err, dsm = dsm, corr = corr, method = method, warn.inf =
-      warn.inf))
+    negbilog = fbvpnegbilog(x = x, u = u, start = start, ..., cshape =
+      cshape, cscale = cscale, std.err = std.err, dsm = dsm,
+      corr = corr, method = method, warn.inf = warn.inf),
+    ct = fbvpct(x = x, u = u, start = start, ..., sym = sym, cshape =
+      cshape, cscale = cscale, std.err = std.err, dsm = dsm,
+      corr = corr, method = method, warn.inf = warn.inf))
 }
 
 ################## censored likelihood fitting routines #################
 
-fbvclog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvclog <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
-  nllbvclog <- function(scale1, shape1, scale2, shape2, dep) { 
+  nllbvclog <- function(scale1, shape1, scale2, shape2, dep) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvclog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi,
       spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
       PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "dep")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "dep")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "log", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "log", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u)  
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  f <- formals(nllbvclog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE)
+  f <- formals(nllbvclog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
@@ -91,27 +108,33 @@ fbvclog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, 
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, FALSE, model = "log")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "log")
 }
 
-fbvcbilog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvcbilog <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvcbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvcbilog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
       alpha, beta, scale1, shape1, scale2, shape2, dns = double(1),
       PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "alpha", "beta")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "alpha", "beta")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "bilog", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "bilog", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u) 
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  f <- formals(nllbvcbilog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE, TRUE)
+  f <- formals(nllbvcbilog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
@@ -126,82 +149,75 @@ fbvcbilog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, FALSE, model = "bilog")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "bilog")
 }
 
-fbvcalog <- function(x, u, start, ..., sym = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
-
-  nllbvcalog.sym <- function(scale1, shape1, scale2, shape2, asy1, dep) {
-    nllbvcalog(scale1, shape1, scale2, shape2, asy1, asy1, dep)
-  }
-
+fbvcalog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
   nllbvcalog <- function(scale1, shape1, scale2, shape2, asy1, asy2, dep) {
+    if(sym) asy2 <- asy1
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvcalog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
        dep, asy1, asy2, scale1, shape1, scale2, shape2, dns = double(1),
        PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "asy1", "dep")
-  if(!sym) param[6:7] <- c("asy2", "dep")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  if(!sym) param <- c(param, "asy1", "asy2", "dep")
+  else param <- c(param, "asy1", "dep")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "alog", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "alog", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u)
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  if(sym) f <- formals(nllbvcalog.sym)
-  else f <- formals(nllbvcalog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE, !sym, TRUE)
+  f <- formals(nllbvcalog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
     stop("`start' specifies unknown arguments") 
-  if(sym) {
-    formals(nllbvcalog.sym) <- c(f[m], f[-m])
-    nll <- function(p, ...) nllbvcalog.sym(p, ...)
-    if(l > 1) {
-      body(nll) <- parse(text = paste("nllbvcalog.sym(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
-    }
-  } else {
-    formals(nllbvcalog) <- c(f[m], f[-m])
-    nll <- function(p, ...) nllbvcalog(p, ...)
-    if(l > 1) {
-      body(nll) <- parse(text = paste("nllbvcalog(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
-    }
+  formals(nllbvcalog) <- c(f[m], f[-m])
+  nll <- function(p, ...) nllbvcalog(p, ...)
+  if(l > 1) {
+    body(nll) <- parse(text = paste("nllbvcalog(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
   }
   start.arg <- c(list(p = unlist(start)), fixed.param)
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  if(sym) {
-    asy2 <- opt$par["asy1"]
-    names(asy2) <- NULL
-    if(is.na(asy2)) asy2 <- fixed.param[["asy1"]]
-    fixed.param <- c(fixed.param, list(asy2 = asy2))
-  }
   bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr,
-    spx$nat, sym, model = "alog")
+    spx$nat, sym = sym, cmar = c(cscale, cshape), model = "alog")
 }
 
-fbvcneglog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvcneglog <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvcneglog <- function(scale1, shape1, scale2, shape2, dep) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvcneglog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
       dep, scale1, shape1, scale2, shape2, dns = double(1),
       PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "dep")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "dep")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "neglog", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "neglog", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u) 
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  f <- formals(nllbvcneglog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE)
+  f <- formals(nllbvcneglog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
@@ -215,27 +231,33 @@ fbvcneglog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALS
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, FALSE, model = "neglog")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "neglog")
 }
 
-fbvcnegbilog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvcnegbilog <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvcnegbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvcnegbilog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
        alpha, beta, scale1, shape1, scale2, shape2, dns = double(1),
        PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "alpha", "beta")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "alpha", "beta")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "negbilog", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "negbilog", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u) 
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  f <- formals(nllbvcnegbilog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE, TRUE)
+  f <- formals(nllbvcnegbilog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
@@ -250,138 +272,159 @@ fbvcnegbilog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FA
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, FALSE, model = "negbilog")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "negbilog")
 }
 
-fbvcaneglog <- function(x, u, start, ..., sym = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
-
-  nllbvcaneglog.sym <- function(scale1, shape1, scale2, shape2, asy1, dep) {
-    nllbvcaneglog(scale1, shape1, scale2, shape2, asy1, asy1, dep)
-  }
-
+fbvcaneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+  
   nllbvcaneglog <- function(scale1, shape1, scale2, shape2, asy1, asy2, dep) {
+    if(sym) asy2 <- asy1
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvcaneglog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
        dep, asy1, asy2, scale1, shape1, scale2, shape2, dns = double(1),
        PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "asy1", "dep")
-  if(!sym) param[6:7] <- c("asy2", "dep")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  if(!sym) param <- c(param, "asy1", "asy2", "dep")
+  else param <- c(param, "asy1", "dep")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "aneglog", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "aneglog", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u) 
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  if(sym) f <- formals(nllbvcaneglog.sym)
-  else f <- formals(nllbvcaneglog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE, !sym, TRUE)
+  f <- formals(nllbvcaneglog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
     stop("`start' specifies unknown arguments") 
-  if(sym) {
-    formals(nllbvcaneglog.sym) <- c(f[m], f[-m])
-    nll <- function(p, ...) nllbvcaneglog.sym(p, ...)
-    if(l > 1) {
-      body(nll) <- parse(text = paste("nllbvcaneglog.sym(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
-    }
-  } else {
-    formals(nllbvcaneglog) <- c(f[m], f[-m])
-    nll <- function(p, ...) nllbvcaneglog(p, ...)
-    if(l > 1) {
-      body(nll) <- parse(text = paste("nllbvcaneglog(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
-    }
+  formals(nllbvcaneglog) <- c(f[m], f[-m])
+  nll <- function(p, ...) nllbvcaneglog(p, ...)
+  if(l > 1) {
+    body(nll) <- parse(text = paste("nllbvcaneglog(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
   }
   start.arg <- c(list(p = unlist(start)), fixed.param)
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  if(sym) {
-    asy2 <- opt$par["asy1"]
-    names(asy2) <- NULL
-    if(is.na(asy2)) asy2 <- fixed.param[["asy1"]]
-    fixed.param <- c(fixed.param, list(asy2 = asy2))
-  }
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym, model = "aneglog")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = sym, cmar = c(cscale, cshape), model = "aneglog")
 }
 
-fbvcct <- function(x, u, start, ..., sym = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
-
-  nllbvcct.sym <- function(scale1, shape1, scale2, shape2, alpha) {
-    nllbvcct(scale1, shape1, scale2, shape2, alpha, alpha)
-  }
+fbvcct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvcct <- function(scale1, shape1, scale2, shape2, alpha, beta) {
+    if(sym) beta <- alpha
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvcct", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
       alpha, beta, scale1, shape1, scale2, shape2, dns = double(1),
       PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "alpha")
-  if(!sym) param <- c(param, "beta")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  if(!sym) param <- c(param, "alpha", "beta")
+  else param <- c(param, "alpha")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "ct", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "ct", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u) 
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  if(sym) f <- formals(nllbvcct.sym)
-  else f <- formals(nllbvcct)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE, !sym)
+  f <- formals(nllbvcct)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
     stop("`start' specifies unknown arguments") 
-  if(sym) {
-    formals(nllbvcct.sym) <- c(f[m], f[-m])
-    nll <- function(p, ...) nllbvcct.sym(p, ...)
-    if(l > 1) {
-      body(nll) <- parse(text = paste("nllbvcct.sym(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
-    }
-  } else {
-    formals(nllbvcct) <- c(f[m], f[-m])
-    nll <- function(p, ...) nllbvcct(p, ...)
-    if(l > 1) {
-      body(nll) <- parse(text = paste("nllbvcct(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
-    }
+  formals(nllbvcct) <- c(f[m], f[-m])
+  nll <- function(p, ...) nllbvcct(p, ...)
+  if(l > 1) {
+    body(nll) <- parse(text = paste("nllbvcct(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
   }
   start.arg <- c(list(p = unlist(start)), fixed.param)
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  if(sym) {
-    beta <- opt$par["alpha"]
-    names(beta) <- NULL
-    if(is.na(beta)) beta <- fixed.param[["alpha"]]
-    fixed.param <- c(fixed.param, list(beta = beta))
-  }
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym, model = "ct")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = sym, cmar = c(cscale, cshape), model = "ct")
 }
 
+fbvchr <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+
+  nllbvchr <- function(scale1, shape1, scale2, shape2, dep) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
+    .C("nllbvchr", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi,
+      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
+      PACKAGE = "evd")$dns
+  }
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "dep")
+  nmdots <- names(list(...))
+  start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
+    NULL, model = "hr", obj = "bvpot", u = u)
+  spx <- sep.bvdata(x, obj = "bvpot", u = u)  
+  nm <- names(start)
+  l <- length(nm)
+  fixed.param <- list(...)[nmdots %in% param]
+  if(any(!(param %in% c(nm,names(fixed.param)))))
+    stop("unspecified parameters")
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE)
+  f <- formals(nllbvchr)[prind]
+  names(f) <- param
+  m <- match(nm, param)
+  if(any(is.na(m))) 
+    stop("`start' specifies unknown arguments")     
+  formals(nllbvchr) <- c(f[m], f[-m])
+  nll <- function(p, ...) nllbvchr(p, ...)
+  if(l > 1) {
+    body(nll) <- parse(text = paste("nllbvchr(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
+  }
+  start.arg <- c(list(p = unlist(start)), fixed.param)
+  if(warn.inf && do.call("nll", start.arg) == 1e+06)
+    warning("negative log-likelihood is infinite at starting values")
+  opt <- optim(start, nll, hessian = std.err, ..., method = method)
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "hr")
+}
 
 ################## Poisson likelihood fitting routines ##################
 
-fbvplog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvplog <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvplog <- function(scale1, shape1, scale2, shape2, dep) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvplog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1, spx$r2,
       spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
       PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "dep")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "dep")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "log", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "log", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u, censored = FALSE) 
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  f <- formals(nllbvplog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE)
+  f <- formals(nllbvplog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
@@ -396,27 +439,33 @@ fbvplog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, 
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
   bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr,
-    spx$nat, FALSE, model = "log")
+    spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "log")
 }
 
-fbvpneglog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvpneglog <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvpneglog <- function(scale1, shape1, scale2, shape2, dep) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvpneglog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1,
       spx$r2, spx$lambda, dep, scale1, shape1, scale2, shape2,
       dns = double(1), PACKAGE = "evd")$dns    
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "dep")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "dep")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "neglog", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "neglog", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u, censored = FALSE)
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  f <- formals(nllbvpneglog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE)
+  f <- formals(nllbvpneglog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
@@ -430,81 +479,75 @@ fbvpneglog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALS
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, FALSE, model = "neglog")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "neglog")
 }
 
-fbvpct <- function(x, u, start, ..., sym = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
-
-  nllbvpct.sym <- function(scale1, shape1, scale2, shape2, alpha) {
-    nllbvpct(scale1, shape1, scale2, shape2, alpha, alpha)
-  }
+fbvpct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvpct <- function(scale1, shape1, scale2, shape2, alpha, beta) {
+    if(sym) beta <- alpha
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvpct", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1, spx$r2,
       spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
       dns = double(1), PACKAGE = "evd")$dns
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "alpha")
-  if(!sym) param <- c(param, "beta")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  if(!sym) param <- c(param, "alpha", "beta")
+  else param <- c(param, "alpha")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "ct", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "ct", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u, censored = FALSE)
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  if(sym) f <- formals(nllbvpct.sym)
-  else f <- formals(nllbvpct)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE, !sym)
+  f <- formals(nllbvpct)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
     stop("`start' specifies unknown arguments") 
-  if(sym) {
-    formals(nllbvpct.sym) <- c(f[m], f[-m])
-    nll <- function(p, ...) nllbvpct.sym(p, ...)
-    if(l > 1) {
-      body(nll) <- parse(text = paste("nllbvpct.sym(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
-    }
-  } else {
-    formals(nllbvpct) <- c(f[m], f[-m])
-    nll <- function(p, ...) nllbvpct(p, ...)
-    if(l > 1) {
-      body(nll) <- parse(text = paste("nllbvpct(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
-    }
+  formals(nllbvpct) <- c(f[m], f[-m])
+  nll <- function(p, ...) nllbvpct(p, ...)
+  if(l > 1) {
+    body(nll) <- parse(text = paste("nllbvpct(", paste("p[", 1:l, "]", collapse=", "), ", ...)"))
   }
   start.arg <- c(list(p = unlist(start)), fixed.param)
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  if(sym) {
-    beta <- opt$par["alpha"]
-    names(beta) <- NULL
-    if(is.na(beta)) beta <- fixed.param[["alpha"]]
-    fixed.param <- c(fixed.param, list(beta = beta))
-  }
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym, model = "ct")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = sym, cmar = c(cscale, cshape), model = "ct")
 }
 
-fbvpbilog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvpbilog <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvpbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvpbilog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1,
       spx$r2, spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
       dns = double(1), PACKAGE = "evd")$dns    
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "alpha", "beta")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "alpha", "beta")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "bilog", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "bilog", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u, censored = FALSE) 
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  f <- formals(nllbvpbilog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE, TRUE)
+  f <- formals(nllbvpbilog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
@@ -519,27 +562,33 @@ fbvpbilog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, FALSE, model = "bilog")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "bilog")
 }
 
-fbvpnegbilog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
+fbvpnegbilog <- function(x, u, start, ..., cshape = cscale, cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
 
   nllbvpnegbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
+    if(cshape) shape2 <- shape1
+    if(cscale) scale2 <- scale1
     .C("nllbvpnegbilog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1,
       spx$r2, spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
       dns = double(1), PACKAGE = "evd")$dns 
   }
-  param <- c("scale1", "shape1", "scale2", "shape2", "alpha", "beta")
+  param <- c("scale1", "shape1")
+  if(!cscale) param <- c(param, "scale2")
+  if(!cshape) param <- c(param, "shape2")
+  param <- c(param, "alpha", "beta")
   nmdots <- names(list(...))
   start <- bvstart.vals(x, start, NULL, NULL, nmdots, param, NULL,
-    NULL, model = "negbilog", sym = sym, obj = "bvpot", u = u)
+    NULL, model = "negbilog", obj = "bvpot", u = u)
   spx <- sep.bvdata(x, obj = "bvpot", u = u, censored = FALSE) 
   nm <- names(start)
+  l <- length(nm)
   fixed.param <- list(...)[nmdots %in% param]
   if(any(!(param %in% c(nm,names(fixed.param)))))
     stop("unspecified parameters")
-  l <- length(nm)
-  f <- formals(nllbvpnegbilog)
+  prind <- c(TRUE, TRUE, !cscale, !cshape, TRUE, TRUE)
+  f <- formals(nllbvpnegbilog)[prind]
   names(f) <- param
   m <- match(nm, param)
   if(any(is.na(m))) 
@@ -554,13 +603,13 @@ fbvpnegbilog <- function(x, u, start, ..., std.err = TRUE, dsm = TRUE, corr = FA
   if(warn.inf && do.call("nll", start.arg) == 1e+06)
     warning("negative log-likelihood is infinite at starting values")
   opt <- optim(start, nll, hessian = std.err, ..., method = method)
-  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, FALSE, model = "negbilog")
+  bvtpost.optim(x, u, opt, nm, fixed.param, std.err, dsm, corr, spx$nat, sym = FALSE, cmar = c(cscale, cshape), model = "negbilog")
 }
 
 
 ###################### post-optimisation processing #####################
 
-bvtpost.optim <- function(x, u, opt, nm, fixed.param, std.err, dsm, corr, nat, sym, model) {
+bvtpost.optim <- function(x, u, opt, nm, fixed.param, std.err, dsm, corr, nat, sym, cmar, model) {
   if(opt$convergence != 0) {
     warning(paste("optimization for", model, "may not have succeeded"), call. = FALSE)
       if(opt$convergence == 1) 
@@ -586,7 +635,20 @@ bvtpost.optim <- function(x, u, opt, nm, fixed.param, std.err, dsm, corr, nat, s
     else corr <- NULL
   }
   else std.err <- corr <- NULL
-  param <- c(opt$par, unlist(fixed.param))
+  fixed <- unlist(fixed.param)
+  param <- c(opt$par, fixed)
+  fixed2 <- NULL
+  if(cmar[1]) fixed2 <- c(fixed2, param["scale1"])
+  if(cmar[2]) fixed2 <- c(fixed2, param["shape1"])
+  if(sym) {
+    if(model %in% c("alog","aneglog")) fixed2 <- c(fixed2, param["asy1"])
+    if(model == "ct") fixed2 <- c(fixed2, param["alpha"])
+  }
+  if(!is.null(fixed2)) {
+    names(fixed2) <- sub("1", "2", names(fixed2))
+    names(fixed2) <- sub("alpha", "beta", names(fixed2))
+  }
+  param <- c(param, fixed2)
   if(dsm) {
     dep.sum <- numeric(3)
     if(model %in% c("log", "hr", "neglog")) {
@@ -612,7 +674,7 @@ bvtpost.optim <- function(x, u, opt, nm, fixed.param, std.err, dsm, corr, nat, s
     }
   }
   else dep.sum <- NULL
-  list(estimate = opt$par, std.err = std.err, fixed = unlist(fixed.param), param = param, deviance = 2 * opt$value, dep.summary = dep.sum, corr = corr, convergence = opt$convergence, counts = opt$counts, message = opt$message, data = x, threshold = u, n = nrow(x), nat = nat, sym = sym, model = model)
+  list(estimate = opt$par, std.err = std.err, fixed = fixed, fixed2 = fixed2, param = param, deviance = 2 * opt$value, dep.summary = dep.sum, corr = corr, convergence = opt$convergence, counts = opt$counts, message = opt$message, data = x, threshold = u, n = nrow(x), nat = nat, sym = sym, cmar = cmar, model = model)
 }
 
 
@@ -663,3 +725,67 @@ bvtpost.optim <- function(x, u, opt, nm, fixed.param, std.err, dsm, corr, nat, s
 plot.bvpot <- function(x, ...) {
   stop("no plot method currently implemented for bivariate threshold models")
 }
+
+chiplot <- function(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, lty = 1, cilty = 2, col = 1, cicol = 1, xlim = c(0,1), ylim1 = NULL, ylim2 = c(-1,1), main1 = "Chi Plot", main2 = "Chi Bar Plot", xlab = "Quantile", ylab1 = "Chi", ylab2 = "Chi Bar", ask = nb.fig < length(which) && dev.interactive(), ...)
+{
+    data <- na.omit(data)
+    n <- nrow(data)
+    data <- cbind(rank(data[, 1])/(n + 1), rank(data[, 2])/(n + 1))
+    rowmax <- apply(data, 1, max)
+    rowmin <- apply(data, 1, min)
+    eps <- .Machine$double.eps^0.5
+    qlim2 <- c(min(rowmax) + eps, max(rowmin) - eps)
+    if(!is.null(qlim)) {
+      if(qlim[1] < qlim2[1]) stop("lower quantile limit is too low")
+      if(qlim[2] > qlim2[2]) stop("upper quantile limit is too high")
+      if(qlim[1] > qlim[2]) stop("lower quantile limit is less than upper quantile limit")
+    } else qlim <- qlim2
+    u <- seq(qlim[1], qlim[2], length = nq)
+
+    cu <- cbaru <- numeric(nq)
+    for(i in 1:nq) cu[i] <- mean(rowmax < u[i])
+    for(i in 1:nq) cbaru[i] <- mean(rowmin > u[i])
+    chiu <- 2 - log(cu)/log(u)
+    chibaru <- (2 * log(1 - u))/log(cbaru) - 1
+    cnst <- qnorm((1 + conf)/2)
+    varchi <- ((1/log(u)^2 * 1)/cu^2 * cu * (1 - cu))/n
+    varchi <- cnst * sqrt(varchi)
+    varchibar <- (((4 * log(1 - u)^2)/(log(cbaru)^4 * cbaru^2)) * cbaru * (
+		1 - cbaru))/n
+    varchibar <- cnst * sqrt(varchibar)
+
+    chiu <- cbind(chilow = chiu-varchi, chi = chiu, chiupp = chiu+varchi) 
+    chibaru <- cbind(chiblow = chibaru-varchibar, chib = chibaru, chibupp =
+      chibaru+varchibar)
+
+    show <- logical(2)
+    show[which] <- TRUE
+    lty <- c(cilty, lty, cilty)
+    col <- c(cicol, col, cicol)
+    nb.fig <- prod(par("mfcol"))
+    if (ask) {
+      op <- par(ask = TRUE)
+      on.exit(par(op))
+    }
+    tmp <- rep(-Inf, nq)
+    tmp[u > 0.5] <- 2 - log(2*u[u > 0.5] - 1)/log(u[u > 0.5])
+    chiu <- pmin(pmax(chiu, tmp), 1)
+    chibaru <- pmin(pmax(chibaru, -1), 1)
+    if(is.null(ylim1)) ylim1 <- c(min(c(chiu, 0)), 1)
+    if(show[1]) {
+      matplot(u, chiu, type = "l", lty = lty, col = col, xlim = xlim, ylim = ylim1,
+              main = main1, xlab = xlab, ylab = ylab1, ...)
+    }
+
+    if(show[2]) {
+      matplot(u, chibaru, type = "l", lty = lty, col = col, xlim = xlim, ylim = ylim2,
+              main = main2, xlab = xlab, ylab = ylab2, ...)
+    }
+
+    plvals <- list(quantile = u, chi = chiu, chibar = chibaru)
+    if(!show[1]) plvals$chi <- NULL
+    if(!show[2]) plvals$chib <- NULL
+    invisible(plvals)    
+}
+
+
