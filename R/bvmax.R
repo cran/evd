@@ -181,7 +181,7 @@ function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
         asy <- c(0,0)
         dep <- 1
     }
-    asy <- as.double(asy)
+    asy <- as.double(asy[c(2,1)])
   }
   if(!(model %in% m3)) {
     if(length(alpha) != 1 || mode(alpha) != "numeric" || alpha <= 0)
@@ -190,8 +190,8 @@ function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
         stop("invalid argument for `beta'")
     if(model == "bilog" && any(c(alpha,beta) >= 1))
         stop("`alpha' and `beta' must be in the open interval (0,1)")
-    alpha <- as.double(alpha)
-    beta <- as.double(beta)
+    alpha <- as.double(beta)
+    beta <- as.double(alpha)
   } 
     
   evmc <- runif(n)

@@ -476,7 +476,7 @@ mvalog.check <- function(asy, dep, d, ss = FALSE)
     if(mode(dep) != "numeric" || any(dep <= 0) || any(dep > 1))
       stop("invalid argument for `dep'")
     nb <- 2^d-1
-    if(asy != "equal" && (mode(asy) != "list" || length(asy) != nb))
+    if(mode(asy) != "list" || length(asy) != nb)
       stop(paste("`asy' should be a list of length", nb))
 
     subsets <- function(d) {
@@ -488,18 +488,13 @@ mvalog.check <- function(asy, dep, d, ss = FALSE)
         pset[sort.list(unlist(lapply(pset,length)))[-1]] 
     }
     tasy <- function(theta, b) {
-        trans <- matrix(0,nrow=nb,ncol=d)
-        for(i in 1:nb) {
-            if(theta == "equal")
-                trans[i,(1:d %in% b[[i]])] <- 1/2^(d-1)
-            else
-            trans[i,(1:d %in% b[[i]])] <- theta[[i]]
-        }
+        trans <- matrix(0, nrow=nb, ncol=d)
+        for(i in 1:nb) trans[i,(1:d %in% b[[i]])] <- theta[[i]]
         trans
     }
     
     b <- subsets(d)
-    if(asy != "equal" && any(sapply(asy, length) != sapply(b, length)))
+    if(any(sapply(asy, length) != sapply(b, length)))
       stop("`asy' is not of the correct form")
     asy <- tasy(asy, b)
     if(!is.matrix(asy) || mode(asy) != "numeric")
