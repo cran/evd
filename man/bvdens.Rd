@@ -7,8 +7,8 @@
   \code{\link{contour}}.
 }
 \usage{
-bvdens(x, jitter = FALSE, nlevels = 10, levels, main = "Density Plot",
-    xlab = "", ylab = "", \dots)
+bvdens(x, jitter = FALSE, main = "Density Plot", xlab = "",
+    ylab = "", \dots)
 }
 \arguments{
   \item{x}{An object of class \code{"bvevd"}.}
@@ -16,10 +16,9 @@ bvdens(x, jitter = FALSE, nlevels = 10, levels, main = "Density Plot",
     are jittered. See \code{\link{jitter}}.
     This need only be used if the data contains repeated
     values.}
-  \item{nlevels,levels}{Arguments passed to \code{\link{contour}}.}
   \item{main}{Title of plot.}
   \item{xlab,ylab}{Labels for x and y axes.}
-  \item{\dots}{Other parameters to be passed to \code{contour}.}
+  \item{\dots}{Arguments passed to \code{\link{contour}}.}
 }
 
 \details{

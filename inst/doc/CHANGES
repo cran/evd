@@ -1,3 +1,16 @@
+CHANGES FROM VERSION 1.2-2 ARE AS FOLLOWS
+
+  Two more datasets - venice and porotpirie, intended for use
+  in the evdbayes package.
+
+  Fixed minor problem with extraction functions for bvall objects
+  when only one model is fitted.
+
+  Contours for bivariate density plots are now chosen by 
+  the contour function.
+
+  Error messages in internal functions are more informative.
+
 CHANGES FROM VERSION 1.2-1 ARE AS FOLLOWS
 
   New methods hall and tdo for calculating non-parametric 
