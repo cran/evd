@@ -121,7 +121,7 @@ double maximum_n(int n, double *x)
 }
 
 /* produces uniform margins */
-void rbvhr(double *n, double *dep, double *sim)
+void rbvhr(int *n, double *dep, double *sim)
 {
   double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
   int i,j;
@@ -158,7 +158,7 @@ void rbvhr(double *n, double *dep, double *sim)
 }
 
 /* produces uniform margins */
-void rbvneglog(double *n, double *dep, double *sim)
+void rbvneglog(int *n, double *dep, double *sim)
 {
   double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
   int i,j;
@@ -195,7 +195,7 @@ void rbvneglog(double *n, double *dep, double *sim)
 }
 
 /* produces uniform margins */
-void rbvaneglog(double *n, double *dep, double *asy, double *sim)
+void rbvaneglog(int *n, double *dep, double *asy, double *sim)
 {
   double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
   int i,j;
@@ -232,7 +232,7 @@ void rbvaneglog(double *n, double *dep, double *asy, double *sim)
 }
 
 /* produces uniform margins */
-void rbvbilog(double *n, double *alpha, double *beta, double *sim)
+void rbvbilog(int *n, double *alpha, double *beta, double *sim)
 {
   double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
   int i,j;
@@ -269,7 +269,7 @@ void rbvbilog(double *n, double *alpha, double *beta, double *sim)
 }
 
 /* produces uniform margins */
-void rbvnegbilog(double *n, double *alpha, double *beta, double *sim)
+void rbvnegbilog(int *n, double *alpha, double *beta, double *sim)
 {
   double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
   int i,j;
@@ -306,7 +306,7 @@ void rbvnegbilog(double *n, double *alpha, double *beta, double *sim)
 }
 
 /* produces uniform margins */
-void rbvct(double *n, double *alpha, double *beta, double *sim)
+void rbvct(int *n, double *alpha, double *beta, double *sim)
 {
   double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
   int i,j;

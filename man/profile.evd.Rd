@@ -9,8 +9,8 @@
 \usage{
 \method{profile}{evd}(fitted, which = names(fitted$estimate), conf = 0.999,
     mesh = fitted$std.err[which]/2, xmin = rep(-Inf, length(which)),
-    xmax = rep(Inf, length(which)), convergence = FALSE,
-    control = list(maxit = 5000), \dots)
+    xmax = rep(Inf, length(which)), convergence = FALSE, method = "BFGS",
+    control = list(maxit = 500), \dots)
 }
 \arguments{
   \item{fitted}{The original fitted model object.}
@@ -40,6 +40,7 @@
     the call to \code{plot}.}
   \item{convergence}{Logical; print convergence code after each
     optimization?}
+  \item{method}{The optimization method.}
   \item{control}{Passed to \code{optim}. See \code{\link{optim}} for
     details.}
   \item{\dots}{Ignored.}
