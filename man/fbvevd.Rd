@@ -11,14 +11,14 @@
 }
 \synopsis{
 fbvevd(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog",
-    "negbilog", "ct"), start, \dots, nsloc1 = NULL, nsloc2 = NULL,
-    std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS",
-    warn.inf = TRUE)
+    "negbilog", "ct"), start, \dots, sym = FALSE, nsloc1 = NULL,
+    nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method =
+    "BFGS", warn.inf = TRUE)
 }
 \usage{
-fbvevd(x, model = "log", start, \dots, nsloc1 = NULL, nsloc2 = NULL,
-    std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS",
-    warn.inf = TRUE)
+fbvevd(x, model = "log", start, \dots, sym = FALSE, nsloc1 = NULL,
+    nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method =
+    "BFGS", warn.inf = TRUE)
 }
 \arguments{
   \item{x}{A matrix or data frame with two columns, which may contain
@@ -39,6 +39,10 @@ fbvevd(x, model = "log", start, \dots, nsloc1 = NULL, nsloc2 = NULL,
     value model or for the optimization function \code{optim}. If
     parameters of the model are included they will be held fixed at
     the values given (see \bold{Examples}).}
+  \item{sym}{Logical; if \code{TRUE}, the dependence structure
+    of the models \code{"alog"}, \code{"aneglog"} or \code{"ct"} are
+    constrained to be symmetric (see \bold{Details}). For all other
+    models, the argument is ignored (and a warning is given).}
   \item{nsloc1, nsloc2}{A data frame with the same number of rows as
     \code{x}, for linear modelling of the location parameter on the
     first/second margin (see \bold{Details}).
@@ -81,6 +85,20 @@ fbvevd(x, model = "log", start, \dots, nsloc1 = NULL, nsloc2 = NULL,
   are centered and scaled), particularly if automatic starting values
   are used, since the starting values for the associated parameters are
   then zero.
+
+  If \code{sym} is \code{TRUE}, the asymmetric logistic and
+  asymmetric negative logistic models are constrained so that
+  \code{asy2 = asy1}, and the Coles-Tawn model is constrained
+  so that \code{beta = alpha}. The parameter \code{asy2} or
+  \code{beta} is then omitted from the parameter set. 
+  (Bilogistic and negative bilogistic models constrained to
+  symmetry are logistic and negative logistic models
+  respectively.) The mixed model (e.g. Tawn, 1998)
+  is obtained by the asymmetric negative logistic model upon
+  setting the dependence parameter to be one, and constraining
+  the asymmetry parameters to be equal to each other. It can
+  therefore be fitted using \code{model = "anegl"} with
+  \code{dep = 1} and \code{sym = TRUE} (see \bold{Examples}). 
 
   If \code{dsm} is \code{TRUE}, three values are returned which
   summarize the dependence structure, based on the fitted
@@ -139,6 +157,7 @@ fbvevd(x, model = "log", start, \dots, nsloc1 = NULL, nsloc2 = NULL,
     models).}
   \item{nsloc1, nsloc2}{The arguments \code{nsloc1} and \code{nsloc2}.}
   \item{n}{The number of rows in \code{x}.}
+  \item{sym}{The argument \code{sym}.}
   \item{model}{The argument \code{model}.}
 }
 \section{Warning}{
@@ -154,6 +173,10 @@ fbvevd(x, model = "log", start, \dots, nsloc1 = NULL, nsloc2 = NULL,
   Smith, R. L. (1985)
   Maximum likelihood estimation in a class of non-regular cases.
   \emph{Biometrika}, \bold{72}, 67--90.
+
+  Tawn, J. A. (1988)
+  Bivariate extreme value theory: models and estimation.
+  \emph{Biometrika}, \bold{75}, 397--415.
 }
 
 \seealso{\code{\link{anova.evd}}, \code{\link{optim}},
@@ -180,6 +203,11 @@ fbvevd(bvdata, model = "log", nsloc1 = trend, nsloc2 = data.frame(trend
 = trend,  random = rnd))
 fbvevd(bvdata, model = "log", nsloc1 = trend, nsloc2 = data.frame(trend
 = trend, random = rnd), loc2random = 0)
+
+bvdata <- rbvevd(100, dep = 1, asy = c(0.5,0.5), model = "anegl")
+anlog <- fbvevd(bvdata, model = "anegl")
+mixed <- fbvevd(bvdata, model = "anegl", dep = 1, sym = TRUE)
+anova(anlog, mixed)
 }
 
 \keyword{models}

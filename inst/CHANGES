@@ -1,3 +1,14 @@
+CHANGES FROM VERSION 2.1-0 ARE AS FOLLOWS
+
+  New function fbvpot for fitting bivariate threshold
+  models. A plot method for these models will be 
+  implemented at a later date.
+
+  New argument sym in function fbvevd, to allow the
+  fitting of dependence structures under a symmetry
+  constraint. The argument also exists in the new
+  function fbvpot. 
+
 CHANGES FROM VERSION 2.0-1 ARE AS FOLLOWS
 
   Univariate threshold models are now implemented. The main

@@ -14,7 +14,9 @@ fpot(x, threshold, model = c("gpd", "pp"), start, npp = length(x),
     std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 }
 \arguments{
-  \item{x}{A numeric vector, which may contain missing values.}
+  \item{x}{A numeric vector. If this contains missing values,
+    those values are treated as if they fell below the
+    threshold.}
   \item{threshold}{The threshold.}
   \item{model}{The model; either \code{"gpd"} (the default) or
     \code{"pp"}, for the Generalized Pareto or Point Process

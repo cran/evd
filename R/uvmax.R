@@ -949,10 +949,26 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
             call.args$mper <- fitted$mper
         }
         if(inherits(fitted, "bvevd")) {
+            call.args$model <- fitted$model
             call.args$nsloc1 <- fitted$nsloc1
             call.args$nsloc2 <- fitted$nsloc2
-            call.args$model <- fitted$model
+            call.args$sym <- fitted$sym
+            if(fitted$sym) {
+              call.args$asy2 <- NULL
+              call.args$beta <- NULL
+            }
             call.args$dsm <- FALSE
+        }
+        if(inherits(fitted, "bvpot")) {
+            call.args$threshold <- fitted$threshold
+            call.args$likelihood <- fitted$likelihood
+            call.args$model <- fitted$model
+            call.args$sym <- fitted$sym
+            if(fitted$sym) {
+              call.args$asy2 <- NULL
+              call.args$beta <- NULL
+            }
+            call.args$dsm <- FALSE          
         }
         lcnt <- TRUE; ppar <- mles[j]
         while(lcnt) {
@@ -1095,11 +1111,37 @@ profile2d <- function (fitted, ...) {
         call.args$nsloc <- fitted$nsloc
         call.args$prob <- fitted$prob
     }
+    #if(inherits(fitted, "pot")) {
+    #    call.args$threshold <- fitted$threshold
+    #    call.args$npp <- fitted$npp
+    #    call.args$period <- fitted$period
+    #    call.args$cmax <- fitted$cmax
+    #    call.args$r <- fitted$r
+    #    call.args$ulow <- fitted$ulow
+    #    call.args$rlow <- fitted$rlow
+    #    call.args$mper <- fitted$mper
+    #}
     if(inherits(fitted, "bvevd")) {
         call.args$nsloc1 <- fitted$nsloc1
         call.args$nsloc2 <- fitted$nsloc2
         call.args$model <- fitted$model
+        call.args$sym <- fitted$sym
+        if(fitted$sym) {
+          call.args$asy2 <- NULL
+          call.args$beta <- NULL
+        }
         call.args$dsm <- FALSE
+    }
+    if(inherits(fitted, "bvpot")) {
+        call.args$threshold <- fitted$threshold
+        call.args$likelihood <- fitted$likelihood
+        call.args$model <- fitted$model
+        call.args$sym <- fitted$sym
+        if(fitted$sym) {
+          call.args$asy2 <- NULL
+          call.args$beta <- NULL
+        }
+        call.args$dsm <- FALSE          
     }
     for(i in 1:pts^2) {
         call.args[[which[1]]] <- pars[i,1]
