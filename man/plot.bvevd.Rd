@@ -13,8 +13,8 @@
 \method{plot}{bvevd}(x, mar = 0, which = 1:4, main = c("Conditional Plot One", 
     "Conditional Plot Two", "Density Plot", "Dependence Function"), 
     ask = nb.fig < length(which) && dev.interactive(), ci = TRUE, 
-    nlevels = 10, levels, jitter = FALSE, nplty = 2, method = "cfg", 
-    modify = 0, wf = function(t) t, \dots)
+    jitter = FALSE, nplty = 2, method = "cfg", modify = 0,
+    wf = function(t) t, \dots)
 }
 \arguments{
   \item{x}{An object of class \code{"bvevd"}.}
@@ -29,11 +29,11 @@
     each plot.}
   \item{ci}{Logical; if \code{TRUE} (the default), plot simulated
     95\% confidence intervals for the conditional P-P plots.}
-  \item{nlevels,levels,jitter}{Arguments to the density plot.
-    See \code{\link{bvdens}} for details.}
+  \item{jitter}{Argument for the density plot. See
+    \code{\link{bvdens}} for details.}
   \item{nplty,method,modify,wf}{Arguments to the dependence function
     plot. See \code{\link{bvdp}} for details.}
-  \item{\dots}{Other parameters to be passed through to plotting
+  \item{\dots}{Other arguments to be passed through to plotting
     functions.}
 }
 \details{

@@ -1727,11 +1727,22 @@ function(x, ..., nsloc1 = NULL, nsloc2 = NULL, which = NULL, boxcon = TRUE, std.
 }
 
 "fitted.bvall" <- function (object, which = names(object$deviance), ...)
-    object$estimate[,which]
+{
+    if(length(object$deviance) == 1) object$estimate
+    else object$estimate[,which]
+}
+
 "deviance.bvall" <- function (object, which = names(object$deviance), ...)
-    object$deviance[which]
+{
+    if(length(object$deviance) == 1) object$deviance
+    else object$deviance[which]
+}
+
 "std.errors.bvall" <- function (object, which = names(object$deviance), ...)
-    object$std.err[,which]
+{
+    if(length(object$deviance) == 1) object$std.err
+    else object$std.err[,which]
+}
 
 "print.bvall" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
 {
@@ -1761,8 +1772,8 @@ function(x, ..., nsloc1 = NULL, nsloc2 = NULL, which = NULL, boxcon = TRUE, std.
      c("Conditional Plot One", "Conditional Plot Two", "Density Plot",
        "Dependence Function"),
      ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
-     nlevels = 10, levels, jitter = FALSE, nplty = 2, method = "cfg",
-     modify = 0, wf = function(t) t, ...) 
+     jitter = FALSE, nplty = 2, method = "cfg", modify = 0,
+     wf = function(t) t, ...) 
 {
     if (!inherits(x, "bvevd")) 
         stop("Use only with `bvevd' objects")
@@ -1799,10 +1810,7 @@ function(x, ..., nsloc1 = NULL, nsloc2 = NULL, which = NULL, boxcon = TRUE, std.
               ylim = c(0,1), ...)
     }
     if (show[3]) {
-        if(missing(levels))
-          bvdens(x, jitter = jitter, nlevels = nlevels, main = main[3], ...)
-        else
-          bvdens(x, jitter = jitter, levels = levels, main = main[3], ...)
+        bvdens(x, jitter = jitter, main = main[3], ...)
     }
     if (show[4]) {
         bvdp(x, nplty = nplty, method = method, wf = wf, main = main[4], ...)
@@ -1867,7 +1875,7 @@ function(x, ..., nsloc1 = NULL, nsloc2 = NULL, which = NULL, boxcon = TRUE, std.
             ccop = double(n), PACKAGE = "evd")$ccop
 }
 
-"bvdens" <-  function(x, jitter = FALSE, nlevels = 10, levels, main = "Density Plot", xlab = "", ylab = "", ...)
+"bvdens" <-  function(x, jitter = FALSE, main = "Density Plot", xlab = "", ylab = "", ...)
 {
     if(x$model %in% c("ext","order","gev","gev.quantile"))
         stop("bivariate density plots not implemented for this model")
@@ -1893,12 +1901,8 @@ function(x, ..., nsloc1 = NULL, nsloc2 = NULL, which = NULL, boxcon = TRUE, std.
             mar1 = mar1, mar2 = mar2)
     dfunargs <- c(list(x = xyvals), dfunargs)
     dens <- do.call(dfun, dfunargs)
-    max.dens <- max(dens)
-    if(missing(levels))
-        levels <- round(max.dens - log(seq(exp(max.dens),1,length=nlevels)),2)
     dens <- matrix(dens, nrow = 50, ncol = 50)
-    contour(xvec, yvec, dens, levels = levels, main = main, xlab = xlab,
-            ylab = ylab, ...)
+    contour(xvec, yvec, dens, main = main, xlab = xlab, ylab = ylab, ...)
     data <- na.omit(x$tdata)
     if(jitter) {
         data[,1] <- jitter(data[,1])
@@ -2035,7 +2039,7 @@ function(x)
 function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr, call, model)
 {
     if (opt$convergence != 0) {
-        warning("optimization may not have succeeded")
+        warning(paste("optimization for", model, "may not have succeeded"))
         if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
     }
     else opt$convergence <- "successful"
@@ -2043,11 +2047,13 @@ function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr, call, model)
         tol <- .Machine$double.eps^0.5
         var.cov <- qr(opt$hessian, tol = tol)
         if(var.cov$rank != ncol(var.cov$qr)) 
-            stop("observed information matrix is singular; use std.err = FALSE")
+            stop(paste("observed information matrix for", model,
+                       "is singular; use std.err = FALSE"))
         var.cov <- solve(var.cov, tol = tol)
         std.err <- diag(var.cov)
         if(any(std.err <= 0))
-            stop("observed information matrix is singular; use std.err = FALSE")
+            stop(paste("observed information matrix for", model,
+                       "is singular; use std.err = FALSE"))
         std.err <- sqrt(std.err)
         names(std.err) <- nm
         if(corr) {
@@ -2079,3 +2085,9 @@ function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr, call, model)
     nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), model = model),
     class = c("bvevd","evd"))
 }
+
+
+
+
+
+

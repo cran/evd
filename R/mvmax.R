@@ -20,7 +20,7 @@ function(n, dep, asy, d = 2, mar = c(0,1,0))
     dep <- rep(dep, length.out = nb-d)
     if(any(dep <= 0) || any(dep > 1))
         stop("invalid argument for `dep'")
-    # Poor Interface
+    
     subsets <- function(d) {
         x <- 1:d
         k <- NULL
@@ -76,7 +76,7 @@ function(q, dep, asy, d = 2, mar = c(0,1,0))
     dep <- rep(dep, length.out = nb-d)
     if(any(dep <= 0) || any(dep > 1))
         stop("invalid argument for `dep'")
-    # Poor Interface
+    
     subsets <- function(d) {
         x <- 1:d
         k <- NULL
