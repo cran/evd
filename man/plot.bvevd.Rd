@@ -13,8 +13,8 @@
 \method{plot}{bvevd}(x, mar = 0, which = 1:4, main = c("Conditional Plot One", 
     "Conditional Plot Two", "Density Plot", "Dependence Function"), 
     ask = nb.fig < length(which) && dev.interactive(), ci = TRUE, 
-    jitter = FALSE, grid = 50, nplty = 2, blty = 3, method = "cfg",
-    convex = FALSE, wf = function(t) t, \dots)
+    jitter = FALSE, grid = 50, legend = TRUE, nplty = 2, blty = 3,
+    method = "cfg", convex = FALSE, wf = function(t) t, \dots)
 }
 \arguments{
   \item{x}{An object of class \code{"bvevd"}.}
@@ -30,12 +30,14 @@
     each plot.}
   \item{ci}{Logical; if \code{TRUE} (the default), plot simulated
     95\% confidence intervals for the conditional P-P plots.}
-  \item{jitter, grid}{Arguments for the density plot. The (possibly
-    transformed) data is plotted with a contour plot of the
+  \item{jitter, grid, legend}{Arguments for the density plot. The
+    (possibly transformed) data is plotted with a contour plot of the
     bivariate density of the fitted model. The density is evaluated
     at \code{grid^2} points. If \code{jitter} is \code{TRUE}, the
     data are jittered. This need only be used if the data contains
-    repeated values.}
+    repeated values. If \code{legend} is \code{TRUE} and if the
+    fitted data contained a third column of mode \code{logical},
+    then a legend is included.}
   \item{nplty, blty, method, convex, wf}{Arguments to the dependence
     function plot. The dependence function for the fitted model is
     plotted and (optionally) compared to a non-parameteric estimate.

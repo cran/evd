@@ -27,9 +27,9 @@ void nlgev(double *data, int *n, double *loc, double *scale, double *shape,
     *dns = *dns - dvec[i];
 }
 
-void nlbvlog(double *datam1, double *datam2, int *n, double *dep, 
+void nlbvlog(double *datam1, double *datam2, int *n, int *si, double *dep, 
              double *loc1, double *scale1, double *shape1, double *loc2, 
-             double *scale2, double *shape2,  double *dns)
+             double *scale2, double *shape2, int *split, double *dns)
 {
   int i;
   double idep, *dvec, *z;
@@ -67,17 +67,24 @@ void nlbvlog(double *datam1, double *datam2, int *n, double *dep,
     z[i] = R_pow(exp(idep * datam1[i]) + exp(idep * datam2[i]), *dep);
     dvec[i] = (idep + *shape1) * datam1[i] + (idep + *shape2) *
       datam2[i] - log(*scale1 * *scale2);
-    dvec[i] = dvec[i] + (1-2*idep)*log(z[i]) + log(idep-1+z[i]) - z[i];
+    dvec[i] = dvec[i] + (1-2*idep)*log(z[i]) - z[i];
+    if(si[i] == 0) dvec[i] = dvec[i] + log(z[i]);
+    else if(si[i] == 1) dvec[i] = dvec[i] + log(idep-1);
+    else dvec[i] = dvec[i] + log(idep-1+z[i]);
   }
-
-  for(i=0;i<*n;i++) 
-    *dns = *dns - dvec[i];
+  
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
 }
 
-void nlbvalog(double *datam1, double *datam2, int *n, double *dep,
+void nlbvalog(double *datam1, double *datam2, int *n, int *si, double *dep,
 	      double *asy1, double *asy2, double *loc1, double *scale1, 
               double *shape1, double *loc2, double *scale2, double *shape2, 
-              double *dns)
+              int *split, double *dns)
 {
   int i;
   double idep,c1,c2,c3,c4;
@@ -133,16 +140,34 @@ void nlbvalog(double *datam1, double *datam2, int *n, double *dep,
     e2[i] = c4 + (idep - 1) * datam1[i];
     e3[i] = (1 - idep) * log(z[i]) + log(exp(e1[i]) + exp(e2[i]));
     e4[i] = c2 + (idep - 1) * datam1[i] + (idep - 1) * datam2[i] +
-      (1 - 2*idep) * log(z[i]) + log(idep-1+z[i]);
-    dvec[i] = log(exp(c1) + exp(e3[i]) + exp(e4[i])) - v[i] + jc[i];
+      (1 - 2*idep) * log(z[i]);
+    
+    dvec[i] =  jc[i] - v[i];
+    if(si[i] == 0) {
+      e4[i] = e4[i] + log(z[i]);
+      dvec[i] = dvec[i] + log(exp(c1) + exp(e3[i]) + exp(e4[i]));
+    }
+    else if(si[i] == 1) {
+      e4[i] = e4[i] + log(idep-1);
+      dvec[i] = dvec[i] + e4[i];
+    }
+    else {
+      e4[i] = e4[i] + log(idep-1+z[i]);
+      dvec[i] = dvec[i] + log(exp(c1) + exp(e3[i]) + exp(e4[i]));
+    }
   }
-  for(i=0;i<*n;i++) 
-    *dns = *dns - dvec[i];
+  
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
 }
 
-void nlbvhr(double *datam1, double *datam2, int *n, double *dep, 
+void nlbvhr(double *datam1, double *datam2, int *n, int *si, double *dep, 
             double *loc1, double *scale1, double *shape1, double *loc2, 
-            double *scale2, double *shape2,  double *dns)
+            double *scale2, double *shape2, int *split, double *dns)
 {
   int i;
   double idep;
@@ -189,19 +214,25 @@ void nlbvhr(double *datam1, double *datam2, int *n, double *dep,
     e3[i] = exp(datam1[i]) * 
       dnorm(idep + *dep * (datam1[i] - datam2[i]) / 2, 0, 1, 0);
     v[i] = e1[i] + e2[i];
-    dvec[i] = e1[i] * e2[i] + *dep * e3[i] / 2;
+    if(si[i] == 0) dvec[i] = e1[i] * e2[i];
+    else if(si[i] == 1) dvec[i] = *dep * e3[i] / 2;
+    else dvec[i] = e1[i] * e2[i] + *dep * e3[i] / 2;
     jc[i] = *shape1 * datam1[i] + *shape2 * datam2[i] -
       log(*scale1 * *scale2);
     dvec[i] = log(dvec[i]) + jc[i] - v[i];
   }
 
-  for(i=0;i<*n;i++) 
-    *dns = *dns - dvec[i];
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
 }
 
-void nlbvneglog(double *datam1, double *datam2, int *n, double *dep, 
+void nlbvneglog(double *datam1, double *datam2, int *n, int *si, double *dep, 
                 double *loc1, double *scale1, double *shape1, double *loc2, 
-                double *scale2, double *shape2,  double *dns)
+                double *scale2, double *shape2, int *split, double *dns)
 {
   int i;
   double idep;
@@ -248,26 +279,35 @@ void nlbvneglog(double *datam1, double *datam2, int *n, double *dep,
     e1[i] = (1 + *dep) * log(z[i]) +
       log(exp((-*dep-1) * datam1[i]) + exp((-*dep-1) * datam2[i]));
     e2[i] = (-*dep-1) * datam1[i] + (-*dep-1) * datam2[i] +
-      (1 + 2 * *dep) * log(z[i]) + log(1 + *dep + z[i]);
-    /*if(*dep > 0.95 && i == 9) {
-      Rprintf("%f ",datam1[9]);
-      Rprintf("%f ",datam2[9]);
-      Rprintf("%f ",z[9]);
-      Rprintf("%f ",e1[9]);
-      Rprintf("%f ",e2[9]);
-      Rprintf("\n");
-      }*/
-    dvec[i] = log(1 - exp(e1[i]) + exp(e2[i])) - v[i] + jc[i];
-  }
+      (1 + 2 * *dep) * log(z[i]);
 
-  for(i=0;i<*n;i++) 
-    *dns = *dns - dvec[i];
+    dvec[i] =  jc[i] - v[i];
+    if(si[i] == 0) {
+      e2[i] = e2[i] + log(z[i]);
+      dvec[i] = dvec[i] + log(1 - exp(e1[i]) + exp(e2[i]));
+    }
+    else if(si[i] == 1) {
+      e2[i] = e2[i] + log(1 + *dep);
+      dvec[i] = dvec[i] + e2[i];
+    }
+    else {
+      e2[i] = e2[i] + log(1 + *dep + z[i]);
+      dvec[i] = dvec[i] + log(1 - exp(e1[i]) + exp(e2[i]));
+    }
+  }
+ 
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
 }
 
-void nlbvaneglog(double *datam1, double *datam2, int *n, double *dep,
+void nlbvaneglog(double *datam1, double *datam2, int *n, int *si, double *dep,
 	         double *asy1, double *asy2, double *loc1, double *scale1, 
                  double *shape1, double *loc2, double *scale2, double *shape2, 
-                 double *dns)
+                 int *split, double *dns)
 {
   int i;
   double idep;
@@ -316,17 +356,35 @@ void nlbvaneglog(double *datam1, double *datam2, int *n, double *dep,
     e1[i] = -*dep * log(*asy1) + (-*dep - 1) * datam1[i];
     e2[i] = -*dep * log(*asy2) + (-*dep - 1) * datam2[i];
     e3[i] = (1 + *dep) * log(z[i]) + log(exp(e1[i]) + exp(e2[i]));
-    e4[i] = e1[i] + e2[i] + (1 + 2 * *dep) * log(z[i]) + log(1 + *dep + z[i]);
-    dvec[i] = log(1 - exp(e3[i]) + exp(e4[i])) - v[i] + jc[i];
+    e4[i] = e1[i] + e2[i] + (1 + 2 * *dep) * log(z[i]);
+
+    dvec[i] =  jc[i] - v[i];
+    if(si[i] == 0) {
+      e4[i] = e4[i] + log(z[i]);
+      dvec[i] = dvec[i] + log(1 - exp(e3[i]) + exp(e4[i]));
+    }
+    else if(si[i] == 1) {
+      e4[i] = e4[i] + log(1 + *dep);
+      dvec[i] = dvec[i] + e4[i];
+    }
+    else {
+      e4[i] = e4[i] + log(1 + *dep + z[i]);
+      dvec[i] = dvec[i] + log(1 - exp(e3[i]) + exp(e4[i]));
+    }
   }
 
-  for(i=0;i<*n;i++) 
-    *dns = *dns - dvec[i];
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
 }
 
-void nlbvbilog(double *datam1, double *datam2, int *n, double *alpha,
+void nlbvbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
 	      double *beta, double *loc1, double *scale1, double *shape1, 
-              double *loc2, double *scale2, double *shape2, double *dns)
+              double *loc2, double *scale2, double *shape2, int *split, 
+              double *dns)
 {
   int i,j;
   double *e1,*e2,*v,*jc,*dvec,*gma;
@@ -403,15 +461,24 @@ void nlbvbilog(double *datam1, double *datam2, int *n, double *alpha,
             datam1[i]) + 
             exp(log(1 - *beta) + log(*alpha) + (*alpha - 1) * log(gma[i]) +
             datam2[i]);
-    dvec[i] = log(e1[i] + (1 - *alpha) * (1 - *beta) / e2[i]) - v[i] + jc[i];
+    if(si[i] == 0) dvec[i] = log(e1[i]) - v[i] + jc[i];
+    else if(si[i] == 1) 
+      dvec[i] = log((1 - *alpha) * (1 - *beta)/e2[i]) - v[i] + jc[i];
+    else dvec[i] = log(e1[i] + (1 - *alpha) * (1 - *beta) / e2[i]) - v[i] + jc[i];
   }
-  for(i=0;i<*n;i++) 
-    *dns = *dns - dvec[i];
+
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
 }
 
-void nlbvnegbilog(double *datam1, double *datam2, int *n, double *alpha,
+void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
 	         double *beta, double *loc1, double *scale1, double *shape1, 
-                 double *loc2, double *scale2, double *shape2, double *dns)
+                 double *loc2, double *scale2, double *shape2, int *split, 
+                 double *dns)
 {
   int i,j;
   double *e1,*e2,*e3,*v,*jc,*dvec,*gma;
@@ -493,15 +560,24 @@ void nlbvnegbilog(double *datam1, double *datam2, int *n, double *alpha,
             datam1[i]) + 
             exp(log(1 + *beta) + log(*beta) + (*beta - 1) * log(1-gma[i]) +
             datam2[i]);
-    dvec[i] = log(e1[i] + e2[i] / e3[i]) - v[i] + jc[i];
+    if(si[i] == 0) dvec[i] = log(e1[i]) - v[i] + jc[i];
+    else if(si[i] == 1) 
+      dvec[i] = dvec[i] = log(e2[i] / e3[i]) - v[i] + jc[i];
+    else dvec[i] = log(e1[i] + e2[i] / e3[i]) - v[i] + jc[i];
   }
-  for(i=0;i<*n;i++) 
-    *dns = *dns - dvec[i];
+  
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
 }
 
-void nlbvct(double *datam1, double *datam2, int *n, double *alpha,
+void nlbvct(double *datam1, double *datam2, int *n, int *si, double *alpha,
 	    double *beta, double *loc1, double *scale1, double *shape1, 
-            double *loc2, double *scale2, double *shape2, double *dns)
+            double *loc2, double *scale2, double *shape2, int *split, 
+            double *dns)
 {
   int i;
   double *e1,*e2,*u,*v,*jc,*dvec;
@@ -551,9 +627,16 @@ void nlbvct(double *datam1, double *datam2, int *n, double *alpha,
           pbeta(u[i], *alpha + 1, *beta, 0, 0);
     e2[i] = dbeta(u[i], *alpha + 1, *beta + 1, 0) /
           (*alpha * exp(datam2[i]) + *beta * exp(datam1[i]));
-    dvec[i] = log(e1[i] + c * e2[i]) - v[i] + jc[i];
+    if(si[i] == 0) dvec[i] = log(e1[i]) - v[i] + jc[i];
+    else if(si[i] == 1) dvec[i] = log(c * e2[i]) - v[i] + jc[i];
+    else dvec[i] = log(e1[i] + c * e2[i]) - v[i] + jc[i];
   }
-  for(i=0;i<*n;i++) 
-    *dns = *dns - dvec[i];
+  
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
 }
  

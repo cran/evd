@@ -1170,9 +1170,9 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
             m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
                       shape2, dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0   
-        bvl <- .C("nlbvlog", spx$x1, spx$x2, spx$n, dep, loc1[spx$na == 0],
-                  scale1, shape1, loc2[spx$na == 0], scale2, shape2,
-                  dns = double(1), PACKAGE = "evd")$dns
+        bvl <- .C("nlbvlog", spx$x1, spx$x2, spx$n, spx$si, dep,
+                  loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
+                  scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -1201,6 +1201,7 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "log") 
     spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
@@ -1263,9 +1264,9 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
             m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
                 shape2, dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0
-        bvl <- .C("nlbvalog", spx$x1, spx$x2, spx$n, dep, asy1, asy2,
+        bvl <- .C("nlbvalog", spx$x1, spx$x2, spx$n, spx$si, dep, asy1, asy2,
                 loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+                scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -1295,6 +1296,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param, loc.param1,
       loc.param2, model = "alog")
     spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
@@ -1354,9 +1356,9 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
             m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
                 shape2, dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0
-        bvl <- .C("nlbvhr", spx$x1, spx$x2, spx$n, dep, loc1[spx$na == 0],
-                scale1, shape1, loc2[spx$na == 0], scale2, shape2,
-                dns = double(1), PACKAGE = "evd")$dns
+        bvl <- .C("nlbvhr", spx$x1, spx$x2, spx$n, spx$si, dep,
+                loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0], scale2,
+                shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -1385,6 +1387,7 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "hr") 
     spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
@@ -1445,9 +1448,9 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
             m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
                 shape2, dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0
-        bvl <- .C("nlbvneglog", spx$x1, spx$x2, spx$n, dep, loc1[spx$na == 0],
-                  scale1, shape1, loc2[spx$na == 0], scale2, shape2,
-                  dns = double(1), PACKAGE = "evd")$dns
+        bvl <- .C("nlbvneglog", spx$x1, spx$x2, spx$n, spx$si, dep,
+                  loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
+                  scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -1476,6 +1479,7 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "neglog") 
     spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
@@ -1538,9 +1542,9 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
             m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1],
                 scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0
-        bvl <- .C("nlbvaneglog", spx$x1, spx$x2, spx$n, dep, asy1, asy2,
-                loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+        bvl <- .C("nlbvaneglog", spx$x1, spx$x2, spx$n, spx$si, dep, asy1,
+                asy2, loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
+                scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -1570,6 +1574,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
       loc.param1, loc.param2, model = "aneglog") 
     spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
@@ -1630,9 +1635,9 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
             m2l <- .C("nlgev", spx$x.m2,  spx$n.m2, loc2[spx$na == 1],
                 scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0
-        bvl <- .C("nlbvbilog", spx$x1, spx$x2, spx$n, alpha, beta,
+        bvl <- .C("nlbvbilog", spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
                 loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+                scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -1661,6 +1666,7 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "bilog") 
     spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
@@ -1722,9 +1728,9 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
             m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1],
                 scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0
-        bvl <- .C("nlbvnegbilog", spx$x1, spx$x2, spx$n, alpha, beta,
+        bvl <- .C("nlbvnegbilog", spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
                   loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                  scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+                  scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -1753,6 +1759,7 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "negbilog") 
     spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
@@ -1815,9 +1822,9 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
             m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1],
                 scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
         else m2l <- 0
-        bvl <- .C("nlbvct", spx$x1, spx$x2, spx$n, alpha, beta,
+        bvl <- .C("nlbvct", spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
                 loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+                scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -1847,6 +1854,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
       loc.param1, loc.param2, model = "ct") 
     spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
@@ -1876,6 +1884,12 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
 {
   call <- match.call()
   model <- match.arg(model)
+  if(!is.matrix(x) && !is.data.frame(x))
+    stop("`x' must be a matrix or data frame")
+  if(ncol(x) != 2) {
+    if(ncol(x) != 3) stop("`x' has incorrect number of columns")
+    if(!is.logical(x[,3])) stop("third column of `x' must be logical")
+  }
   if(sym && !(model %in% c("alog","aneglog","ct")))
     warning("Argument `sym' was ignored")
   
@@ -1950,8 +1964,8 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
      c("Conditional Plot One", "Conditional Plot Two", "Density Plot",
        "Dependence Function"),
      ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
-     jitter = FALSE, grid = 50, nplty = 2, blty = 3, method = "cfg",
-     convex = FALSE, wf = function(t) t, ...) 
+     jitter = FALSE, grid = 50, legend = TRUE, nplty = 2, blty = 3,
+     method = "cfg", convex = FALSE, wf = function(t) t, ...) 
 {
     if (!inherits(x, "bvevd")) 
         stop("Use only with `bvevd' objects")
@@ -1988,7 +2002,8 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
               ylim = c(0,1), ...)
     }
     if (show[3]) {
-        bvdens(x, jitter = jitter, grid = grid, main = main[3], ...)
+        bvdens(x, jitter = jitter, grid = grid, legend = legend,
+               main = main[3], ...)
     }
     if (show[4]) {
         bvdp(x, nplty = nplty, blty = blty, method = method,
@@ -2002,19 +2017,33 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     data <- x$tdata
     mle.m1 <- x$param[c("loc1","scale1","shape1")]
     mle.m2 <- x$param[c("loc2","scale2","shape2")]
-    data <- exp(-mtransform(data, list(mle.m1, mle.m2)))
-    data <- na.omit(data)
+    data[,1:2] <- exp(-mtransform(data[,1:2], list(mle.m1, mle.m2)))
+    narow <- is.na(data[,1]) | is.na(data[,2])
+    data <- data[!narow,, drop=FALSE]
     n <- nrow(data)
     ppx <- ppoints(n)
-    if(x$model %in% c("log","hr","neglog"))
+    if(ncol(data) == 2) {
+      if(x$model %in% c("log","hr","neglog")) {
         probs <- ccop(data[,1], data[,2], mar = mar, dep = x$param["dep"],
-                      model = x$model)
-    if(x$model  %in% c("alog","aneglog"))
+                      model = x$model)}
+      if(x$model  %in% c("alog","aneglog"))
         probs <- ccop(data[,1], data[,2], mar = mar, dep = x$param["dep"],
                       asy = x$param[c("asy1","asy2")], model = x$model)
-    if(x$model  %in% c("bilog","negbilog","ct"))
+      if(x$model  %in% c("bilog","negbilog","ct"))
         probs <- ccop(data[,1], data[,2], mar = mar, alpha = x$param["alpha"],
                       beta = x$param["beta"], model = x$model)
+    }
+    if(ncol(data) == 3) {
+      if(x$model %in% c("log","hr","neglog")) {
+        probs <- ccop.case(data[,1], data[,2], data[,3], mar = mar, dep =
+          x$param["dep"], model = x$model)}
+      if(x$model  %in% c("alog","aneglog"))
+        probs <- ccop.case(data[,1], data[,2], data[,3], mar = mar, dep =
+          x$param["dep"], asy = x$param[c("asy1","asy2")], model = x$model)
+      if(x$model  %in% c("bilog","negbilog","ct"))
+        probs <- ccop.case(data[,1], data[,2], data[,3], mar = mar, alpha =
+          x$param["alpha"], beta = x$param["beta"], model = x$model)
+    }
     probs <- sort(probs)
     if(!ci) {
         plot(ppx, probs, main = main, xlab = xlab, ylab = ylab, ...)
@@ -2037,6 +2066,70 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     invisible(list(x = ppx, y = probs))
 }
 
+"ccop.case" <- function(x1, x2, case, mar, dep, asy, alpha, beta, model)
+{
+    if(min(c(x1,x2)) <= 0 || max(c(x1,x2)) >= 1)
+      stop("x1 and x2 must contain values in (0,1)")
+    nlbvfn <- paste("nlbv", model, sep = "")
+    modelnm <- match(model, c("log","hr","neglog","alog","aneglog",
+                              "bilog","negbilog","ct"))
+    
+    "dbvevd.case" <- function(x1, x2, case, mar, dep, asy, alpha, beta)
+    {
+      n <- max(length(x1), length(x2))
+      x1 <- rep(-1/log(x1), length = n)
+      x2 <- rep(-1/log(x2), length = n)
+      case <- rep(case, length = n)
+      mpar <- as.double(1)
+      split <- as.integer(1)
+      if(mar == 1) {
+        tmp <- x1; x1 <- x2; x2 <- tmp
+        if(modelnm %in% c(4,5)) asy <- rev(asy)
+        if(modelnm >= 6) { tmp <- alpha; alpha <- beta; beta <- tmp }
+      }
+      if(modelnm >= 6)
+        nl <- .C(nlbvfn,
+          as.double(x1), as.double(x2), n, case,
+          as.double(alpha), as.double(beta), rep(mpar,n), mpar, mpar,
+          rep(mpar,n), mpar, mpar, split, dns = double(n),
+          PACKAGE = "evd")$dns
+      if(modelnm <= 3)
+        nl <- .C(nlbvfn,
+          as.double(x1), as.double(x2), n, case,
+          as.double(dep), rep(mpar,n), mpar, mpar, rep(mpar,n), mpar,
+          mpar, split, dns = double(n), PACKAGE = "evd")$dns
+      if(modelnm %in% c(4,5))
+        nl <- .C(nlbvfn,
+          as.double(x1), as.double(x2), n, case,
+          as.double(dep), as.double(asy[1]), as.double(asy[2]), rep(mpar,n),
+          mpar, mpar, rep(mpar,n), mpar, mpar, split, dns = double(n),
+          PACKAGE = "evd")$dns
+      jac.alt <- 1/x1 + 1/x2 + 2*log(x1 * x2)
+      exp(jac.alt - nl)
+    }
+
+    n <- length(x1)
+    ccv <- numeric(n)
+    eps <- .Machine$double.eps^0.5
+    case <- as.integer(case)
+    if(mar == 2) { fm <- x1 ; cm <- x2 }
+    if(mar == 1) { fm <- x2 ; cm <- x1 }
+    for(i in 1:n) {
+      if(is.na(case[i])){
+        ccv[i] <- ccop(x1[i], x2[i], mar=mar, dep=dep, asy=asy,
+                       beta=beta, model=model)
+      }
+      else {
+        den <- integrate("dbvevd.case", eps, 1-eps, x2 = cm[i], case = case[i],
+          mar=mar, dep=dep, asy=asy, alpha=alpha, beta=beta)$value
+        num <- integrate("dbvevd.case", eps, fm[i], x2 = cm[i], case = case[i],
+          mar=mar, dep=dep, asy=asy, alpha=alpha, beta=beta)$value
+        ccv[i] <- num/den
+      }
+    }
+    ccv
+}
+
 "ccop" <- function(x1, x2, mar, dep, asy, alpha, beta, model)
 {
     model <- match(model, c("log","alog","hr","neglog","aneglog",
@@ -2052,7 +2145,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
             ccop = double(n), PACKAGE = "evd")$ccop
 }
 
-"bvdens" <-  function(x, jitter = FALSE, grid = 50, main = "Density Plot", xlab = "", ylab = "", ...)
+"bvdens" <-  function(x, jitter = FALSE, grid = 50, legend = TRUE, main = "Density Plot", xlab = "", ylab = "", ...)
 {
     xlimit <- range(x$tdata[,1], na.rm = TRUE)
     ylimit <- range(x$tdata[,2], na.rm = TRUE)
@@ -2077,21 +2170,31 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     dens <- do.call("dbvevd", dfunargs)
     dens <- matrix(dens, nrow = grid, ncol = grid)
     contour(xvec, yvec, dens, main = main, xlab = xlab, ylab = ylab, ...)
-    data <- na.omit(x$tdata)
+    data <- x$tdata
     if(jitter) {
         data[,1] <- jitter(data[,1])
         data[,2] <- jitter(data[,2])
     }
-    points(data, pch = 4)
+    if(ncol(data) == 2) points(data, pch = 4)
+    if(ncol(data) == 3) {
+      si <- data[,3] ; data <- data[,1:2]
+      points(data[is.na(si),], pch = 4)
+      points(data[si & !is.na(si),], pch = 16)
+      points(data[!si & !is.na(si),], pch = 1)
+      legwrd <- c("True","False","Unknown") ; legpch <- c(16,1,4)
+      if(!any(is.na(si))) {legwrd <- legwrd[1:2] ; legpch <- legpch[1:2]}
+      if(legend) legend(xlimit[1], ylimit[2], legwrd, pch = legpch)
+    }
     invisible(list(x = xyvals, y = dens))
 }
 
 "bvdp" <- function(x, method = "cfg", convex = FALSE, wf = function(t) t, add = FALSE, lty = 1, nplty = 2, blty = 3, main = "Dependence Function", xlab = "", ylab = "", ...)
 {
-    abvnonpar(data = x$data, nsloc1 = x$nsloc1, nsloc2 = x$nsloc2,
+    if(ncol(x$data) == 3) nplty <- 0
+    abvnonpar(data = x$data[,1:2], nsloc1 = x$nsloc1, nsloc2 = x$nsloc2,
               method = method, convex = convex, wf = wf,
-              plot = TRUE, lty = nplty, blty = blty, main = main,
-              xlab = xlab, ylab = ylab, add = add, ...)
+              plot = TRUE, lty = nplty, blty = blty,
+              main = main, xlab = xlab, ylab = ylab, add = add, ...)
     if(x$model %in% c("log","hr","neglog"))
         afunargs <- list(dep = x$param["dep"])
     if(x$model  %in% c("alog","aneglog"))
@@ -2224,10 +2327,16 @@ function(x, obj = "bvevd", u = NULL, censored = TRUE)
       n.m2 <- as.integer(length(x.m2))
       x.full <- x[na == 0, , drop = FALSE]
       x1 <- as.double(x.full[,1])
-      x2 <- as.double(x.full[,2])
+      x2 <- as.double(x.full[,2])      
       n <- as.integer(nrow(x.full))
+      if(ncol(x) == 3) {
+        si <- x.full[,3]
+        si[is.na(si)] <- 2
+      }
+      else si <- rep(2, n)
+      si <- as.integer(si)
       spx <- list(x.m1 = x.m1, n.m1 = n.m1, x.m2 = x.m2, n.m2 = n.m2,
-        x1 = x1, x2 = x2, n = n, na = na)
+        x1 = x1, x2 = x2, n = n, si = si, na = na)
     }
     if(obj == "bvpot") {
       x1 <- x[,1]

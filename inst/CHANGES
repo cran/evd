@@ -1,3 +1,12 @@
+CHANGES FROM VERSION 2.1-5 ARE AS FOLLOWS
+
+  The data passed to the bivariate fitting function
+  fbvevd can now be a data frame with a third column 
+  of mode logical. See the corresponding documentation 
+  for more details.
+
+  A new dataset called sealevel2 has been introduced.
+
 CHANGES FROM VERSION 2.1-4 ARE AS FOLLOWS
 
   The lower.tail argument for pbvevd and pmvevd did not
