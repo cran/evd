@@ -55,32 +55,35 @@ void rbvct(int *n, double *alpha, double *beta, double *sim);
 
 void nlgev(double *data, int *n, double *loc, double *scale, double *shape, 
            double *dns);
-void nlbvalog(double *datam1, double *datam2, int *n, double *dep,
+void nlbvalog(double *datam1, double *datam2, int *n, int *si, double *dep,
 	      double *asy1, double *asy2, double *loc1, double *scale1, 
               double *shape1, double *loc2, double *scale2, double *shape2, 
-              double *dns);
-void nlbvlog(double *datam1, double *datam2, int *n, double *dep, 
+              int *split, double *dns);
+void nlbvlog(double *datam1, double *datam2, int *n, int *si, double *dep, 
 	     double *loc1, double *scale1, double *shape1, double *loc2, 
-             double *scale2, double *shape2,  double *dns);
-void nlbvhr(double *datam1, double *datam2, int *n, double *dep, 
+             double *scale2, double *shape2, int *split, double *dns);
+void nlbvhr(double *datam1, double *datam2, int *n, int *si, double *dep, 
             double *loc1, double *scale1, double *shape1, double *loc2, 
-            double *scale2, double *shape2,  double *dns);
-void nlbvneglog(double *datam1, double *datam2, int *n, double *dep, 
+            double *scale2, double *shape2, int *split, double *dns);
+void nlbvneglog(double *datam1, double *datam2, int *n, int *si, double *dep, 
                 double *loc1, double *scale1, double *shape1, double *loc2, 
-                double *scale2, double *shape2,  double *dns);
-void nlbvaneglog(double *datam1, double *datam2, int *n, double *dep,
+                double *scale2, double *shape2, int *split, double *dns);
+void nlbvaneglog(double *datam1, double *datam2, int *n, int *si, double *dep,
 	         double *asy1, double *asy2, double *loc1, double *scale1, 
                  double *shape1, double *loc2, double *scale2, double *shape2, 
-                 double *dns);
-void nlbvbilog(double *datam1, double *datam2, int *n, double *alpha,
+                 int *split, double *dns);
+void nlbvbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
 	      double *beta, double *loc1, double *scale1, double *shape1, 
-              double *loc2, double *scale2, double *shape2, double *dns);
-void nlbvnegbilog(double *datam1, double *datam2, int *n, double *alpha,
+              double *loc2, double *scale2, double *shape2, int *split, 
+              double *dns);
+void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
 	          double *beta, double *loc1, double *scale1, double *shape1, 
-		  double *loc2, double *scale2, double *shape2, double *dns);
-void nlbvct(double *datam1, double *datam2, int *n, double *alpha,
+		  double *loc2, double *scale2, double *shape2, int *split, 
+                  double *dns);
+void nlbvct(double *datam1, double *datam2, int *n, int *si, double *alpha,
 	    double *beta, double *loc1, double *scale1, double *shape1, 
-            double *loc2, double *scale2, double *shape2, double *dns);
+            double *loc2, double *scale2, double *shape2, int *split, 
+            double *dns);
 
 /* from bvpot.c (censored) */
 

@@ -31,10 +31,10 @@ function(n, loc = 0, scale = 1, shape = 0)
 "rorder"<-
 function(n, quantfun, ..., distn,  mlen = 1, j = 1, largest = TRUE)
 {
-    if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
+    if(!is.numeric(mlen) || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
         stop("`mlen' must be a non-negative integer")
-    if(mode(j) != "numeric" || length(j) != 1 || j < 1 || j %% 1 != 0) 
+    if(!is.numeric(j) || length(j) != 1 || j < 1 || j %% 1 != 0) 
         stop("`j' must be a non-negative integer")
     if(j > mlen)
         stop("`j' cannot be greater than `mlen'")
@@ -47,7 +47,7 @@ function(n, quantfun, ..., distn,  mlen = 1, j = 1, largest = TRUE)
 "rextreme"<-
 function(n, quantfun, ..., distn, mlen = 1, largest = TRUE)
 {
-    if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
+    if(!is.numeric(mlen) || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
         stop("`mlen' must be a non-negative integer")
     if(missing(quantfun))
@@ -101,7 +101,7 @@ function(p, quantfun, ..., distn, mlen = 1, largest = TRUE, lower.tail = TRUE)
 {
     if(min(p, na.rm = TRUE) <= 0 || max(p, na.rm = TRUE) >=1)
         stop("`p' must contain probabilities in (0,1)")
-    if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
+    if(!is.numeric(mlen) || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
         stop("`mlen' must be a non-negative integer")
     if(missing(quantfun))
@@ -155,10 +155,10 @@ function(q, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
 function(q, distnfun, ..., distn, mlen = 1, j = 1, largest = TRUE,
          lower.tail = TRUE)
 {
-    if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
+    if(!is.numeric(mlen) || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
         stop("`mlen' must be a non-negative integer")
-    if(mode(j) != "numeric" || length(j) != 1 || j < 1 || j %% 1 != 0) 
+    if(!is.numeric(j) || length(j) != 1 || j < 1 || j %% 1 != 0) 
         stop("`j' must be a non-negative integer")
     if(j > mlen)
         stop("`j' cannot be greater than `mlen'")
@@ -180,7 +180,7 @@ function(q, distnfun, ..., distn, mlen = 1, j = 1, largest = TRUE,
 "pextreme"<-
 function(q, distnfun, ..., distn, mlen = 1, largest = TRUE, lower.tail = TRUE)
 {
-    if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
+    if(!is.numeric(mlen) || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
         stop("`mlen' must be a non-negative integer")
     if(missing(distnfun))
@@ -258,10 +258,10 @@ function(x, loc = 0, scale = 1, shape = 0, log = FALSE)
 function(x, densfun, distnfun, ..., distn, mlen = 1, j = 1, largest = TRUE,
          log = FALSE)
 {
-    if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
+    if(!is.numeric(mlen) || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
         stop("`mlen' must be a non-negative integer")
-    if(mode(j) != "numeric" || length(j) != 1 || j < 1 || j %% 1 != 0) 
+    if(!is.numeric(j) || length(j) != 1 || j < 1 || j %% 1 != 0) 
         stop("`j' must be a non-negative integer")
     if(j > mlen)
         stop("`j' cannot be greater than `mlen'")
@@ -284,7 +284,7 @@ function(x, densfun, distnfun, ..., distn, mlen = 1, j = 1, largest = TRUE,
 "dextreme"<-
 function(x, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE, log = FALSE)
 {
-    if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
+    if(!is.numeric(mlen) || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
         stop("`mlen' must be a non-negative integer")
     if(missing(densfun))
@@ -306,7 +306,7 @@ function(x, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE, log = FALSE
 function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE,
          std.err = TRUE, corr = FALSE, method = "Nelder-Mead")
 {
-    if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
+    if (missing(x) || length(x) == 0 || !is.numeric(x)) 
         stop("`x' must be a non-empty numeric object")
     if(any(is.na(x)))
         stop("`x' must not contain missing values")
@@ -377,7 +377,7 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE,
 function(x, start, densfun, distnfun, ..., distn, mlen = 1, j = 1,
          largest = TRUE, std.err = TRUE, corr = FALSE, method = "Nelder-Mead")
 {
-    if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
+    if (missing(x) || length(x) == 0 || !is.numeric(x)) 
         stop("`x' must be a non-empty numeric object")
     if(any(is.na(x)))
         stop("`x' must not contain missing values")
@@ -666,14 +666,14 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
     corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
   call <- match.call()
-  if(missing(x) || length(x) == 0 || mode(x) != "numeric") 
+  if(missing(x) || length(x) == 0 || !is.numeric(x)) 
     stop("`x' must be a non-empty numeric vector")
   if(is.null(prob)) {
     ft <- fgev.norm(x = x, start = start, ..., nsloc = nsloc, std.err =
       std.err, corr = corr, method = method, warn.inf = warn.inf)
   }
   else {
-    if(length(prob) != 1 || mode(prob) != "numeric" || prob < 0 || prob > 1)
+    if(length(prob) != 1 || !is.numeric(prob) || prob < 0 || prob > 1)
       stop("`prob' should be a probability in [0,1]")
     ft <- fgev.quantile(x = x, start = start, ..., nsloc = nsloc, prob = prob,
       std.err = std.err, corr = corr, method = method, warn.inf = warn.inf)
@@ -1246,11 +1246,11 @@ function(n, p = 0, q = 0, psi, theta, init = rep(0, p), n.start = p,
 {
     if(missing(psi)) psi <- numeric(0)
     if(missing(theta)) theta <- numeric(0)
-    if(length(psi) != p || mode(psi) != "numeric" || any(psi < 0))
+    if(length(psi) != p || !is.numeric(psi) || any(psi < 0))
       stop("`par' must be a non-negative vector of length `p'")
-    if(length(theta) != q || mode(theta) != "numeric" || any(theta < 0))
+    if(length(theta) != q || !is.numeric(theta) || any(theta < 0))
       stop("`theta' must be a non-negative vector of length `q'")
-    if(length(init) != p || mode(init) != "numeric" || any(init < 0))
+    if(length(init) != p || !is.numeric(init) || any(init < 0))
       stop("`init' must be a non-negative vector of length `p'")
     
     marma <- c(init, numeric(n + n.start - p))

@@ -23,8 +23,10 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE, nsloc1 = NULL,
     warn.inf = TRUE)
 }
 \arguments{
-  \item{x}{A matrix or data frame with two columns, which may contain
-    missing values.}
+  \item{x}{A matrix or data frame, ordinarily with two columns,
+    which may contain missing values. A data frame may also
+    contain a third column of mode \code{logical}, which
+    itself may contain missing values (see \bold{More Details}).}
   \item{model}{The specified model; a character string. Must be
     either \code{"log"} (the default), \code{"alog"}, \code{"hr"},
     \code{"neglog"}, \code{"aneglog"}, \code{"bilog"},
@@ -190,6 +192,23 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE, nsloc1 = NULL,
   \item{model}{The argument \code{model}.}
   \item{call}{The call of the current function.}
 }
+\section{More Details}{
+  If \code{x} is a data frame with a third column of mode
+  \code{logical}, then the model is fitted using the likelihood
+  derived by Stephenson and Tawn (2004). This is appropriate
+  when each bivariate data point comprises componentwise maxima
+  from some underlying bivariate process, and where the
+  corresponding logical value denotes whether or not the maxima
+  were caused by the same event within that process.
+  
+  Under this scheme the diagnostic plots that are produced
+  using \code{plot} are somewhat different to those described
+  in \code{\link{plot.bvevd}}. In particular, there is no
+  comparative non-parametric dependence function estimate,
+  and the conditional P-P plots condition on both the logical
+  case and the given margin (which requires numerical integration
+  at each data point).
+}
 \section{Warning}{
   The standard errors and the correlation matrix in the returned
   object are taken from the observed information, calculated by a
@@ -203,6 +222,11 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE, nsloc1 = NULL,
   Smith, R. L. (1985)
   Maximum likelihood estimation in a class of non-regular cases.
   \emph{Biometrika}, \bold{72}, 67--90.
+
+  Stephenson, A. G. and Tawn, J. A. (2004)
+  Exploiting Occurence Times in Likelihood Inference for
+  Componentwise Maxima.
+  \emph{Biometrika} (To Appear).
 
   Tawn, J. A. (1988)
   Bivariate extreme value theory: models and estimation.
