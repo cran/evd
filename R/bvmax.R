@@ -250,7 +250,7 @@ function(q, alpha, beta, mar1 = c(0,1,0), mar2 = mar1)
 }
 
 "abvlog"<- 
-function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
+function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
          blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -261,7 +261,7 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
     idep <- 1/dep
     a <- (x^idep + (1-x)^idep)^dep
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
@@ -269,8 +269,8 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
 
 "abvalog"<- 
 function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
-         lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
-         ylab = "", ...)
+         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
         stop("invalid argument for `x'")
@@ -283,14 +283,14 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
     a <- ((asy[1]*x)^idep + (asy[2]*(1-x))^idep)^dep +
         (1-asy[1])*x + (1-asy[2])*(1-x)    
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...) 
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...) 
         return(invisible(a))
     }
     a
 }
 
 "abvhr" <-
-function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
+function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
          blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -301,14 +301,14 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
     fn <- function(z) z*pnorm(1/dep + dep * log(z/(1-z)) / 2)
     a <- fn(x) + fn(1-x)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
 }
 
 "abvneglog"<- 
-function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
+function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
          blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -318,7 +318,7 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
     if(plot || add) x <- seq(0, 1, length = 100)
     a <- 1 - (x^(-dep) + (1-x)^(-dep))^(-1/dep)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...) 
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...) 
         return(invisible(a))
     }
     a
@@ -326,8 +326,8 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1,
 
 "abvaneglog"<- 
 function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
-         lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
-         ylab = "", ...)
+         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
         stop("invalid argument for `x'")
@@ -338,7 +338,7 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
        max(asy) > 1) stop("invalid argument for `asy'")
     a <- 1 - ((asy[1]*x)^(-dep) + (asy[2]*(1-x))^(-dep))^(-1/dep)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
@@ -346,8 +346,8 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
 
 "abvbilog"<- 
 function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
-         lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
-         ylab = "", ...)
+         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
         stop("invalid argument for `x'")
@@ -370,7 +370,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     }
     a <- x * gma^(1-alpha) + (1-x) * (1 - gma)^(1-beta)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
@@ -378,8 +378,8 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
 
 "abvnegbilog"<- 
 function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
-         lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
-         ylab = "", ...)
+         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
         stop("invalid argument for `x'")
@@ -402,7 +402,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     }
     a <- 1 - x * gma^(1+alpha) - (1-x) * (1 - gma)^(1+beta)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
@@ -410,8 +410,8 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
 
 "abvct" <-
 function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
-         lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
-         ylab = "", ...)
+         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
         stop("invalid argument for `x'")
@@ -426,7 +426,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     a <- (1-x) * pbeta(u, shape1 = alpha, shape2 = beta + 1) +
       x * pbeta(u, shape1 = alpha + 1, shape2 = beta, lower.tail = FALSE)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
@@ -434,9 +434,9 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
 
 "abvnonpar"<- 
 function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
-         method = c("cfg","deheuvels","pickands"), modify = 0,
+         method = c("cfg","deheuvels","pickands","tdo","hall"), modify = 0,
          wf = function(t) t, plot = FALSE, add = FALSE,
-         lty = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1),
+         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1),
          xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -513,26 +513,72 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
         zratio <- log(zvec) - log(1-zvec)
         qvec <- exp(cumsum(zratio) / nn)
         if(modify != 2) {
-            step.pos <- as.numeric(cut(1-x, breaks = c(-0.1, zvec, 1))) - 1
+            step.pos <- as.numeric(cut(x, breaks = c(-0.1, zvec, 1))) - 1
             step.pos.r <- step.pos / nn
-            a <- (1-x)^step.pos.r * x^(1 - step.pos.r) *
-                qvec[nn]^(1 - wf(x)) / ifelse(step.pos, qvec[step.pos], 1)
+            a <- x^step.pos.r * (1-x)^(1 - step.pos.r) * qvec[nn]^wf(x) /
+              c(rep(1, sum(step.pos == 0)), qvec[step.pos])
         }
         if(modify == 1) a <- pmin(1, pmax(a, x, 1-x))
         if(modify == 2) {
             x2 <- seq(0, 1, length = 250)
-            step.pos <- as.numeric(cut(1-x2, breaks = c(-0.1, zvec, 1))) - 1
+            step.pos <- as.numeric(cut(x2, breaks = c(-0.1, zvec, 1))) - 1
             step.pos.r <- step.pos / nn
-            a <- (1-x2)^step.pos.r * x2^(1 - step.pos.r) *
-                qvec[nn]^(1 - wf(x2)) / ifelse(step.pos, qvec[step.pos], 1)
+            a <- x2^step.pos.r * (1-x2)^(1 - step.pos.r) * qvec[nn]^wf(x2) /
+              c(rep(1, sum(step.pos == 0)), qvec[step.pos])
             a <- pmin(1, pmax(a, x2, 1-x2))
             inch <- chull(x2, a)
             a <- a[inch] ; x2 <- x2[inch]
             a <- approx(x2, a, xout = x, method="linear")$y
         }
     }
+    if(method == "tdo") {
+        if(modify != 2) {
+            a <- numeric(length(x))
+            for(i in 1:length(x))
+                a[i] <- sum(pmin(x[i]/(1 + nn*data[,1]),
+                                 (1-x[i])/(1 + nn*data[,2])))
+            a <- 1 - a/(1 + log(nn))
+        }
+        if(modify == 1) a <- pmin(1, pmax(a, x, 1-x))
+        if(modify == 2) {
+            x2 <- seq(0, 1, length = 250)
+            a <- numeric(250)
+            for(i in 1:250)
+                a[i] <- sum(pmin(x2[i]/(1 + nn*data[,1]),
+                                 (1-x2[i])/(1 + nn*data[,2])))
+            a <- 1 - a/(1 + log(nn))
+            a <- pmin(1, pmax(a, x2, 1-x2))
+            inch <- chull(x2, a)
+            a <- a[inch] ; x2 <- x2[inch]
+            a <- approx(x2, a, xout = x, method="linear")$y
+        }
+    } 
+    if(method == "hall") {
+        sum1 <- sum(data[,1], na.rm = TRUE)
+        sum2 <- sum(data[,2], na.rm = TRUE)
+        if(modify != 2) {
+            a <- numeric(length(x))
+            for(i in 1:length(x))
+                a[i] <- sum(pmin(data[,1]/(sum1 * x[i]),
+                                 data[,2]/(sum2 * (1 - x[i]))))
+            a <- 1/a
+        }
+        if(modify == 1) a <- pmin(1, pmax(a, x, 1-x))
+        if(modify == 2) {
+            x2 <- seq(0, 1, length = 250)
+            a <- numeric(250)
+            for(i in 1:250)
+                a[i] <- sum(pmin(data[,1]/(sum1 * x2[i]),
+                                 data[,2]/(sum2 * (1 - x2[i]))))
+            a <- 1 / a
+            a <- pmin(1, pmax(a, x2, 1-x2))
+            inch <- chull(x2, a)
+            a <- a[inch] ; x2 <- x2[inch]
+            a <- approx(x2, a, xout = x, method="linear")$y
+        }
+    } 
     if(plot || add) {
-        bvdepfn(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
         return(invisible(a))
     }
     a
@@ -1915,14 +1961,14 @@ function(x, p1, p2, inv = FALSE)
 }
 
 "bvdepfn" <- 
-function(x, a, add, lty, blty, xlab, ylab, xlim, ylim, ...)
+function(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)
 {
     if(!add)  { 
         plot(x, a, type="n", xlab = xlab, ylab = ylab,
              xlim = xlim, ylim = ylim, ...) 
         polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty)  
     }
-    lines(x, a, lty = lty)
+    lines(x, a, lty = lty, lwd = lwd, col = col)
 }
 
 na.vals <- function(x) {

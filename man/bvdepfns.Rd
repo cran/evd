@@ -14,29 +14,29 @@
   bilogistic, negative bilogistic, Husler-Reiss and Coles-Tawn models.
 }
 \usage{
-abvalog(x = 0.5, dep, asy = c(1, 1), plot = FALSE,
-    add = FALSE, lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
-    xlab = "", ylab = "", \dots) 
-abvaneglog(x = 0.5, dep, asy = c(1, 1), plot = FALSE,
-    add = FALSE, lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
-    xlab = "", ylab = "", \dots) 
-abvhr(x = 0.5, dep, plot = FALSE, add = FALSE, 
-    lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
+abvalog(x = 0.5, dep, asy = c(1, 1), plot = FALSE, add = FALSE,
+    lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0, 1),
+    ylim = c(0.5, 1), xlab = "", ylab = "", \dots) 
+abvaneglog(x = 0.5, dep, asy = c(1, 1), plot = FALSE, add = FALSE,
+   lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0, 1),
+   ylim = c(0.5, 1), xlab = "", ylab = "", \dots) 
+abvhr(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
+    col = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
     ylab = "", \dots) 
-abvlog(x = 0.5, dep, plot = FALSE, add = FALSE, 
-    lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
+abvlog(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
+    col = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
     ylab = "", \dots) 
-abvneglog(x = 0.5, dep, plot = FALSE, add = FALSE, 
-    lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
+abvneglog(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
+    col = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
     ylab = "", \dots)
-abvbilog(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
-    lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "",
-    ylab = "", \dots) 
-abvnegbilog(x = 0.5, alpha, beta, plot = FALSE,
-    add = FALSE, lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
+abvbilog(x = 0.5, alpha, beta, plot = FALSE, add = FALSE, lty = 1,
+    lwd = 1, col = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
+    xlab = "", ylab = "", \dots) 
+abvnegbilog(x = 0.5, alpha, beta, plot = FALSE, add = FALSE, lty = 1,
+    lwd = 1, col = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
     xlab = "", ylab = "", \dots)
-abvct(x = 0.5, alpha, beta, plot = FALSE, 
-    add = FALSE, lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
+abvct(x = 0.5, alpha, beta, plot = FALSE, add = FALSE, lty = 1,
+    lwd = 1, col = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
     xlab = "", ylab = "", \dots)  
 }
 \arguments{
@@ -50,6 +50,8 @@ abvct(x = 0.5, alpha, beta, plot = FALSE,
   \item{add}{Logical; add to an existing plot?}
   \item{lty, blty}{Function and border line types.
     Use zero to suppress.}
+  \item{lwd}{Line width.}
+  \item{col}{Line colour.}
   \item{xlim, ylim}{x and y-axis limits.}
   \item{xlab, ylab}{x and y-axis labels.}
   \item{\dots}{Other high-level graphics parameters to be passed to
