@@ -1,9 +1,24 @@
+CHANGES FROM VERSION 1.2-1 ARE AS FOLLOWS
+
+  New methods hall and tdo for calculating non-parametric 
+  dependence function estimates.
+
+  BUG fix: the non-parameteric dependence function estimator of 
+  Caperaa et al (the default) was plotting/calculating A(1-x) 
+  rather than A(x).
+
+  The recommended citation for the package is now the article
+  included in R-News Volume 2/2.
+
+  Extra graphical arguments have been included in the abv[...]
+  functions. 
+
 CHANGES FROM VERSION 1.2-0 ARE AS FOLLOWS
 
   The profile.evd function now has a method argument to specify 
   the optimization method. The default method is now BFGS.
   
-  A bug existed in profile.evd; a fatal error would result if 
+  A BUG existed in profile.evd; a fatal error would result if 
   the mesh argument did not have a names attribute. This has 
   been fixed.
 
@@ -102,7 +117,7 @@ CHANGES FROM VERSION 1.0-0 ARE AS FOLLOWS
   within the multivariate functions is now c(0,1,0) (Gumbel), which 
   is consistent with the functions for bivariate models.
 
-  The bivariate density functions contained a fairly minor bug; if one
+  The bivariate density functions contained a fairly minor BUG; if one
   of the marginal parameter arguments were passed a three column
   matrix and some of the rows of the matrix produced zero density, a
   fatal error would result. This has now been fixed.

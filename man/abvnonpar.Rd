@@ -8,8 +8,9 @@
 \usage{
 abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
     method = c("cfg", "deheuvels", "pickands"), modify = 0,
-    wf = function(t) t, plot = FALSE, add = FALSE, lty = 1, blty = 3,
-    xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", ylab = "", \dots) 
+    wf = function(t) t, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
+    col = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "",
+    ylab = "", \dots) 
 }
 \arguments{
   \item{x}{A vector of values at which the dependence function is
@@ -33,6 +34,8 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
   \item{add}{Logical; add to an existing plot?}
   \item{lty, blty}{Function and border line types.
     Use zero to suppress.}
+  \item{lwd}{Line width.}
+  \item{col}{Line colour.}
   \item{xlim, ylim}{x and y-axis limits.}
   \item{xlab, ylab}{x and y-axis labels.}
   \item{\dots}{Other high-level graphics parameters to be passed to
