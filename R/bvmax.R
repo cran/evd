@@ -227,7 +227,9 @@ function(q, dep, mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     q <- mtransform(q, list(mar1, mar2))
     v <- apply(q^(1/dep),1,sum)^dep
     pp <- exp(-v)
-    if(!lower.tail) pp <- 1 - pp
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
     pp
 }
 
@@ -243,7 +245,9 @@ function(q, dep, asy = c(1,1), mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     asy <- rep(asy,rep(nrow(q),2))
     v <- apply((asy*q)^(1/dep),1,sum)^dep + apply((1-asy)*q,1,sum)
     pp <- exp(-v)
-    if(!lower.tail) pp <- 1 - pp
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
     pp
 }
 
@@ -257,7 +261,9 @@ function(q, dep, mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     fn <- function(x1,x2) x1*pnorm(1/dep + dep * log(x1/x2) / 2)
     v <- fn(q[,1],q[,2]) + fn(q[,2],q[,1])
     pp <- exp(-v)
-    if(!lower.tail) pp <- 1 - pp
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
     pp
 }
 
@@ -270,7 +276,9 @@ function(q, dep, mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     q <- mtransform(q, list(mar1, mar2))
     v <- apply(q,1,sum) - apply(q^(-dep),1,sum)^(-1/dep)
     pp <- exp(-v)
-    if(!lower.tail) pp <- 1 - pp
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
     pp
 }
 
@@ -286,7 +294,9 @@ function(q, dep, asy = c(1,1), mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     asy <- rep(asy,rep(nrow(q),2))
     v <- apply(q,1,sum) - apply((asy*q)^(-dep),1,sum)^(-1/dep)
     pp <- exp(-v)
-    if(!lower.tail) pp <- 1 - pp
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
     pp
 }
 
@@ -314,7 +324,9 @@ function(q, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     }
     v <- q[,1] * gma^(1-alpha) + q[,2] * (1 - gma)^(1-beta)
     pp <- exp(-v)
-    if(!lower.tail) pp <- 1 - pp
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
     pp
 }
 
@@ -343,7 +355,9 @@ function(q, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     v <- q[,1] + q[,2] - q[,1] * gma^(1+alpha) - q[,2] * (1 - gma)^(1+beta)
     v[is.infinite(gma)] <- Inf
     pp <- exp(-v)
-    if(!lower.tail) pp <- 1 - pp
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
     pp
 }
 
@@ -364,7 +378,9 @@ function(q, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     v[is.infinite(q[,1]) || is.infinite(q[,2])] <- Inf
     v[(q[,1] + q[,2]) == 0] <- 0
     pp <- exp(-v)
-    if(!lower.tail) pp <- 1 - pp
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
     pp
 }
 

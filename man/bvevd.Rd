@@ -53,8 +53,9 @@ rbvevd(n, dep, asy = c(1, 1), alpha, beta, model = "log",
     column represents a vector of values to be passed to the
     corresponding marginal parameter.}
   \item{log}{Logical; if \code{TRUE}, the log density is returned.}
-  \item{lower.tail}{Logical; if \code{TRUE} (default), probabilities
-    are P[X <= x], otherwise, P[X > x].}
+  \item{lower.tail}{Logical; if \code{TRUE} (default), the
+    distribution function is returned; the survivor function
+    is returned otherwise.}
 }
 \details{
   Define
