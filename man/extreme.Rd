@@ -51,7 +51,7 @@ rextreme(n, quantfun, \dots, distn, mlen = 1, largest = TRUE)
 \examples{
 dextreme(2:4, dnorm, pnorm, mean = 0.5, sd = 1.2, mlen = 5)
 dextreme(2:4, distn = "norm", mean = 0.5, sd = 1.2, mlen = 5)
-dextreme(2:4, distn = "exp", mlen = 2)
+dextreme(2:4, distn = "exp", mlen = 2, largest = FALSE)
 pextreme(2:4, distn = "exp", rate = 1.2, mlen = 2)
 qextreme(seq(0.9, 0.6, -0.1), distn = "exp", rate = 1.2, mlen = 2)
 rextreme(5, qgamma, shape = 1, mlen = 10)
