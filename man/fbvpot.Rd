@@ -12,14 +12,15 @@
 }
 \synopsis{
 fbvpot(x, threshold, model = c("log", "bilog", "alog", "neglog",
-    "negbilog", "aneglog", "ct"), likelihood = c("censored",
-    "poisson"), start, \dots, sym = FALSE, std.err = TRUE,
-    dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+    "negbilog", "aneglog", "ct", "hr"), likelihood = c("censored",
+    "poisson"), start, \dots, sym = FALSE, cshape = cscale,
+    cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE,
+    method = "BFGS", warn.inf = TRUE)
 }
 \usage{
 fbvpot(x, threshold, model = "log", likelihood = "censored", start,
-    \dots, sym = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE,
-    method = "BFGS", warn.inf = TRUE)
+    \dots, sym = FALSE, cshape = cscale, cscale = FALSE, std.err =
+    TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 }
 \arguments{
   \item{x}{A matrix or data frame with two columns. If this
@@ -47,6 +48,12 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
     of the models \code{"alog"}, \code{"aneglog"} or \code{"ct"} are
     constrained to be symmetric (see \bold{Details}). For all other
     models, the argument is ignored (and a warning is given).}
+  \item{cshape}{Logical; if \code{TRUE}, a common shape parameter is
+    fitted to each margin.}
+  \item{cscale}{Logical; if \code{TRUE}, a common scale parameter is
+    fitted to each margin, and the default value of \code{cshape}
+    is then \code{TRUE}, so that under this default common marginal
+    parameters are fitted.}
   \item{std.err}{Logical; if \code{TRUE} (the default), the standard
     errors are returned.}
   \item{dsm}{Logical; if \code{TRUE} (the default), summaries of the
@@ -71,14 +78,25 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
   for the first margin, and \code{scale2} and \code{shape2} for the
   second margin.
 
+  If \code{cshape} is true, the models are constrained so that
+  \code{shape2 = shape1}. The parameter \code{shape2} is then
+  taken to be specified, so that e.g. the common shape
+  parameter can only be fixed at zero using \code{shape1 = 0},
+  since using \code{shape2 = 0} gives an error. Similar
+  comments apply for \code{cscale}.
+  
   If \code{sym} is \code{TRUE}, the asymmetric logistic and
   asymmetric negative logistic models are constrained so that
   \code{asy2 = asy1}, and the Coles-Tawn model is constrained
   so that \code{beta = alpha}. The parameter \code{asy2} or
-  \code{beta} is then omitted from the parameter set. 
-  (Bilogistic and negative bilogistic models constrained to
+  \code{beta} is then taken to be specified, so that e.g.
+  the parameters \code{asy1} and \code{asy2} can only
+  be fixed at \code{0.8} using \code{asy1 = 0.8}, since
+  using \code{asy2 = 0.8} gives an error.
+  
+  Bilogistic and negative bilogistic models constrained to
   symmetry are logistic and negative logistic models
-  respectively.) The mixed model (e.g. Tawn, 1998)
+  respectively. The mixed model (e.g. Tawn, 1998)
   is obtained by the asymmetric negative logistic model upon
   setting the dependence parameter to be one, and constraining
   the asymmetry parameters to be equal to each other. It can
@@ -112,9 +130,13 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
   the following components
   \item{estimate}{A vector containing the maximum likelihood estimates.}
   \item{std.err}{A vector containing the standard errors.}
-  \item{fixed}{A vector containing the parameters that have been set
-    to fixed values within the optimization.}
-  \item{param}{A vector containing all parameters (optimized and fixed).}
+  \item{fixed}{A vector containing the parameters that have been fixed
+    at specific values within the optimization.}
+  \item{fixed2}{A vector containing the parameters that have been set
+    to be equal to other model parameters.}
+  \item{param}{A vector containing all parameters (those optimized,
+    those fixed to specific values, and those set to be
+    equal to other model parameters).}
   \item{deviance}{The deviance at the maximum likelihood estimates.}
   \item{dep.summary}{A vector of three values, summarizing the
     dependence structure of the fitted model (see \bold{Details}).}
@@ -127,6 +149,7 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
   \item{nat}{The vector of length three containing the number of
     exceedances on the first, second and both margins respectively.}
   \item{sym}{The argument \code{sym}.}
+  \item{cmar}{The vector \code{c(cscale, cshape)}.}
   \item{model}{The argument \code{model}.}
   \item{call}{The call of the current function.}
 }

@@ -1,3 +1,23 @@
+CHANGES FROM VERSION 2.1-1 ARE AS FOLLOWS
+  
+  The function fbvevd now has arguments cshape, cscale
+  and cloc for fitting common marginal parameters.
+
+  The function fbvpot now has arguments cshape and 
+  cscale for fitting common marginal parameters.
+
+  The Husler-Reiss model is now implemented in fbvpot.
+
+  New function chiplot for plotting estimates of the 
+  dependence measures chi and chi-bar for bivariate 
+  data.
+   
+  The latex file for The Users' Guide is now included
+  in the doc directory along with the pdf file.
+
+  The default x-label "theshold" in mrlplot has been
+  corrected to "threshold". 
+
 CHANGES FROM VERSION 2.1-0 ARE AS FOLLOWS
 
   New function fbvpot for fitting bivariate threshold

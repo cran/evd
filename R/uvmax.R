@@ -953,10 +953,9 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
             call.args$nsloc1 <- fitted$nsloc1
             call.args$nsloc2 <- fitted$nsloc2
             call.args$sym <- fitted$sym
-            if(fitted$sym) {
-              call.args$asy2 <- NULL
-              call.args$beta <- NULL
-            }
+            call.args$cloc <- fitted$cmar[1]
+            call.args$cscale <- fitted$cmar[2]
+            call.args$cshape <- fitted$cmar[3]
             call.args$dsm <- FALSE
         }
         if(inherits(fitted, "bvpot")) {
@@ -964,10 +963,8 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
             call.args$likelihood <- fitted$likelihood
             call.args$model <- fitted$model
             call.args$sym <- fitted$sym
-            if(fitted$sym) {
-              call.args$asy2 <- NULL
-              call.args$beta <- NULL
-            }
+            call.args$cscale <- fitted$cmar[1]
+            call.args$cshape <- fitted$cmar[2]
             call.args$dsm <- FALSE          
         }
         lcnt <- TRUE; ppar <- mles[j]
@@ -1126,10 +1123,9 @@ profile2d <- function (fitted, ...) {
         call.args$nsloc2 <- fitted$nsloc2
         call.args$model <- fitted$model
         call.args$sym <- fitted$sym
-        if(fitted$sym) {
-          call.args$asy2 <- NULL
-          call.args$beta <- NULL
-        }
+        call.args$cloc <- fitted$cmar[1]
+        call.args$cscale <- fitted$cmar[2]
+        call.args$cshape <- fitted$cmar[3]
         call.args$dsm <- FALSE
     }
     if(inherits(fitted, "bvpot")) {
@@ -1137,10 +1133,8 @@ profile2d <- function (fitted, ...) {
         call.args$likelihood <- fitted$likelihood
         call.args$model <- fitted$model
         call.args$sym <- fitted$sym
-        if(fitted$sym) {
-          call.args$asy2 <- NULL
-          call.args$beta <- NULL
-        }
+        call.args$cscale <- fitted$cmar[1]
+        call.args$cshape <- fitted$cmar[2]
         call.args$dsm <- FALSE          
     }
     for(i in 1:pts^2) {

@@ -12,13 +12,15 @@
 \synopsis{
 fbvevd(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog",
     "negbilog", "ct"), start, \dots, sym = FALSE, nsloc1 = NULL,
-    nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method =
-    "BFGS", warn.inf = TRUE)
+    nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE,
+    std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS",
+    warn.inf = TRUE)
 }
 \usage{
 fbvevd(x, model = "log", start, \dots, sym = FALSE, nsloc1 = NULL,
-    nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method =
-    "BFGS", warn.inf = TRUE)
+    nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE,
+    std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS",
+    warn.inf = TRUE)
 }
 \arguments{
   \item{x}{A matrix or data frame with two columns, which may contain
@@ -49,6 +51,16 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE, nsloc1 = NULL,
     The data frames are treated as covariate matrices, excluding the
     intercept. A numeric vector can be given as an alternative to a
     single column data frame.}
+  \item{cshape}{Logical; if \code{TRUE}, a common shape parameter is
+    fitted to each margin.}
+  \item{cscale}{Logical; if \code{TRUE}, a common scale parameter is
+    fitted to each margin, and the default value of \code{cshape}
+    is then \code{TRUE}, so that under this default common scale
+    and shape parameters are fitted.}
+  \item{cloc}{Logical; if \code{TRUE}, a common location parameter is
+    fitted to each margin, and the default values of \code{cshape}
+    and \code{cscale} are then \code{TRUE}, so that under these
+    defaults common marginal parameters are fitted.}
   \item{std.err}{Logical; if \code{TRUE} (the default), the standard
     errors are returned.}
   \item{dsm}{Logical; if \code{TRUE} (the default), summaries of the
@@ -84,22 +96,35 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE, nsloc1 = NULL,
   scaled (i.e.\ that the columns of \code{nsloc1} and \code{nsloc2}
   are centered and scaled), particularly if automatic starting values
   are used, since the starting values for the associated parameters are
-  then zero.
+  then zero. If \code{cloc} is \code{TRUE}, both \code{nsloc1} and
+  \code{nsloc2} must be identical, since a common linear model is
+  then implemented on both margins.
 
+  If \code{cshape} is true, the models are constrained so that
+  \code{shape2 = shape1}. The parameter \code{shape2} is then
+  taken to be specified, so that e.g. the common shape
+  parameter can only be fixed at zero using \code{shape1 = 0},
+  since using \code{shape2 = 0} gives an error. Similar
+  comments apply for \code{cscale} and \code{cloc}.
+  
   If \code{sym} is \code{TRUE}, the asymmetric logistic and
   asymmetric negative logistic models are constrained so that
   \code{asy2 = asy1}, and the Coles-Tawn model is constrained
   so that \code{beta = alpha}. The parameter \code{asy2} or
-  \code{beta} is then omitted from the parameter set. 
-  (Bilogistic and negative bilogistic models constrained to
+  \code{beta} is then taken to be specified, so that e.g.
+  the parameters \code{asy1} and \code{asy2} can only
+  be fixed at \code{0.8} using \code{asy1 = 0.8}, since
+  using \code{asy2 = 0.8} gives an error.
+  
+  Bilogistic and negative bilogistic models constrained to
   symmetry are logistic and negative logistic models
-  respectively.) The mixed model (e.g. Tawn, 1998)
+  respectively. The mixed model (e.g. Tawn, 1998)
   is obtained by the asymmetric negative logistic model upon
   setting the dependence parameter to be one, and constraining
   the asymmetry parameters to be equal to each other. It can
   therefore be fitted using \code{model = "anegl"} with
-  \code{dep = 1} and \code{sym = TRUE} (see \bold{Examples}). 
-
+  \code{dep = 1} and \code{sym = TRUE} (see \bold{Examples}).
+  
   If \code{dsm} is \code{TRUE}, three values are returned which
   summarize the dependence structure, based on the fitted
   dependence function \eqn{A} (see \code{\link{abvpar}}).
@@ -142,23 +167,28 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE, nsloc1 = NULL,
   the following components
   \item{estimate}{A vector containing the maximum likelihood estimates.}
   \item{std.err}{A vector containing the standard errors.}
-  \item{fixed}{A vector containing the parameters that have been set
-    to fixed values within the optimization.}
-  \item{param}{A vector containing all parameters (optimized and fixed).}
+  \item{fixed}{A vector containing the parameters that have been fixed
+    at specific values within the optimization.}
+  \item{fixed2}{A vector containing the parameters that have been set
+    to be equal to other model parameters.}
+  \item{param}{A vector containing all parameters (those optimized,
+    those fixed to specific values, and those set to be
+    equal to other model parameters).}
   \item{deviance}{The deviance at the maximum likelihood estimates.}
   \item{dep.summary}{A vector of three values, summarizing the
     dependence structure of the fitted model (see \bold{Details}).}
   \item{corr}{The correlation matrix.}
   \item{convergence, counts, message}{Components taken from the
     list returned by \code{\link{optim}}.}
-  \item{call}{The call of the current function.}
   \item{data}{The data passed to the argument \code{x}.}
   \item{tdata}{The data, transformed to stationarity (for non-stationary
     models).}
   \item{nsloc1, nsloc2}{The arguments \code{nsloc1} and \code{nsloc2}.}
   \item{n}{The number of rows in \code{x}.}
   \item{sym}{The argument \code{sym}.}
+  \item{cmar}{The vector \code{c(cloc, cscale, cshape)}.}
   \item{model}{The argument \code{model}.}
+  \item{call}{The call of the current function.}
 }
 \section{Warning}{
   The standard errors and the correlation matrix in the returned

@@ -82,9 +82,59 @@ void nlbvct(double *datam1, double *datam2, int *n, double *alpha,
 	    double *beta, double *loc1, double *scale1, double *shape1, 
             double *loc2, double *scale2, double *shape2, double *dns);
 
+/* from bvpot.c (censored) */
 
+void nllbvclog(double *data1, double *data2, int *nn, int *n, double *thid, 
+              double *lambda, double *dep, double *scale1, double *shape1, 
+              double *scale2, double *shape2, double *dns);
+void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, 
+                 double *lambda, double *alpha, double *beta, 
+                 double *scale1, double *shape1, double *scale2, 
+                 double *shape2, double *dns);
+void nllbvcalog(double *data1, double *data2, int *nn, int *n, double *thid, 
+                double *lambda, double *dep, double *asy1, double *asy2, 
+                double *scale1, double *shape1, double *scale2, 
+                double *shape2, double *dns);
+void nllbvcneglog(double *data1, double *data2, int *nn, int *n, double *thid, 
+                  double *lambda, double *dep, double *scale1, 
+                  double *shape1, double *scale2, double *shape2, 
+                  double *dns);
+void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, 
+                    double *thid, double *lambda, double *alpha, double *beta, 
+                    double *scale1, double *shape1, double *scale2, 
+                    double *shape2, double *dns);
+void nllbvcaneglog(double *data1, double *data2, int *nn, int *n, 
+                   double *thid, double *lambda, double *dep, double *asy1, 
+                   double *asy2, double *scale1, double *shape1, 
+                   double *scale2, double *shape2, double *dns);
+void nllbvcct(double *data1, double *data2, int *nn, int *n, double *thid, 
+              double *lambda, double *alpha, double *beta, double *scale1, 
+              double *shape1, double *scale2, double *shape2, double *dns);
+void nllbvchr(double *data1, double *data2, int *nn, int *n, double *thid, 
+              double *lambda, double *dep, double *scale1, double *shape1, 
+              double *scale2, double *shape2, double *dns);
 
+/* from bvpot.c (poisson) */
 
-
-
-
+void nllbvplog(double *data1, double *data2, int *nn, int *n, 
+               double *thid, double *r1, double *r2, double *p, 
+               double *dep, double *scale1, double *shape1, 
+               double *scale2, double *shape2, double *dns);
+void nllbvpneglog(double *data1, double *data2, int *nn, int *n, 
+                  double *thid, double *r1, double *r2, double *p, 
+                  double *dep, double *scale1, double *shape1, 
+                  double *scale2, double *shape2, double *dns);
+void nllbvpct(double *data1, double *data2, int *nn, int *n, double *thid, 
+              double *r1, double *r2, double *p, double *alpha, 
+              double *beta, double *scale1, double *shape1, double *scale2, 
+              double *shape2, double *dns);
+void nllbvpbilog(double *data1, double *data2, int *nn, int *n, 
+                 double *thid, double *r1, double *r2, double *p, 
+                 double *alpha, double *beta, double *scale1, 
+                 double *shape1, double *scale2, double *shape2, 
+                 double *dns);
+void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, 
+                    double *thid, double *r1, double *r2, double *p, 
+                    double *alpha, double *beta, double *scale1, 
+                    double *shape1, double *scale2, double *shape2, 
+                    double *dns);

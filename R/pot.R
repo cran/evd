@@ -58,7 +58,7 @@ function(n, loc = 0, scale = 1, shape = 0)
 
 "mrlplot"<-
 function(data, tlim, nt = max(100, length(data)), lty = c(2,1,2), col = 1,
-    conf = 0.95, main = "Mean Residual Life Plot", xlab = "Theshold",
+    conf = 0.95, main = "Mean Residual Life Plot", xlab = "Threshold",
     ylab = "Mean Excess", ...)
 {
     data <- sort(data[!is.na(data)])

@@ -1121,10 +1121,13 @@ function(x, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
 }
 
 "fbvlog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvlog <- function(loc1, scale1, shape1, loc2, scale2, shape2, dep)
     {
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+        
         if(any(c(scale1,scale2) < 0.01) || dep < 0.1 || dep > 1)
             return(1e6)
         if(!is.null(nsloc1)) {
@@ -1134,13 +1137,15 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
             loc1 <- drop(nslocmat1 %*% ns)
         }
         else loc1 <- rep(loc1, length.out = nrow(x))
-        if(!is.null(nsloc2)) {
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
             ns <- numeric(length(loc.param2))
             for(i in 1:length(ns))
                 ns[i] <- get(loc.param2[i])
             loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
         }
-        else loc2 <- rep(loc2, length.out = nrow(x))
         if(spx$n.m1)
             m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
                       shape1, dns = double(1), PACKAGE = "evd")$dns
@@ -1159,6 +1164,8 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
         else return(m1l + m2l + bvl)
     }
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
     if(!is.null(nsloc1)) {
         nsloc1 <- nsloc.transform(x, nsloc1)
         nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -1169,19 +1176,23 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
     }
     loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
-    param <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
-               "shape2", "dep")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    param <- c(param, "dep")
     nmdots <- names(list(...))
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "log") 
     spx <- sep.bvdata(x)
     nm <- names(start)
+    l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
     if(any(!(param %in% c(nm,names(fixed.param)))))
         stop("unspecified parameters")
-    l <- length(nm)
+    prind <- (5:7)[c(!cscale, !cshape, TRUE)]
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvlog)[2:3],
-           as.list(numeric(length(loc.param2))), formals(nlbvlog)[5:7])
+           as.list(numeric(length(loc.param2))), formals(nlbvlog)[prind])
     names(f) <- param
     m <- match(nm, param)
     if(any(is.na(m))) 
@@ -1196,20 +1207,19 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
     bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 FALSE, model = "log") 
+                 sym = FALSE, cmar = c(cloc, cscale, cshape), model = "log") 
 }
 
 "fbvalog"<- 
-function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
-{
-    nlbvalog.sym <- function(loc1, scale1, shape1, loc2, scale2, shape2,
-                            asy1, dep) {
-    nlbvalog(loc1, scale1, shape1, loc2, scale2, shape2, asy1, asy1, dep)
-    }
-    
+function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+{   
     nlbvalog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
-                         asy1, asy2, dep)
+                          asy1, asy2, dep)
     {
+        if(sym) asy2 <- asy1
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+          
         if(any(c(scale1,scale2) < 0.01) || any(c(dep,asy1,asy2) > 1) ||
            any(c(asy1,asy2) < 0.001) || dep < 0.1)
             return(1e6)
@@ -1220,13 +1230,15 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
             loc1 <- drop(nslocmat1 %*% ns)
         }
         else loc1 <- rep(loc1, length.out = nrow(x))
-        if(!is.null(nsloc2)) {
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
             ns <- numeric(length(loc.param2))
             for(i in 1:length(ns))
-                ns[i] <- get(loc.param2[i])
+              ns[i] <- get(loc.param2[i])
             loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
         }
-        else loc2 <- rep(loc2, length.out = nrow(x))
         if(spx$n.m1)
             m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
                 shape1, dns = double(1), PACKAGE = "evd")$dns
@@ -1245,6 +1257,8 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
         if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
         else return(m1l + m2l + bvl)  
     }
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
     if(!is.null(nsloc1)) {
         nsloc1 <- nsloc.transform(x, nsloc1)
         nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -1255,63 +1269,49 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
     }
     loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
-    param <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
-               "shape2", "asy1")
-    if(!sym) param <- c(param, "asy2", "dep")
-    else param <- c(param, "dep")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    if(!sym) param <- c(param, "asy1", "asy2", "dep")
+    else param <- c(param, "asy1", "dep")
     nmdots <- names(list(...))
-    start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
-      loc.param1, loc.param2, model = "alog", sym = sym) 
+    start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param, loc.param1,
+      loc.param2, model = "alog")
     spx <- sep.bvdata(x)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
     if(any(!(param %in% c(nm,names(fixed.param)))))
         stop("unspecified parameters")
-    if(sym) {
-      f <- c(as.list(numeric(length(loc.param1))), formals(nlbvalog.sym)[2:3],
-      as.list(numeric(length(loc.param2))), formals(nlbvalog.sym)[5:8])
-    }
-    else {
-      f <- c(as.list(numeric(length(loc.param1))), formals(nlbvalog)[2:3],
-      as.list(numeric(length(loc.param2))), formals(nlbvalog)[5:9])
-    }
+    prind <- (5:9)[c(!cscale, !cshape, TRUE, !sym, TRUE)]
+    f <- c(as.list(numeric(length(loc.param1))), formals(nlbvalog)[2:3],
+      as.list(numeric(length(loc.param2))), formals(nlbvalog)[prind])
     names(f) <- param
     m <- match(nm, param)
     if(any(is.na(m))) 
         stop("`start' specifies unknown arguments")
-    if(sym) {
-      formals(nlbvalog.sym) <- c(f[m], f[-m])
-      nllh <- function(p, ...) nlbvalog.sym(p, ...)
-      if(l > 1) body(nllh) <- parse(text = paste("nlbvalog.sym(",
-        paste("p[",1:l,"]", collapse = ", "), ", ...)"))
-    }
-    else {
-      formals(nlbvalog) <- c(f[m], f[-m])
-      nllh <- function(p, ...) nlbvalog(p, ...)
-      if(l > 1) body(nllh) <- parse(text = paste("nlbvalog(",
-        paste("p[",1:l,"]", collapse = ", "), ", ...)"))
-    }
+    formals(nlbvalog) <- c(f[m], f[-m])
+    nllh <- function(p, ...) nlbvalog(p, ...)
+    if(l > 1) body(nllh) <- parse(text = paste("nlbvalog(", paste("p[",1:l,"]",
+      collapse = ", "), ", ...)"))
     start.arg <- c(list(p = unlist(start)), fixed.param)
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if(sym) {
-      asy2 <- opt$par["asy1"]
-      names(asy2) <- NULL
-      if(is.na(asy2)) asy2 <- fixed.param[["asy1"]]
-      fixed.param <- c(fixed.param, list(asy2 = asy2))
-    }
     bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 sym, model = "alog")
+      sym = sym, cmar = c(cloc, cscale, cshape), model = "alog")
 }
 
 "fbvhr"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvhr <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                        dep)
     {
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+        
         if(any(c(scale1,scale2) < 0.01) || dep < 0.2 || dep > 10)
             return(1e6)
         if(!is.null(nsloc1)) {
@@ -1321,13 +1321,15 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
             loc1 <- drop(nslocmat1 %*% ns)
         }
         else loc1 <- rep(loc1, length.out = nrow(x))
-        if(!is.null(nsloc2)) {
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
             ns <- numeric(length(loc.param2))
             for(i in 1:length(ns))
                 ns[i] <- get(loc.param2[i])
             loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
         }
-        else loc2 <- rep(loc2, length.out = nrow(x))
         if(spx$n.m1)
             m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
                 shape1, dns = double(1), PACKAGE = "evd")$dns
@@ -1346,7 +1348,8 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
         else return(m1l + m2l + bvl)
     }
-    
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
     if(!is.null(nsloc1)) {
         nsloc1 <- nsloc.transform(x, nsloc1)
         nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -1357,19 +1360,23 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
     }
     loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
-    param <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
-               "shape2", "dep")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    param <- c(param, "dep")
     nmdots <- names(list(...))
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "hr") 
     spx <- sep.bvdata(x)
     nm <- names(start)
+    l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
     if(any(!(param %in% c(nm,names(fixed.param)))))
         stop("unspecified parameters")
-    l <- length(nm)
+    prind <- (5:7)[c(!cscale, !cshape, TRUE)]
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvhr)[2:3],
-           as.list(numeric(length(loc.param2))), formals(nlbvhr)[5:7])
+           as.list(numeric(length(loc.param2))), formals(nlbvhr)[prind])
     names(f) <- param
     m <- match(nm, param)
     if(any(is.na(m))) 
@@ -1384,15 +1391,18 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
     bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 FALSE, model = "hr")
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "hr")
 }
 
 "fbvneglog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvneglog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                            dep)
     {
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+        
         if(any(c(scale1,scale2) < 0.01) || dep < 0.05 || dep > 5)
             return(1e6)
         if(!is.null(nsloc1)) {
@@ -1402,13 +1412,15 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
             loc1 <- drop(nslocmat1 %*% ns)
         }
         else loc1 <- rep(loc1, length.out = nrow(x))
-        if(!is.null(nsloc2)) {
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
             ns <- numeric(length(loc.param2))
             for(i in 1:length(ns))
                 ns[i] <- get(loc.param2[i])
             loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
         }
-        else loc2 <- rep(loc2, length.out = nrow(x))
         if(spx$n.m1)
             m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
                 shape1, dns = double(1), PACKAGE = "evd")$dns
@@ -1427,7 +1439,8 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
         else return(m1l + m2l + bvl)
     }
-    
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
     if(!is.null(nsloc1)) {
         nsloc1 <- nsloc.transform(x, nsloc1)
         nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -1438,19 +1451,23 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
     }
     loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
-    param <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
-               "shape2", "dep")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    param <- c(param, "dep")
     nmdots <- names(list(...))
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "neglog") 
     spx <- sep.bvdata(x)
     nm <- names(start)
+    l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
     if(any(!(param %in% c(nm,names(fixed.param)))))
         stop("unspecified parameters")
-    l <- length(nm)
+    prind <- (5:7)[c(!cscale, !cshape, TRUE)]
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvneglog)[2:3],
-           as.list(numeric(length(loc.param2))), formals(nlbvneglog)[5:7])
+           as.list(numeric(length(loc.param2))), formals(nlbvneglog)[prind])
     names(f) <- param   
     m <- match(nm, param)
     if(any(is.na(m))) 
@@ -1465,20 +1482,19 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
     bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 FALSE, model = "neglog")
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "neglog")
 }
 
 "fbvaneglog"<- 
-function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvaneglog.sym <- function(loc1, scale1, shape1, loc2, scale2, shape2,
-                            asy1, dep) {
-    nlbvaneglog(loc1, scale1, shape1, loc2, scale2, shape2, asy1, asy1, dep)
-    }
-    
     nlbvaneglog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                             asy1, asy2, dep)
     {
+        if(sym) asy2 <- asy1
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+        
         if(any(c(scale1,scale2) < 0.01) || any(c(asy1,asy2) > 1) ||
            any(c(asy1,asy2) < 0.001) || dep < 0.05 || dep > 5)
             return(1e6)
@@ -1489,13 +1505,15 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
             loc1 <- drop(nslocmat1 %*% ns)
         }
         else loc1 <- rep(loc1, length.out = nrow(x))
-        if(!is.null(nsloc2)) {
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
             ns <- numeric(length(loc.param2))
             for(i in 1:length(ns))
-                ns[i] <- get(loc.param2[i])
+              ns[i] <- get(loc.param2[i])
             loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
         }
-        else loc2 <- rep(loc2, length.out = nrow(x))
         if(spx$n.m1)
             m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2],
                 scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
@@ -1514,6 +1532,8 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
         if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
         else return(m1l + m2l + bvl)
     }
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
     if(!is.null(nsloc1)) {
         nsloc1 <- nsloc.transform(x, nsloc1)
         nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -1524,63 +1544,49 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
     }
     loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
-    param <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
-               "shape2", "asy1")
-    if(!sym) param <- c(param, "asy2", "dep")
-    else param <- c(param, "dep")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    if(!sym) param <- c(param, "asy1", "asy2", "dep")
+    else param <- c(param, "asy1", "dep")
     nmdots <- names(list(...))
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
-      loc.param1, loc.param2, model = "aneglog", sym = sym) 
+      loc.param1, loc.param2, model = "aneglog") 
     spx <- sep.bvdata(x)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
     if(any(!(param %in% c(nm,names(fixed.param)))))
         stop("unspecified parameters")
-    if(sym) {
-      f <- c(as.list(numeric(length(loc.param1))), formals(nlbvaneglog.sym)[2:3],
-      as.list(numeric(length(loc.param2))), formals(nlbvaneglog.sym)[5:8])
-    }
-    else {
-      f <- c(as.list(numeric(length(loc.param1))), formals(nlbvaneglog)[2:3],
-      as.list(numeric(length(loc.param2))), formals(nlbvaneglog)[5:9])
-    }
+    prind <- (5:9)[c(!cscale, !cshape, TRUE, !sym, TRUE)]
+    f <- c(as.list(numeric(length(loc.param1))), formals(nlbvaneglog)[2:3],
+      as.list(numeric(length(loc.param2))), formals(nlbvaneglog)[prind])
     names(f) <- param
     m <- match(nm, param)
     if(any(is.na(m))) 
         stop("`start' specifies unknown arguments")
-    if(sym) {
-      formals(nlbvaneglog.sym) <- c(f[m], f[-m])
-      nllh <- function(p, ...) nlbvaneglog.sym(p, ...)
-      if(l > 1) body(nllh) <- parse(text = paste("nlbvaneglog.sym(",
-        paste("p[",1:l,"]", collapse = ", "), ", ...)"))
-    }
-    else {
-      formals(nlbvaneglog) <- c(f[m], f[-m])
-      nllh <- function(p, ...) nlbvaneglog(p, ...)
-      if(l > 1) body(nllh) <- parse(text = paste("nlbvaneglog(",
-        paste("p[",1:l,"]", collapse = ", "), ", ...)"))
-    }
+    formals(nlbvaneglog) <- c(f[m], f[-m])
+    nllh <- function(p, ...) nlbvaneglog(p, ...)
+    if(l > 1) body(nllh) <- parse(text = paste("nlbvaneglog(",
+      paste("p[",1:l,"]", collapse = ", "), ", ...)"))
     start.arg <- c(list(p = unlist(start)), fixed.param)
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if(sym) {
-      asy2 <- opt$par["asy1"]
-      names(asy2) <- NULL
-      if(is.na(asy2)) asy2 <- fixed.param[["asy1"]]
-      fixed.param <- c(fixed.param, list(asy2 = asy2))
-    }
     bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 sym, model = "aneglog")
+      sym = sym, cmar = c(cloc, cscale, cshape), model = "aneglog")
 }
 
 "fbvbilog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvbilog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                           alpha, beta)
     {
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+        
         if(any(c(scale1,scale2) < 0.01) || any(c(alpha,beta) < 0.1) ||
            any(c(alpha,beta) > 0.999))
             return(1e6)
@@ -1591,13 +1597,15 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
             loc1 <- drop(nslocmat1 %*% ns)
         }
         else loc1 <- rep(loc1, length.out = nrow(x))
-        if(!is.null(nsloc2)) {
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
             ns <- numeric(length(loc.param2))
             for(i in 1:length(ns))
                 ns[i] <- get(loc.param2[i])
             loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
         }
-        else loc2 <- rep(loc2, length.out = nrow(x))
         if(spx$n.m1)
             m1l <- .C("nlgev", spx$x.m1,  spx$n.m1, loc1[spx$na == 2],
                 scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
@@ -1616,6 +1624,8 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
         else return(m1l + m2l + bvl)
     }
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
     if(!is.null(nsloc1)) {
         nsloc1 <- nsloc.transform(x, nsloc1)
         nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -1626,19 +1636,23 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
     }
     loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
-    param <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
-               "shape2", "alpha", "beta")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    param <- c(param, "alpha", "beta")
     nmdots <- names(list(...))
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "bilog") 
     spx <- sep.bvdata(x)
     nm <- names(start)
+    l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
     if(any(!(param %in% c(nm,names(fixed.param)))))
         stop("unspecified parameters")
-    l <- length(nm)
+    prind <- (5:8)[c(!cscale, !cshape, TRUE, TRUE)]
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvbilog)[2:3],
-           as.list(numeric(length(loc.param2))), formals(nlbvbilog)[5:8])
+           as.list(numeric(length(loc.param2))), formals(nlbvbilog)[prind])
     names(f) <- param
     m <- match(nm, param)
     if(any(is.na(m))) 
@@ -1653,15 +1667,18 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
     bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 FALSE, model = "bilog")
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "bilog")
 }
 
 "fbvnegbilog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvnegbilog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                              alpha, beta)
     {
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+        
         if(any(c(scale1,scale2) < 0.01) || any(c(alpha,beta) < 0.1) ||
            any(c(alpha,beta) > 20))
             return(1e6)
@@ -1672,13 +1689,15 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
             loc1 <- drop(nslocmat1 %*% ns)
         }
         else loc1 <- rep(loc1, length.out = nrow(x))
-        if(!is.null(nsloc2)) {
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
             ns <- numeric(length(loc.param2))
             for(i in 1:length(ns))
                 ns[i] <- get(loc.param2[i])
             loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
         }
-        else loc2 <- rep(loc2, length.out = nrow(x))
         if(spx$n.m1)
             m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2],
                 scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
@@ -1697,6 +1716,8 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
         else return(m1l + m2l + bvl)
     }
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
     if(!is.null(nsloc1)) {
         nsloc1 <- nsloc.transform(x, nsloc1)
         nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -1707,19 +1728,23 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
     }
     loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
-    param <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
-               "shape2", "alpha", "beta")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    param <- c(param, "alpha", "beta")
     nmdots <- names(list(...))
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
                           loc.param1, loc.param2, model = "negbilog") 
     spx <- sep.bvdata(x)
     nm <- names(start)
+    l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
     if(any(!(param %in% c(nm,names(fixed.param)))))
         stop("unspecified parameters")
-    l <- length(nm)
+    prind <- (5:8)[c(!cscale, !cshape, TRUE, TRUE)]
     f <- c(as.list(numeric(length(loc.param1))), formals(nlbvnegbilog)[2:3],
-           as.list(numeric(length(loc.param2))), formals(nlbvnegbilog)[5:8])
+           as.list(numeric(length(loc.param2))), formals(nlbvnegbilog)[prind])
     names(f) <- param
     m <- match(nm, param)
     if(any(is.na(m))) 
@@ -1734,20 +1759,19 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE
         warning("negative log-likelihood is infinite at starting values") 
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
     bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 FALSE, model = "negbilog")
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "negbilog")
 }
 
 "fbvct"<- 
-function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
-    nlbvct.sym <- function(loc1, scale1, shape1, loc2, scale2, shape2,
-                            alpha) {
-    nlbvct(loc1, scale1, shape1, loc2, scale2, shape2, alpha, alpha)
-    }
-    
     nlbvct <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                        alpha, beta)
     {
+        if(sym) beta <- alpha
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+        
         if(any(c(scale1,scale2) < 0.01) || any(c(alpha,beta) < 0.001) ||
            any(c(alpha,beta) > 30))
             return(1e6)
@@ -1758,13 +1782,15 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
             loc1 <- drop(nslocmat1 %*% ns)
         }
         else loc1 <- rep(loc1, length.out = nrow(x))
-        if(!is.null(nsloc2)) {
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
             ns <- numeric(length(loc.param2))
             for(i in 1:length(ns))
-                ns[i] <- get(loc.param2[i])
+              ns[i] <- get(loc.param2[i])
             loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
         }
-        else loc2 <- rep(loc2, length.out = nrow(x))
         if(spx$n.m1)
             m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2],
                 scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
@@ -1783,6 +1809,8 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
         if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
         else return(m1l + m2l + bvl)
     }
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
     if(!is.null(nsloc1)) {
         nsloc1 <- nsloc.transform(x, nsloc1)
         nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -1793,58 +1821,42 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRU
     }
     loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
     loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
-    param <- c(loc.param1, "scale1", "shape1", loc.param2, "scale2",
-               "shape2", "alpha")
-    if(!sym) param <- c(param, "beta")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    if(!sym) param <- c(param, "alpha", "beta")
+    else param <- c(param, "alpha")
     nmdots <- names(list(...))
     start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
-      loc.param1, loc.param2, model = "ct", sym = sym) 
+      loc.param1, loc.param2, model = "ct") 
     spx <- sep.bvdata(x)
     nm <- names(start)
     l <- length(nm)
     fixed.param <- list(...)[nmdots %in% param]
     if(any(!(param %in% c(nm,names(fixed.param)))))
         stop("unspecified parameters")
-    if(sym) {
-      f <- c(as.list(numeric(length(loc.param1))), formals(nlbvct.sym)[2:3],
-      as.list(numeric(length(loc.param2))), formals(nlbvct.sym)[5:7])
-    }
-    else {
-      f <- c(as.list(numeric(length(loc.param1))), formals(nlbvct)[2:3],
-      as.list(numeric(length(loc.param2))), formals(nlbvct)[5:8])
-    }
+    prind <- (5:8)[c(!cscale, !cshape, TRUE, !sym)]
+    f <- c(as.list(numeric(length(loc.param1))), formals(nlbvct)[2:3],
+      as.list(numeric(length(loc.param2))), formals(nlbvct)[prind])
     names(f) <- param
     m <- match(nm, param)
     if(any(is.na(m))) 
         stop("`start' specifies unknown arguments")
-    if(sym) {
-      formals(nlbvct.sym) <- c(f[m], f[-m])
-      nllh <- function(p, ...) nlbvct.sym(p, ...)
-      if(l > 1) body(nllh) <- parse(text = paste("nlbvct.sym(",
-        paste("p[",1:l,"]", collapse = ", "), ", ...)"))
-    }
-    else {
-      formals(nlbvct) <- c(f[m], f[-m])
-      nllh <- function(p, ...) nlbvct(p, ...)
-      if(l > 1) body(nllh) <- parse(text = paste("nlbvct(",
-        paste("p[",1:l,"]", collapse = ", "), ", ...)"))
-    }
+    formals(nlbvct) <- c(f[m], f[-m])
+    nllh <- function(p, ...) nlbvct(p, ...)
+    if(l > 1) body(nllh) <- parse(text = paste("nlbvct(",
+      paste("p[",1:l,"]", collapse = ", "), ", ...)"))
     start.arg <- c(list(p = unlist(start)), fixed.param)
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    if(sym) {
-      beta <- opt$par["alpha"]
-      names(beta) <- NULL
-      if(is.na(beta)) beta <- fixed.param[["alpha"]]
-      fixed.param <- c(fixed.param, list(beta = beta))
-    }
     bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 sym, model = "ct")
+      sym = sym, cmar = c(cloc, cscale, cshape), model = "ct")
 }
 
 "fbvevd" <-
-function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"), start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"), start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
   call <- match.call()
   model <- match.arg(model)
@@ -1853,24 +1865,32 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
   
   ft <- switch(model,
     log = fbvlog(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=nsloc2,
-      std.err=std.err, dsm=dsm, corr=corr, method=method, warn.inf=warn.inf),
-    alog = fbvalog(x=x, start=start, ..., sym=sym,
-      nsloc1=nsloc1, nsloc2=nsloc2, std.err=std.err, dsm=dsm, corr=corr,
-      method=method, warn.inf=warn.inf),
+      cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err,
+      dsm=dsm, corr=corr, method=method, warn.inf=warn.inf),
+    alog = fbvalog(x=x, start=start, ..., sym=sym, nsloc1=nsloc1,
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
+      std.err=std.err, dsm=dsm, corr=corr, method=method,
+      warn.inf=warn.inf),
     hr = fbvhr(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=nsloc2,
-      std.err=std.err, dsm=dsm, corr=corr, method=method, warn.inf=warn.inf),
+      cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err, dsm=dsm,
+      corr=corr, method=method, warn.inf=warn.inf),
     neglog = fbvneglog(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=nsloc2,
-      std.err=std.err, dsm=dsm, corr=corr, method=method, warn.inf=warn.inf),
-    aneglog = fbvaneglog(x=x, start=start, ..., sym=sym,
-      nsloc1=nsloc1, nsloc2=nsloc2, std.err=std.err, dsm=dsm, corr=corr,
-      method=method, warn.inf=warn.inf),
+      cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err, dsm=dsm,
+      corr=corr, method=method, warn.inf=warn.inf),
+    aneglog = fbvaneglog(x=x, start=start, ..., sym=sym, nsloc1=nsloc1,
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
+      std.err=std.err, dsm=dsm, corr=corr, method=method,
+      warn.inf=warn.inf),
     bilog = fbvbilog(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=nsloc2,
-      std.err=std.err, dsm=dsm, corr=corr, method=method, warn.inf=warn.inf),
+      cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err, dsm=dsm,
+      corr=corr, method=method, warn.inf=warn.inf),
     negbilog = fbvnegbilog(x=x, start=start, ..., nsloc1=nsloc1,
-      nsloc2=nsloc2, std.err=std.err, dsm=dsm, corr= corr, method=method,
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
+      std.err=std.err, dsm=dsm, corr= corr, method=method,
       warn.inf=warn.inf),
     ct = fbvct(x=x, start=start, ..., sym=sym, nsloc1=nsloc1,
-      nsloc2=nsloc2, std.err=std.err, dsm=dsm, corr=corr, method=method,
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
+      std.err=std.err, dsm=dsm, corr=corr, method=method,
       warn.inf=warn.inf))
 
   structure(c(ft, call = call), class = c("bvevd","evd"))
@@ -2118,7 +2138,7 @@ na.vals <- function(x) {
 }
 
 "bvstart.vals" <- 
-function(x, start, nsloc1, nsloc2, nmdots, param, loc.param1, loc.param2, model, sym = FALSE, obj = "bvevd", u = NULL)
+function(x, start, nsloc1, nsloc2, nmdots, param, loc.param1, loc.param2, model, obj = "bvevd", u = NULL)
 {
   if(missing(start)) {
     start <- as.list(numeric(length(param)))
@@ -2132,25 +2152,29 @@ function(x, start, nsloc1, nsloc2, nmdots, param, loc.param1, loc.param2, model,
       st2 <- as.list(fitted(fpot(x[,2], u[2], std.err = FALSE)))
     }
     start[c(loc.param1, "scale1", "shape1")] <- st1
-    start[c(loc.param2, "scale2", "shape2")] <- st2
+    tmp2 <- loc.param2
+    if("scale2" %in% param) tmp2 <- c(tmp2, "scale2")
+    if("shape2" %in% param) tmp2 <- c(tmp2, "shape2")
+    tmp <- sub("2", "", tmp2)
+    start[tmp2] <- st2[tmp]
     if(model == "log") start[["dep"]] <- 0.75
     if(model == "alog") {
         start[["asy1"]] <- 0.75
-        if(!sym) start[["asy2"]] <- 0.75 
+        if("asy2" %in% param) start[["asy2"]] <- 0.75 
         start[["dep"]] <- 0.65
     }
     if(model == "hr") start[["dep"]] <- 1
     if(model == "neglog") start[["dep"]] <- 0.6
     if(model == "aneglog") {
         start[["asy1"]] <- 0.75
-        if(!sym) start[["asy2"]] <- 0.75 
+        if("asy2" %in% param) start[["asy2"]] <- 0.75 
         start[["dep"]] <- 0.8
     }
     if(model == "bilog") start[["alpha"]] <- start[["beta"]] <- 0.75
     if(model == "negbilog") start[["alpha"]] <- start[["beta"]] <- 1/0.6
     if(model == "ct") {
       start[["alpha"]] <- 0.6
-      if(!sym) start[["beta"]] <- 0.6 
+      if("beta" %in% param) start[["beta"]] <- 0.6 
     }
     start <- start[!(param %in% nmdots)]
   }
@@ -2226,7 +2250,7 @@ function(x, obj = "bvevd", u = NULL, censored = TRUE)
 }
 
 "bvpost.optim" <- 
-function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr, sym, model)
+function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr, sym, cmar, model)
 {
     if (opt$convergence != 0) {
         warning(paste("optimization for", model, "may not have succeeded"))
@@ -2254,7 +2278,24 @@ function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr, sym, model
         else corr <- NULL
     }
     else std.err <- corr <- NULL
-    param <- c(opt$par, unlist(fixed.param))
+    fixed <- unlist(fixed.param)
+    param <- c(opt$par, fixed)
+    fixed2 <- NULL
+    if(cmar[1]) {
+      loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
+      fixed2 <- c(fixed2, param[loc.param1])
+    }
+    if(cmar[2]) fixed2 <- c(fixed2, param["scale1"])
+    if(cmar[3]) fixed2 <- c(fixed2, param["shape1"])
+    if(sym) {
+      if(model %in% c("alog","aneglog")) fixed2 <- c(fixed2, param["asy1"])
+      if(model == "ct") fixed2 <- c(fixed2, param["alpha"])
+    }
+    if(!is.null(fixed2)) {
+      names(fixed2) <- sub("1", "2", names(fixed2))
+      names(fixed2) <- sub("alpha", "beta", names(fixed2))
+    }
+    param <- c(param, fixed2)
     # Transform to stationarity
     x2 <- x
     if(!is.null(nsloc1)) {
@@ -2300,11 +2341,12 @@ function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr, sym, model
     }
     else dep.sum <- NULL
     # End dependence summary
-    list(estimate = opt$par, std.err = std.err,
-    fixed = unlist(fixed.param), param = param, deviance = 2*opt$value,
+    list(estimate = opt$par, std.err = std.err, fixed = fixed,
+    fixed2 = fixed2, param = param, deviance = 2*opt$value,
     dep.summary = dep.sum, corr = corr, convergence = opt$convergence,
     counts = opt$counts, message = opt$message, data = x, tdata = x2,
-    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), sym = sym, model = model)
+    nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), sym = sym, cmar =
+    cmar, model = model)
 }
 
 
