@@ -1,53 +1,53 @@
-abvnonpar                Non-parametric Estimates for the Dependence
-                         Function
-anova.evd                Compare Nested evd Objects
-bvalog                   The Bivariate Asymmetric Logistic Model
-bvaneglog                The Bivariate Asymmetric Negative Logistic Model
-bvbilog                  The Bivariate Bilogistic Model
-bvcpp                    A Conditional P-P Plot for a Bivariate evd
-                         Object
-bvct                     The Bivariate Coles-Tawn Model
-bvdens                   A Density Plot for a Bivariate evd Object
-bvdepfns                 Dependence Functions for Bivariate Extreme Value
-                         Distributions
-bvdp                     A Dependence Function Plot for a Bivariate evd
-                         Object
-bvhr                     The Husler-Reiss Model
-bvlog                    The Bivariate Logistic Model
-bvnegbilog               The Bivariate Negative Bilogistic Model
-bvneglog                 The Bivariate Negative Logistic Model
-dens                     A Density Plot for an evd Object
-evd-defunct              Defunct Functions
-evd-internal             Internal Functions
-ext                      Distributions of Maxima and Minima
-fbv                      Maximum-likelihood Fitting of Bivariate Extreme
-                         Value Distributions
-fbvall                   Simultaneous Maximum-likelihood Fitting of
-                         Bivariate Extreme Value Distributions
-fext                     Maximum-likelihood Fitting of Maxima and Minima
-fgev                     Maximum-likelihood Fitting of the Generalized
-                         Extreme Value Distribution
-fgev.quantile            Maximum-likelihood Fitting of the Generalized
-                         Extreme Value Distribution
-forder                   Maximum-likelihood Fitting of Order Statistics
-frechet                  The Frechet Distribution
-gev                      The Generalized Extreme Value Distribution
-gumbel                   The Gumbel Distribution
-mvalog                   The Multivariate Asymmetric Logistic Model
-mvlog                    The Multivariate Logistic Model
-order                    Distributions of Order Statistics
-oxford                   Annual Maximum Temperatures at Oxford
-pcint                    Profile Likelihood Confidence Intervals
-plot.bvevd               Plot Diagnostics for a Bivariate evd Object
-plot.evd                 Plot Diagnostics for an evd Object
-plot.profile.evd         Plot Profile Devainces
-plot.profile2d.evd       Plot Joint Profile Devaince
-pp                       A P-P Plot for an evd Object
-profile.evd              Method for Profiling evd Objects
-profile2d                Generic Function for Profiling Models
-profile2d.evd            Method for Profiling evd Objects
-qq                       A Q-Q Plot for an evd Object
-rl                       A Return Level Plot for an evd Object
-rweibull                 The Reversed Weibull Distribution
-sealevel                 Annual Sea Level Maxima at Dover and Harwich
-std.errors               Model Standard Errors
+abvnonpar               Non-parametric Estimates for Dependence
+                        Functions of the Bivariate Extreme Value
+                        Distribution
+abvpar                  Parametric Dependence Functions of Bivariate
+                        Extreme Value Models
+anova.evd               Compare Nested EVD Objects
+atvnonpar               Non-parametric Estimates for Dependence
+                        Functions of the Trivariate Extreme Value
+                        Distribution
+atvpar                  Parametric Dependence Functions of Trivariate
+                        Extreme Value Models
+bvevd                   Parametric Bivariate Extreme Value
+                        Distributions
+evd-defunct             Defunct Functions
+evd-internal            Internal Functions
+evmc                    Simulate Markov Chains With Extreme Value
+                        Dependence Structures
+extreme                 Distributions of Maxima and Minima
+failure                 Failure Times
+fbvevd                  Maximum-likelihood Fitting of Bivariate Extreme
+                        Value Distributions
+fextreme                Maximum-likelihood Fitting of Maxima and Minima
+fgev                    Maximum-likelihood Fitting of the Generalized
+                        Extreme Value Distribution
+forder                  Maximum-likelihood Fitting of Order Statistics
+fox                     Maximum Annual Flood Discharges of the Fox
+                        River
+frechet                 The Frechet Distribution
+gev                     The Generalized Extreme Value Distribution
+gumbel                  The Gumbel Distribution
+lisbon                  Annual Maximum Wind Speeds at Lisbon
+marma                   Simulate MARMA(p,q) Processes
+mvevd                   Parametric Multivariate Extreme Value
+                        Distributions
+ocmulgee                Maximum Annual Flood Discharges of the Ocmulgee
+                        River
+oldage                  Oldest Ages for Swedish Males and Females
+order                   Distributions of Order Statistics
+oxford                  Annual Maximum Temperatures at Oxford
+plot.bvevd              Plot Diagnostics for a Bivariate EVD Object
+plot.gev                Plot Diagnostics for a GEV Object
+plot.profile.evd        Plot Profile Deviances and Calculate Profile
+                        Confidence Intervals
+plot.profile2d.evd      Plot Joint Profile Devainces
+portpirie               Annual Maximum Sea Levels at Port Pirie
+profile.evd             Method for Profiling EVD Objects
+profile2d.evd           Method for Profiling EVD Objects
+rweibull                The Reversed Weibull Distribution
+sask                    Maximum Annual Flood Discharges of the North
+                        Saskachevan River
+sealevel                Annual Sea Level Maxima at Dover and Harwich
+uccle                   Rainfall Maxima at Uccle, Belguim
+venice                  Largest Sea Levels in Venice

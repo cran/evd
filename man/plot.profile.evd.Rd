@@ -1,10 +1,12 @@
 \name{plot.profile.evd}
 \alias{plot.profile.evd}
 
-\title{Plot Profile Devainces}
+\title{Plot Profile Deviances and Calculate Profile Confidence
+  Intervals}
 \description{
   Displays profile deviances from a model profiled with
-  \code{\link{profile.evd}}.
+  \code{\link{profile.evd}}, and invisibly returns profile
+  confidence intervals.
 }
 \usage{
 \method{plot}{profile.evd}(x, which = names(x), main = NULL,
@@ -13,33 +15,41 @@
 }
 \arguments{
   \item{x}{An object of class \code{"profile.evd"}.}
-  \item{which}{Parameters for which the profile deviance is
-    plotted. By default all profiled parameters in \code{x}
-    are used.}
+  \item{which}{A character vector giving the parameters for which
+    the profile deviance is plotted, and for which profile confidence
+    intervals are calculated. By default all profiled parameters in
+    \code{x} are used.}
   \item{main}{Title of each plot; a character vector, the
     same length as \code{which}.}
   \item{ask}{Logical; if \code{TRUE}, the user is asked before
     each plot.}
-  \item{ci}{By default the plots include a horizonal line
-    representing a profile confidence interval with confidence
-    coefficient \code{ci} (but see \bold{Warning}).}
-  \item{clty}{The line type of the horizontal line that represents
-    a profile confidence interval. Use zero to suppress.}
+  \item{ci}{A numeric vector. For each parameter in \code{which}
+    profile confidence intervals are calculated, for each confidence
+    coefficient in \code{ci} (but see \bold{Warning}).
+    The intervals are returned invisibly as a list of
+    vectors/matrices. Each plot then (by default) includes
+    horizonal lines that represent each interval.}
+  \item{clty}{The line type of the horizontal lines that represent
+    the profile confidence intervals. To omit the lines set
+    \code{clty} to zero.}
   \item{\dots}{Other graphics parameters.}
 }
-\details{
-  The profile deviance function is minus twice the logarithm of
-  the profile likelihood. 
+\value{
+  Profile devainces are plotted for each parameter in
+  \code{which}.
+  A list with one element for each parameter in \code{which}
+  is also returned invisibly.
+  Each element is a vector of length two or a matrix with two
+  columns, giving the lower and upper limits of each confidence
+  interval.
 }
 \section{Warning}{
-  The interval represented by the horizontal line may not be
-  a confidence interval with (asymptotic) confidence coefficient
+  The profile confidence intervals may not have confidence coefficient
   \code{ci}, because the usual asymptotic properties of maximum
-  likelihood estimators may not hold!
-  The usual asymptotic properties hold when the shape parameter(s)
-  is(are) greater than \eqn{-0.5}, and when
-  the parameters are not on the edge of the parameter space
-  (Smith, 1985). Fortunately, this is usually the case.
+  likelihood estimators may not hold.
+  For the GEV model, the usual asymptotic properties hold when the
+  shape parameter is greater than \eqn{-0.5} (Smith, 1985).
+  Fortunately, this is usually the case.
 }
 \references{
   Smith, R. L. (1985)
@@ -54,7 +64,8 @@
 uvdata <- rgev(100, loc = 0.13, scale = 1.1, shape = 0.2)
 M1 <- fgev(uvdata)
 \dontrun{M1P <- profile(M1)}
-\dontrun{pcint(M1P)}
-\dontrun{plot(M1P)}
+\dontrun{par(mfrow = c(2,2))}
+\dontrun{cint <- plot(M1P, ci = c(0.95, 0.99))}
+\dontrun{cint}
 }
 \keyword{hplot}

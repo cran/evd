@@ -6,6 +6,7 @@
   The \code{sealevel} data frame has 81 rows and 2 columns.
   The columns contain annual sea level maxima from 1912 to 1992 at
   Dover and Harwich respectively, two sites on the coast of Britain.
+  The row names give the years of observation.
   There are 39 missing values.
 }
 \format{

@@ -16,16 +16,16 @@ prweibull(-1:3, 2, 0.5, 1, low = FALSE)
 drweibull(-1:3, loc = 2, scale = 0.5, shape = 1)
 drweibull(-1:3, 2, 0.5, 1, log = TRUE)
 
-rext(4, qexp, rate = 1, mlen = 5)
-rext(4, distn = "exp", rate = 1, mlen = 5)
-rext(4, distn = "exp", mlen = 5)
-rext(1, distn = "norm", mean = 0.5, sd = 2, mlen = 20)
+rextreme(4, qexp, rate = 1, mlen = 5)
+rextreme(4, distn = "exp", rate = 1, mlen = 5)
+rextreme(4, distn = "exp", mlen = 5)
+rextreme(1, distn = "norm", mean = 0.5, sd = 2, mlen = 20)
 max(rnorm(20, 0.5, 2))
-rext(1, distn="norm", sd = 2, mlen = 20, largest = FALSE)
+rextreme(1, distn="norm", sd = 2, mlen = 20, largest = FALSE)
 min(rnorm(20, 0, 2))
-pext(c(.4, .5), distn="norm", sd = c(1, 2), mlen = 4)
-pext(c(.4, .5), distn="norm", mean = 0, sd = c(1, 2), mlen = 4)
-dext(c(1, 4), distn="gamma", shape = 1, scale = 0.3, mlen = 100)
+pextreme(c(.4, .5), distn="norm", sd = c(1, 2), mlen = 4)
+pextreme(c(.4, .5), distn="norm", mean = 0, sd = c(1, 2), mlen = 4)
+dextreme(c(1, 4), distn="gamma", shape = 1, scale = 0.3, mlen = 100)
 
 rorder(1, distn = "norm", mlen = 20, j = 2)
 rorder(1, distn = "norm", mlen = 20, j = 19, largest = FALSE)
@@ -77,31 +77,30 @@ fgev(somedata, start = list(loc = 0.5, scale = 2), shape = 0)
 data2 <- rgev(1000, loc = 0.13, scale = 1.1, shape = -0.25)
 fgev(data2, start = list(loc=0.13,scale=1.1,shape=0), method="BFGS")
 
-data3 <- rext(100, qnorm, mean = 0.56, mlen = 365)
-fext(data3, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
-fext(data3, list(rate = 1), distn = "exp", mlen = 365, method="L-BFGS-B", lower = 0.01)
-fext(data3, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365, method="L-BFGS-B", lower = 0.01)
+data3 <- rextreme(100, qnorm, mean = 0.56, mlen = 365)
+fextreme(data3, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
+fextreme(data3, list(rate = 1), distn = "exp", mlen = 365, method="L-BFGS-B", lower = 0.01)
+fextreme(data3, list(scale = 1), shape = 0.5, distn = "gamma", mlen = 365, method="L-BFGS-B", lower = 0.01)
 
 # Subsection: Bivariate Fitting
 
 bvdata <- rbvlog(100, dep = 0.6, mar1 = c(1.2,1.4,0.4), mar2 = c(1.2,1.4,0.4))
-fbvlog(bvdata, start = list(mar1 = c(2,1,0), mar2 = c(1,1,0), dep = 0.75), control = list(maxit = 2000))
-fbvlog(bvdata, start = list(loc1=2, scale1=1, shape1=0, loc2=1, scale2=1, shape2=0, dep=0.75), control = list(maxit = 2000))
-fbvlog(bvdata, start = list(mar1 = c(2,1,0), mar2 = c(1,1,0), dep = 0.75), method = "BFGS")$counts
+fbvevd(bvdata, model = "log", start = list(mar1 = c(2,1,0), mar2 = c(1,1,0), dep = 0.75), control = list(maxit = 2000))
+fbvevd(bvdata, model = "log", start = list(loc1=2, scale1=1, shape1=0, loc2=1, scale2=1, shape2=0, dep=0.75), control = list(maxit = 2000))
+fbvevd(bvdata, model = "log", start = list(mar1 = c(2,1,0), mar2 = c(1,1,0), dep = 0.75), method = "BFGS")$counts
 
-fbvlog(bvdata, start = list(mar1 = c(2,1,0), mar2 = c(1,1,0)), dep = 1, method="BFGS")
+fbvevd(bvdata, model = "log", start = list(mar1 = c(2,1,0), mar2 = c(1,1,0)), dep = 1, method="BFGS")
 fgev(bvdata[,1], start = list(loc=1,scale=1,shape=0), method="BFGS")$estimate
 fgev(bvdata[,2], start = list(loc=1,scale=1,shape=0), method="BFGS")$estimate
  
-fbvlog(bvdata, start = list(loc1=1, scale1=1, loc2=1, scale2=1, dep=0.75), shape1 = 0, shape2 = 0, method = "BFGS")
-fbvlog(bvdata, start = list(mar2 = c(1,1,0), dep = 0.75), loc1 = 1, scale1 = 1.5, shape1 = 0.5, method = "BFGS")
+fbvevd(bvdata, model = "log", start = list(loc1=1, scale1=1, loc2=1, scale2=1, dep=0.75), shape1 = 0, shape2 = 0, method = "BFGS")
+fbvevd(bvdata, model = "log", start = list(mar2 = c(1,1,0), dep = 0.75), loc1 = 1, scale1 = 1.5, shape1 = 0.5, method = "BFGS")
 
-fbvalog(bvdata, start = list(mar1 = c(1,1,0), mar2 = c(1,1,0), asy = c(.7,.7), dep = 0.75), method = "BFGS")
-fbvalog(bvdata, start = list(mar1 = c(0.9,1.2,0.2), mar2 = c(1,1.2,0.3), asy2 = .72, dep = 0.58), asy1 = 1, method = "BFGS")
+fbvevd(bvdata, model = "alog", start = list(mar1 = c(1,1,0), mar2 = c(1,1,0), asy = c(.7,.7), dep = 0.75), method = "BFGS")
+fbvevd(bvdata, model = "alog", start = list(mar1 = c(0.9,1.2,0.2), mar2 = c(1,1.2,0.3), asy2 = .72, dep = 0.58), asy1 = 1, method = "BFGS")
 # CHANGE: std.err = FALSE
-fbvalog(bvdata, start = list(mar1 = c(0.9,1.2,0.2), mar2 = c(1,1.2,0.3), asy = c(.99,.72), dep = 0.58), method = "L-BFGS-B", lower = c(rep(-Inf, 6), 0, 0, -Inf), upper = c(rep(Inf, 6), 1, 1, 1), std.err = FALSE)
-fbvalog(bvdata, start = list(mar1 = c(1.5,1.4,0.1), mar2 = c(1.4,1.4,0.2), 
-dep = 0.73), asy1 = 1, asy2 = 1, method="BFGS")
+fbvevd(bvdata, model = "alog", start = list(mar1 = c(0.9,1.2,0.2), mar2 = c(1,1.2,0.3), asy = c(.99,.72), dep = 0.58), method = "L-BFGS-B", lower = c(rep(-Inf, 6), 0, 0, -Inf), upper = c(rep(Inf, 6), 1, 1, 1), std.err = FALSE)
+fbvevd(bvdata, model = "alog", start = list(mar1 = c(1.5,1.4,0.1), mar2 = c(1.4,1.4,0.2), dep = 0.73), asy1 = 1, asy2 = 1, method="BFGS")
 
 # Subsection: A Univariate Example
 
@@ -116,8 +115,8 @@ mle <- oxford.fit$estimate
 as.vector(mle[1] - mle[2]/mle[3])
 range(oxford)
 
-fext(oxford, start = list(mean = 40, sd = 1), distn = "norm", mlen = 365)
-fext(oxford, start = list(scale = 1, shape = 1), distn = "gamma", mlen = 365)
+fextreme(oxford, start = list(mean = 40, sd = 1), distn = "norm", mlen = 365)
+fextreme(oxford, start = list(scale = 1, shape = 1), distn = "gamma", mlen = 365)
 
 # Subsection: A Bivariate Example
 
@@ -127,16 +126,16 @@ sl <- sealevel
 sqrt(6 * c(var(sl[,1], na.rm = TRUE), var(sl[,2], na.rm = TRUE)))/pi
 c(mean(sl[,1], na.rm = TRUE), mean(sl[,2], na.rm = TRUE)) - 0.58 * c(0.21, 0.24)
 
-tmp <- fbvlog(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), dep = 1, method = "BFGS")
-tmp <- fbvalog(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), asy1 = 1, asy2 = 1, dep = 1, method = "BFGS")
+tmp <- fbvevd(sl, model = "log", start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), dep = 1, method = "BFGS")
+tmp <- fbvevd(sl, model = "alog", start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), asy1 = 1, asy2 = 1, dep = 1, method = "BFGS")
 # CHANGE: dependence parameter fixed at lower limit
-tmp <- fbvhr(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), dep = 0.2, method = "BFGS")
+tmp <- fbvevd(sl, model = "hr", start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0)), dep = 0.2, method = "BFGS")
 tmp$estimate
 
-sl.fit <- fbvalog(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0), asy = c(0.8, 0.8), dep = 0.6), method = "BFGS", control = list(trace=1))
+sl.fit <- fbvevd(sl, model = "alog", start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0), asy = c(0.8, 0.8), dep = 0.6), method = "BFGS", control = list(trace=1))
 sl.fit
 
-fbvalog(sl, start = list(loc1 = 3.6, scale1 = 0.19, loc2 = 2.6, scale2 = 0.2, asy = c(0.7, 0.45), dep = 0.24), shape1 = 0, shape2 = 0, method = "BFGS")$deviance - sl.fit$deviance
+fbvevd(sl, model = "alog", start = list(loc1 = 3.6, scale1 = 0.19, loc2 = 2.6, scale2 = 0.2, asy = c(0.7, 0.45), dep = 0.24), shape1 = 0, shape2 = 0, method = "BFGS")$deviance - sl.fit$deviance
 tmp$deviance - sl.fit$deviance
 
 # CHANGE: na.rm = TRUE
@@ -146,22 +145,22 @@ range(sl[,1], na.rm = TRUE)
 as.vector(mle[4] - mle[5]/mle[6])
 range(sl[,2], na.rm = TRUE)
 
-sl.fit2 <- fbvalog(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 0.6), asy1 = 1, asy2 = 1, method = "BFGS")
-sl.fit2 <- fbvlog(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 0.6), method = "BFGS")
+sl.fit2 <- fbvevd(sl, model = "alog", start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 0.6), asy1 = 1, asy2 = 1, method = "BFGS")
+#sl.fit2 <- fbvevd(sl, model = "alog", start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 0.6), method = "BFGS")
 sl.fit2$estimate
 sl.fit2$deviance
 sl.fit2$deviance - sl.fit$deviance
 abvalog(dep = 0.24316, asy = c(0.69554, 0.44967))
 abvlog(dep = 0.62474)
 
-fbvhr(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09),  dep = 1), method = "BFGS", control = list(trace=1))
+fbvevd(sl, model = "hr", start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09),  dep = 1), method = "BFGS", control = list(trace=1))
 abvhr(dep = 1.253410)
-fbvaneglog(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 1, asy = c(0.8,0.8)), method = "BFGS", control = list(trace=1))
+fbvevd(sl, model = "aneglog", start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 1, asy = c(0.8,0.8)), method = "BFGS", control = list(trace=1))
 abvaneglog(dep = 3.44762, asy = c(0.69796,0.44601))
-fbvaneglog(sl, start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 1), asy1 = 1, asy2 = 1, method = "BFGS", control = list(trace=1))
+fbvevd(sl, model = "aneglog", start = list(mar1 = c(3.6, 0.19, -0.04), mar2 = c(2.6, 0.2, 0.09), dep = 1), asy1 = 1, asy2 = 1, method = "BFGS", control = list(trace=1))
 abvneglog(dep = 0.87394)
 
-fbvalog(sl, start = list(mar1 = c(3.63, 0.18, -0.04), mar2 = c(2.63, 0.2, 0.09), dep = 0.24), asy1 = 0.4492, asy2 = 0.4492, method = "BFGS")
+fbvevd(sl, model = "alog", start = list(mar1 = c(3.63, 0.18, -0.04), mar2 = c(2.63, 0.2, 0.09), dep = 0.24), asy1 = 0.4492, asy2 = 0.4492, method = "BFGS")
 
 
 
