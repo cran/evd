@@ -60,6 +60,8 @@ function(n, quantfun, ..., distn, mlen = 1, largest = TRUE)
 "qfrechet"<-
 function(p, loc = 0, scale = 1, shape = 1, lower.tail = TRUE)
 {
+    if(min(p, na.rm = TRUE) <= 0 || max(p, na.rm = TRUE) >=1)
+        stop("`p' must contain probabilities in (0,1)")
     if(min(scale) < 0 || min(shape) <= 0) stop("invalid arguments")
     if(!lower.tail) p <- 1 - p
     loc + scale * (-log(p))^(-1/shape)
@@ -74,7 +76,7 @@ function(p, loc = 0, scale = 1, lower.tail = TRUE)
 "qrweibull"<-
 function(p, loc = 0, scale = 1, shape = 1, lower.tail = TRUE)
 {
-    if(min(p) <= 0 || max(p) >=1)
+    if(min(p, na.rm = TRUE) <= 0 || max(p, na.rm = TRUE) >=1)
         stop("`p' must contain probabilities in (0,1)")
     if(min(scale) < 0 || min(shape) <= 0) stop("invalid arguments")
     if(!lower.tail) p <- 1 - p
@@ -84,7 +86,7 @@ function(p, loc = 0, scale = 1, shape = 1, lower.tail = TRUE)
 "qgev"<-
 function(p, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
 {
-    if(min(p) <= 0 || max(p) >=1)
+    if(min(p, na.rm = TRUE) <= 0 || max(p, na.rm = TRUE) >=1)
         stop("`p' must contain probabilities in (0,1)")
     if(min(scale) < 0) stop("invalid scale")
     if(length(shape) != 1) stop("invalid shape")
@@ -96,7 +98,7 @@ function(p, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
 "qext"<-
 function(p, quantfun, ..., distn, mlen = 1, largest = TRUE, lower.tail = TRUE)
 {
-    if(min(p) <= 0 || max(p) >=1)
+    if(min(p, na.rm = TRUE) <= 0 || max(p, na.rm = TRUE) >=1)
         stop("`p' must contain probabilities in (0,1)")
     if(mode(mlen) != "numeric" || length(mlen) != 1 || mlen < 1 ||
        mlen %% 1 != 0) 
@@ -194,13 +196,14 @@ function(x, loc = 0, scale = 1, shape = 1, log = FALSE)
 {
     if(min(scale) <= 0 || min(shape) <= 0) stop("invalid arguments")
     x <- (x - loc)/scale
-    xpos <- x[x>0]
+    xpos <- x[x>0 | is.na(x)]
     nn <- length(x)
-    scale <- rep(scale, length.out = nn)[x>0]
-    shape <- rep(shape, length.out = nn)[x>0]
+    scale <- rep(scale, length.out = nn)[x>0 | is.na(x)]
+    shape <- rep(shape, length.out = nn)[x>0 | is.na(x)]
     d <- numeric(nn)
-    d[x>0] <- log(shape/scale) - (1+shape) * log(xpos) - xpos^(-shape)
-    d[x<=0] <- -Inf
+    d[x>0 | is.na(x)] <- log(shape/scale) - (1+shape) * log(xpos) -
+         xpos^(-shape)
+    d[x<=0 & !is.na(x)] <- -Inf
     if(!log) d <- exp(d)
     d
 }
@@ -216,13 +219,14 @@ function(x, loc = 0, scale = 1, shape = 1, log = FALSE)
 {
     if(min(scale) <= 0 || min(shape) <= 0) stop("invalid arguments")
     x <- (x - loc)/scale
-    xneg <- x[x<0]
+    xneg <- x[x<0 | is.na(x)]
     nn <- length(x)
-    scale <- rep(scale, length.out = nn)[x<0]
-    shape <- rep(shape, length.out = nn)[x<0]
+    scale <- rep(scale, length.out = nn)[x<0 | is.na(x)]
+    shape <- rep(shape, length.out = nn)[x<0 | is.na(x)]
     d <- numeric(nn)
-    d[x<0] <- log(shape/scale) + (shape-1) * log(-xneg) - (-xneg)^shape
-    d[x>=0] <- -Inf
+    d[x<0 | is.na(x)] <- log(shape/scale) + (shape-1) * log(-xneg) -
+        (-xneg)^shape
+    d[x>=0 & !is.na(x)] <- -Inf
     if(!log) d <- exp(d)
     d
 }
@@ -238,11 +242,12 @@ function(x, loc = 0, scale = 1, shape = 0, log = FALSE)
     else {
         nn <- length(x)
         xx <- 1 + shape*x
-        xxpos <- xx[xx>0]
-        scale <- rep(scale, length.out = nn)[xx>0]
+        xxpos <- xx[xx>0 | is.na(xx)]
+        scale <- rep(scale, length.out = nn)[xx>0 | is.na(xx)]
         d <- numeric(nn)
-        d[xx>0] <- log(1/scale) - xxpos^(-1/shape) - (1/shape + 1)*log(xxpos)
-        d[xx<=0] <- -Inf
+        d[xx>0 | is.na(xx)] <- log(1/scale) - xxpos^(-1/shape) -
+            (1/shape + 1)*log(xxpos)
+        d[xx<=0 & !is.na(xx)] <- -Inf
     }  
     if(!log) d <- exp(d)
     d
@@ -297,53 +302,13 @@ function(x, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE, log = FALSE
     d
 }
 
-"fdensfun"<-
-function(x, densfun, start, ...)
-{
-    if (missing(x) || length(x) == 0) 
-        stop("`x' must be a non-empty object")
-    if (is.null(start) || !is.list(start)) 
-        stop("`start' must be a named list")
-    nllh <- function(p, ...) {
-        dvec <- dens(p, ..., log = TRUE)
-        if(any(is.infinite(dvec)))
-            return(1e6)
-        else 
-            return(-sum(dvec))
-    }
-    nm <- names(start)
-    l <- length(nm)
-    f <- formals(densfun)
-    args <- names(f)
-    m <- match(nm, args)
-    if (any(is.na(m))) 
-        stop("`start' specifies unknown arguments")
-    formals(densfun) <- c(f[c(1, m)], f[-c(1, m)])
-    dens <- function(p, x, ...) densfun(x, p, ...)
-    if(l > 1)
-        body(dens) <- parse(text = paste("densfun(x,", paste("p[",1:l,
-            "]", collapse = ", "), ", ...)"))
-    fixed.par <- list(...)
-    fixed.par <- fixed.par[names(fixed.par) %in% args]
-    start.arg <- c(list(p = unlist(start), x = x), fixed.par)
-    if(do.call("nllh", start.arg) == 1e6)
-        warning("negative log-likelihood is infinite at starting values")
-    opt <- optim(start, nllh, x = x, hessian = TRUE, ...)
-    if (opt$convergence > 0) 
-        warning("optimization may not have succeeded")
-    opt$std.err <- sqrt(diag(solve(opt$hessian)))
-    #opt$std.err <- rep(NA,l)
-    names(opt$std.err) <- nm
-    list(estimate = opt$par, std.err = opt$std.err, deviance = 2*opt$value,
-         counts = opt$counts)
-}
-
 "fext"<-
-function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE)
+function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE,
+         std.err = TRUE, method = "Nelder-Mead")
 {
     if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
         stop("`x' must be a non-empty numeric object")
-    if (is.null(start) || !is.list(start)) 
+    if (!is.list(start)) 
         stop("`start' must be a named list")
     if(missing(densfun))
         densfun <- get(paste("d", distn, sep=""), mode="function")
@@ -373,23 +338,32 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE)
                             paste("p[",1:l,"]", collapse = ", "), ", ...)"))
     opt <- optim(start, nllh, x = x, hessian = TRUE, ...,
                  densfun = densfun, distnfun = distnfun, mlen = mlen,
-                 largest = largest)
+                 largest = largest, method = method)
     if (opt$convergence > 0) 
         stop("optimization failed")
-    opt$std.err <- sqrt(diag(solve(opt$hessian)))
-    #opt$std.err <- rep(NA,l)
-    names(opt$std.err) <- nm
-    list(estimate = opt$par, std.err = opt$std.err, deviance = 2*opt$value,
+    if(std.err) {
+        tol <- .Machine$double.eps^0.5
+        std.err <- qr(opt$hessian, tol = tol)
+        if (std.err$rank != ncol(std.err$qr)) 
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- diag(solve(std.err, tol = tol))
+        if(any(std.err <= 0))
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- sqrt(std.err)
+    }
+    else std.err <- rep(NA,l)
+    names(std.err) <- nm
+    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
          counts = opt$counts)
 }
 
 "forder"<-
 function(x, start, densfun, distnfun, ..., distn, mlen = 1, j = 1,
-         largest = TRUE)
+         largest = TRUE, std.err = TRUE, method = "Nelder-Mead")
 {
     if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
         stop("`x' must be a non-empty numeric object")
-    if (is.null(start) || !is.list(start)) 
+    if (!is.list(start)) 
         stop("`start' must be a named list")
     if(missing(densfun))
         densfun <- get(paste("d", distn, sep=""), mode="function")
@@ -418,64 +392,270 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, j = 1,
         body(dens) <- parse(text = paste("dorder(x, densfun, distnfun,",
                             paste("p[",1:l,"]", collapse = ", "), ", ...)"))
     opt <- optim(start, nllh, x = x, hessian = TRUE, ..., densfun = densfun,
-                 distnfun = distnfun, mlen = mlen, j = j, largest = largest)
+                 distnfun = distnfun, mlen = mlen, j = j, largest = largest,
+                 method = method)
     if (opt$convergence > 0) 
         stop("optimization failed")
-    opt$std.err <- sqrt(diag(solve(opt$hessian)))
-    #opt$std.err <- rep(NA,l)
-    names(opt$std.err) <- nm
-    list(estimate = opt$par, std.err = opt$std.err, deviance = 2*opt$value,
+    if(std.err) {
+        tol <- .Machine$double.eps^0.5
+        std.err <- qr(opt$hessian, tol = tol)
+        if (std.err$rank != ncol(std.err$qr)) 
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- diag(solve(std.err, tol = tol))
+        if(any(std.err <= 0))
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- sqrt(std.err)
+    }
+    else std.err <- rep(NA,l)
+    names(std.err) <- nm
+    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
          counts = opt$counts)
 }
 
 "ffrechet"<-
-function(x, start, ...)
+function(x, start, ..., nsloc = NULL, std.err = TRUE, method = "BFGS")
 {
-    ddfrechet <- function(x, loc = 0, scale = 1, shape = 1, log) {
-                     if(any(c(scale, shape) <= 0))
-                         return(-Inf)
-                     dfrechet(x = x, loc = loc, scale = scale,
-                              shape = shape, log = log)
-                 }
-    fdensfun(x = x, densfun = ddfrechet, start = start, ...)
+    if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
+        stop("`x' must be a non-empty numeric vector")
+    nlfrechet <- function(loc = 0, scale = 1, shape = 1)
+    {
+        if(any(c(scale, shape) <= 0)) return(-Inf)
+        if(!is.null(nsloc)) {
+            ns <- numeric(length(loc.param))
+            for(i in 1:length(ns))
+                ns[i] <- get(loc.param[i])
+            loc <- drop(nslocmat %*% ns)
+        }
+        dns <- dfrechet(x = x, loc = loc, scale = scale, shape = shape,
+                        log = TRUE)
+        if(any(is.infinite(dns))) return(1e6)
+        else return(-sum(dns))
+    }
+    if(!is.null(nsloc)) {
+        if(is.vector(nsloc))
+            nsloc <- data.frame(trend = nsloc)
+        if(!is.data.frame(nsloc))
+            stop("`nsloc' must be a vector or data frame")
+        if(nrow(nsloc) != length(x))
+            stop("`nsloc' and `x' are not compatible")
+        nsloc <- nsloc[!is.na(x), ,drop = FALSE]
+        nslocmat <- cbind(1,as.matrix(nsloc))
+    }
+    x <- x[!is.na(x)]
+    loc.param <- paste("loc", c("",names(nsloc)), sep="")
+    param <- c(loc.param, "scale", "shape")
+    if(missing(start)) {
+        start <- as.list(numeric(length(param)))
+        names(start) <- param
+        start$shape <- 10
+        start$scale <- 10 * sqrt(6 * var(x))/pi
+        start$loc <- mean(x) - (1 + 0.58/10) * start$scale
+        start <- start[!(param %in% names(list(...)))]
+    }
+    if(!is.list(start)) 
+        stop("`start' must be a named list")
+    nm <- names(start)
+    l <- length(nm)
+    f <- c(as.list(numeric(length(loc.param))), formals(nlfrechet)[2:3])
+    names(f) <- param
+    m <- match(nm, param)
+    if(any(is.na(m))) 
+        stop("`start' specifies unknown arguments")    
+    formals(nlfrechet) <- c(f[m], f[-m])
+    nllh <- function(p, ...) nlfrechet(p, ...)
+    if(l > 1)
+        body(nllh) <- parse(text = paste("nlfrechet(", paste("p[",1:l,
+            "]", collapse = ", "), ", ...)"))
+    fixed.param <- list(...)[names(list(...)) %in% param]
+    start.arg <- c(list(p = unlist(start)), fixed.param)
+    if(do.call("nllh", start.arg) == 1e6)
+        warning("negative log-likelihood is infinite at starting values")
+    opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+    if (opt$convergence > 0) 
+        warning("optimization may not have succeeded")
+    if(std.err) {
+        tol <- .Machine$double.eps^0.5
+        std.err <- qr(opt$hessian, tol = tol)
+        if (std.err$rank != ncol(std.err$qr)) 
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- diag(solve(std.err, tol = tol))
+        if(any(std.err <= 0))
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- sqrt(std.err)
+    }
+    else std.err <- rep(NA,l)
+    names(std.err) <- nm
+    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
+         counts = opt$counts)
 }
 
 "fgumbel"<-
-function(x, start, ...)
+function(x, start, ..., nsloc = NULL, std.err = TRUE, method = "BFGS")
 {
-    fgev(x = x, start = start, shape = 0, ...)
+    fgev(x = x, start = start, shape = 0, ..., nsloc = nsloc,
+         std.err = std.err, method = method)
 }
 
 "frweibull"<-
-function(x, start, ...)
+function(x, start, ..., nsloc = NULL, std.err = TRUE, method = "BFGS")
 {
-    ddrweibull <- function(x, loc = 0, scale = 1, shape = 1, log) {
-                      if(any(c(scale, shape) <= 0))
-                          return(-Inf)
-                      drweibull(x = x, loc = loc, scale = scale,
-                                shape = shape, log = log)
-                  }    
-    fdensfun(x = x, densfun = ddrweibull, start = start, ...)
+    if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
+        stop("`x' must be a non-empty numeric vector")
+    nlrweibull <- function(loc = 0, scale = 1, shape = 1)
+    {
+        if(any(c(scale, shape) <= 0)) return(-Inf)
+        if(!is.null(nsloc)) {
+            ns <- numeric(length(loc.param))
+            for(i in 1:length(ns))
+                ns[i] <- get(loc.param[i])
+            loc <- drop(nslocmat %*% ns)
+        }
+        dns <- drweibull(x = x, loc = loc, scale = scale, shape = shape,
+                         log = TRUE)
+        if(any(is.infinite(dns))) return(1e6)
+        else return(-sum(dns))
+    }
+    if(!is.null(nsloc)) {
+        if(is.vector(nsloc))
+            nsloc <- data.frame(trend = nsloc)
+        if(!is.data.frame(nsloc))
+            stop("`nsloc' must be a vector or data frame")
+        if(nrow(nsloc) != length(x))
+            stop("`nsloc' and `x' are not compatible")
+        nsloc <- nsloc[!is.na(x), ,drop = FALSE]
+        nslocmat <- cbind(1,as.matrix(nsloc))
+    }
+    x <- x[!is.na(x)]
+    loc.param <- paste("loc", c("",names(nsloc)), sep="")
+    param <- c(loc.param, "scale", "shape")
+    if(missing(start)) {
+        start <- as.list(numeric(length(param)))
+        names(start) <- param
+        start$shape <- 10
+        start$scale <- 10 * sqrt(6 * var(x))/pi
+        start$loc <- mean(x) + (1 - 0.58/10) * start$scale
+        start <- start[!(param %in% names(list(...)))]
+    }
+    if(!is.list(start)) 
+        stop("`start' must be a named list")
+    nm <- names(start)
+    l <- length(nm)
+    f <- c(as.list(numeric(length(loc.param))), formals(nlrweibull)[2:3])
+    names(f) <- param
+    m <- match(nm, param)
+    if(any(is.na(m))) 
+        stop("`start' specifies unknown arguments")    
+    formals(nlrweibull) <- c(f[m], f[-m])
+    nllh <- function(p, ...) nlrweibull(p, ...)
+    if(l > 1)
+        body(nllh) <- parse(text = paste("nlrweibull(", paste("p[",1:l,
+            "]", collapse = ", "), ", ...)"))
+    fixed.param <- list(...)[names(list(...)) %in% param]
+    start.arg <- c(list(p = unlist(start)), fixed.param)
+    if(do.call("nllh", start.arg) == 1e6)
+        warning("negative log-likelihood is infinite at starting values")
+    opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+    if (opt$convergence > 0) 
+        warning("optimization may not have succeeded")
+    if(std.err) {
+        tol <- .Machine$double.eps^0.5
+        std.err <- qr(opt$hessian, tol = tol)
+        if (std.err$rank != ncol(std.err$qr)) 
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- diag(solve(std.err, tol = tol))
+        if(any(std.err <= 0))
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- sqrt(std.err)
+    }
+    else std.err <- rep(NA,l)
+    names(std.err) <- nm
+    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
+         counts = opt$counts)
 }
 
 "fgev"<-
-function(x, start, ...)
+function(x, start, ..., nsloc = NULL, std.err = TRUE, method = "BFGS")
 {
-    ddgev <- function(x, loc = 0, scale = 1, shape = 0, log) {
-                 if(scale <= 0) return(-Inf)
-                 dgev(x = x, loc = loc, scale = scale,
-                      shape = shape, log = log)
-                 } 
-    fdensfun(x = x, densfun = ddgev, start = start, ...)
+    if (missing(x) || length(x) == 0 || mode(x) != "numeric") 
+        stop("`x' must be a non-empty numeric vector")
+    nlgev <- function(loc = 0, scale = 1, shape = 0)
+    { 
+        if(scale <= 0) return(-Inf)
+        if(!is.null(nsloc)) {
+            ns <- numeric(length(loc.param))
+            for(i in 1:length(ns))
+                ns[i] <- get(loc.param[i])
+            loc <- drop(nslocmat %*% ns)
+        }
+        else loc <- rep(loc, length.out = length(x))
+        .C("nlgev",
+            x, n,
+            as.double(loc), as.double(scale),
+            as.double(shape), dns = double(1),
+            PACKAGE = "evd")$dns
+    }
+    if(!is.null(nsloc)) {
+        if(is.vector(nsloc))
+            nsloc <- data.frame(trend = nsloc)
+        if(!is.data.frame(nsloc))
+            stop("`nsloc' must be a vector or data frame")
+        if(nrow(nsloc) != length(x))
+            stop("`nsloc' and `x' are not compatible")
+        nsloc <- nsloc[!is.na(x), ,drop = FALSE]
+        nslocmat <- cbind(1,as.matrix(nsloc))
+    }
+    x <- as.double(x[!is.na(x)])
+    n <- as.integer(length(x))
+    loc.param <- paste("loc", c("",names(nsloc)), sep="")
+    param <- c(loc.param, "scale", "shape")
+    if(missing(start)) {
+        start <- as.list(numeric(length(param)))
+        names(start) <- param
+        start$scale <- sqrt(6 * var(x))/pi
+        start$loc <- mean(x) - 0.58 * start$scale
+        start <- start[!(param %in% names(list(...)))]
+    }
+    if(!is.list(start)) 
+        stop("`start' must be a named list")
+    nm <- names(start)
+    l <- length(nm)
+    f <- c(as.list(numeric(length(loc.param))), formals(nlgev)[2:3])
+    names(f) <- param
+    m <- match(nm, param)
+    if(any(is.na(m))) 
+        stop("`start' specifies unknown arguments")    
+    formals(nlgev) <- c(f[m], f[-m])
+    nllh <- function(p, ...) nlgev(p, ...)
+    if(l > 1)
+        body(nllh) <- parse(text = paste("nlgev(", paste("p[",1:l,
+            "]", collapse = ", "), ", ...)"))
+    fixed.param <- list(...)[names(list(...)) %in% param]
+    start.arg <- c(list(p = unlist(start)), fixed.param)
+    if(do.call("nllh", start.arg) == 1e6)
+        warning("negative log-likelihood is infinite at starting values")
+    opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+    if (opt$convergence > 0) 
+        warning("optimization may not have succeeded")
+    if(std.err) {
+        tol <- .Machine$double.eps^0.5
+        std.err <- qr(opt$hessian, tol = tol)
+        if (std.err$rank != ncol(std.err$qr)) 
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- diag(solve(std.err, tol = tol))
+        if(any(std.err <= 0))
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- sqrt(std.err)
+    }
+    else std.err <- rep(NA,l)
+    names(std.err) <- nm
+    list(estimate = opt$par, std.err = std.err, deviance = 2*opt$value,
+         counts = opt$counts)
 }
 
-
-
-
-
-
-
-
-
-
+    
+    
+   
+    
+    
+    
 

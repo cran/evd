@@ -1,6 +1,6 @@
 \name{oxford}
 \alias{oxford}
-\title{Annual maximum temperatures at Oxford, England.}
+\title{Annual Maximum Temperatures at Oxford}
 \usage{data(oxford)}
 \description{
   A numeric vector containing annual maximum temperatures, in degrees

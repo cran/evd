@@ -1,0 +1,69 @@
+Changes from Version 1.0-0 are as follows.
+
+  Automated starting values for fitting functions.
+
+  Compiled code is now used within the bivariate fitting routines
+  and all bivariate simulation functions.
+  They are consequently much faster than those in Version 1.0-0.
+
+  Simulation, distribution, density and fitting functions for the
+  bivariate bilogistic, bivariate negative bilogistic and
+  bivariate Coles-Tawn models.
+
+  A new function fbvall which fits all bivariate models 
+  simultaneously.
+  For every model it returns maximum likelihood estimates, standard
+  errors, criteria for model comparisons based on the deviance
+  (e.g. AIC), and summaries of the dependence structure (see the 
+  help file for details).
+
+  A new function abvnonpar which calculates or plots non-parametric
+  estimates of the dependence function.
+
+  All functions explicitly allow for missing values.
+  This includes bivariate fitting functions, where missing values can
+  occur on either or both margins within any observation. 
+
+  Extra argument nsloc for univariate fitting functions,
+  and arguments nsloc1 and nsloc2 for bivariate fitting functions.
+  These allow non-stationary fitting using linear models for the
+  location parameters.
+
+  Extra argument std.err for fitting functions.
+  If std.err is FALSE the standard errors are not calculated.
+  By default std.err is TRUE.
+
+  Extra argument method for fitting functions.
+  The method argument explicitly specifies the optimization method 
+  to be passed to the function optim.
+  The default method is now BFGS for all fitting functions except 
+  fext and forder, where the default method is still Nelder-Mead.
+   
+  The sealevel data frame has been expanded to include observations 
+  from 1912 to 1992. There are 39 missing values.  
+   
+  Explicit error handling in fitting functions when the observed
+  information matrix is singular.  
+  
+  Artificial constraints are now placed on dependence parameters 
+  within bivariate fitting functions to prevent numerical problems.  
+
+  The asy argument for the bivariate asymmetric logistic and 
+  bivariate asymmetric negative logistic models now defaults to
+  c(1,1).
+
+  The default values of the marginal parameters for the bivariate and
+  multivariate functions in Version 1.0-0 are different.
+  This is counter intuitive, so the default value for each margin
+  within the multivariate functions is now c(0,1,0) (Gumbel), which 
+  is consistent with the functions for bivariate models.
+
+  The bivariate density functions contained a fairly minor bug; if one
+  of the marginal parameter arguments were passed a three column
+  matrix and some of the rows of the matrix produced zero density, a
+  fatal error would result.
+  This has now been fixed.
+
+  Internal: The .C interface is called with PACKAGE = "evd".
+
+  Internal: R_alloc replaces malloc in C routines.

@@ -16,12 +16,13 @@ qfrechet(p, loc=0, scale=1, shape=1, lower.tail = TRUE)
 rfrechet(n, loc=0, scale=1, shape=1)
 }
 \arguments{
-  \item{x, q}{vector of quantiles.}
-  \item{p}{vector of probabilities.}
-  \item{n}{number of observations.}
-  \item{loc, scale, shape}{location, scale and shape parameters.}
-  \item{log}{logical; if TRUE, the log density is returned.}
-  \item{lower.tail}{logical; if TRUE (default), probabilities are
+  \item{x, q}{Vector of quantiles.}
+  \item{p}{Vector of probabilities.}
+  \item{n}{Number of observations.}
+  \item{loc, scale, shape}{Location, scale and shape parameters (can be
+    given as vectors).}
+  \item{log}{Logical; if TRUE, the log density is returned.}
+  \item{lower.tail}{Logical; if TRUE (default), probabilities are
     P[X <= x], otherwise, P[X > x]}
 }
 \details{

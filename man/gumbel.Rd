@@ -16,12 +16,13 @@ qgumbel(p, loc=0, scale=1, lower.tail = TRUE)
 rgumbel(n, loc=0, scale=1)
 }
 \arguments{
-  \item{x, q}{vector of quantiles.}
-  \item{p}{vector of probabilities.}
-  \item{n}{number of observations.}
-  \item{loc, scale}{location and scale parameters.}
-  \item{log}{logical; if TRUE, the log density is returned.}
-  \item{lower.tail}{logical; if TRUE (default), probabilities are
+  \item{x, q}{Vector of quantiles.}
+  \item{p}{Vector of probabilities.}
+  \item{n}{Number of observations.}
+  \item{loc, scale}{Location and scale parameters (can be given
+    as vectors).}
+  \item{log}{Logical; if TRUE, the log density is returned.}
+  \item{lower.tail}{Logical; if TRUE (default), probabilities are
     P[X <= x], otherwise, P[X > x]}
 }
 \details{
@@ -36,7 +37,7 @@ rgumbel(n, loc=0, scale=1)
   distribution function, \code{qgumbel} gives the quantile function,
   and \code{rgumbel} generates random deviates.
 }
-\note{
+\section{Interesting Fact}{
   Gumbel is the name of my teddy bear.
   And a famous statistician.
 }

@@ -2,10 +2,10 @@
 \alias{dbvlog}
 \alias{pbvlog}
 \alias{rbvlog}
-\title{The Bivariate Logistic Distribution}
+\title{The Bivariate Logistic Model}
 \description{
   Density, distribution function and random generation for the
-  bivariate logistic distribution. 
+  bivariate logistic model. 
 }
 \usage{
 dbvlog(x, dep, mar1 = c(0, 1, 0), mar2 = mar1, log = FALSE) 
@@ -13,17 +13,19 @@ pbvlog(q, dep, mar1 = c(0, 1, 0), mar2 = mar1)
 rbvlog(n, dep, mar1 = c(0, 1, 0), mar2 = mar1) 
 }
 \arguments{
-  \item{x, q}{a vector of length two or a matrix with two columns,
+  \item{x, q}{A vector of length two or a matrix with two columns,
     in which case the density/distribution is evaluated across
     the rows.}
-  \item{n}{number of observations.}
-  \item{dep}{dependence parameter.}
-  \item{mar1, mar2}{vectors of length three containing marginal
-    parameters.}
-  \item{log}{logical; if \code{TRUE}, the log density is returned.}
+  \item{n}{Number of observations.}
+  \item{dep}{Dependence parameter.}
+  \item{mar1, mar2}{Vectors of length three containing marginal
+    parameters, or matrices with three columns where each
+    column represents a vector of values to be passed to the
+    corresponding marginal parameter.}
+  \item{log}{Logical; if \code{TRUE}, the log density is returned.}
 }
 \details{
-  The bivariate logistic distribution function with
+  The bivariate logistic distribution function (Gumbel, 1960) with
   parameter \eqn{\code{dep} = r} is
   \deqn{G(z_1,z_2) = \exp\left[-(y_1^{1/r}+y_2^{1/r})^r\right]}{
     G(z1,z2) = exp{-[y1^(1/r)+y2^(1/r)]^r}}
@@ -38,9 +40,13 @@ rbvlog(n, dep, mar1 = c(0, 1, 0), mar2 = mar1)
   If \eqn{s_i = 0}{si = 0} then \eqn{y_i}{yi} is defined by
   continuity.
   This is a special case of the bivariate asymmetric logistic
-  distribution.
+  model.
   The univariate marginal distributions are generalized extreme
   value.
+
+  Complete dependence is obtained in the limit as
+  \eqn{r} approaches zero.
+  Independence is obtained when \eqn{r = 1}.
 }
 \value{
   \code{dbvlog} gives the density, \code{pbvlog} gives the
@@ -50,7 +56,11 @@ rbvlog(n, dep, mar1 = c(0, 1, 0), mar2 = mar1)
   \code{rbvlog} uses the bivariate version of Algorithm 1.1 in
   Stephenson(2002).
 }
-\references{ 
+\references{
+  Gumbel, E. J. (1960)
+  Distributions des valeurs extremes en plusieurs dimensions.
+  \emph{Publ. Inst. Statist. Univ. Paris}, \bold{9}, 171--173.
+  
   Stephenson, A. G. (2002)
   Simulating multivariate extreme value distributions of logistic type.
   To be published - available on request.

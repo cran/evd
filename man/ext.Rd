@@ -17,23 +17,23 @@ qext(p, quantfun, \dots, distn, mlen = 1, largest = TRUE, lower.tail = TRUE)
 rext(n, quantfun, \dots, distn, mlen = 1, largest = TRUE) 
 }
 \arguments{
-  \item{x, q}{vector of quantiles.}
-  \item{p}{vector of probabilities.}
-  \item{n}{number of observations.}
-  \item{densfun, distnfun, quantfun}{density, distribution and
+  \item{x, q}{Vector of quantiles.}
+  \item{p}{Vector of probabilities.}
+  \item{n}{Number of observations.}
+  \item{densfun, distnfun, quantfun}{Density, distribution and
     quantile function of the distribution.}
-  \item{\dots}{parameters of the distribution.}
-  \item{distn}{a character string, optionally specified as an
+  \item{\dots}{Parameters of the distribution.}
+  \item{distn}{A character string, optionally specified as an
     alternative to \code{densfun}, \code{distnfun} and \code{quantfun}
     such that the density, distribution and quantile functions are
     formed upon the addition of the prefixes \code{d}, \code{p} and
     \code{q} respectively.}
-  \item{mlen}{the number of independent variables over which the
+  \item{mlen}{The number of independent variables over which the
     maximum/minimum is taken.}
-  \item{log}{logical; if \code{TRUE}, the log density is returned.}
-  \item{largest}{logical; if \code{TRUE} (default) use maxima,
+  \item{log}{Logical; if \code{TRUE}, the log density is returned.}
+  \item{largest}{Logical; if \code{TRUE} (default) use maxima,
     otherwise minima.}
-  \item{lower.tail}{logical; if \code{TRUE} (default) probabilities
+  \item{lower.tail}{Logical; if \code{TRUE} (default) probabilities
     are P[X <= x], otherwise  P[X > x].}
 }
 \details{
@@ -51,7 +51,7 @@ rext(n, quantfun, \dots, distn, mlen = 1, largest = TRUE)
 }
 \note{
   The simulation speed is invariant to \code{mlen} since \code{rext}
-  does not simulate directly from \code{distn}.
+  does not simulate directly from the specified distribution.
 }
 
 \seealso{\code{\link{rgev}},\code{\link{rorder}}}

@@ -2,26 +2,29 @@
 \alias{dbvalog}
 \alias{pbvalog}
 \alias{rbvalog}
-\title{The Bivariate Asymmetric Logistic Distribution}
+\title{The Bivariate Asymmetric Logistic Model}
 \description{
   Density, distribution function and random generation for the
-  bivariate asymmetric logistic distribution. 
+  bivariate asymmetric logistic model. 
 }
 \usage{
-dbvalog(x, dep, asy, mar1 = c(0, 1, 0), mar2 = mar1, log = FALSE) 
-pbvalog(q, dep, asy, mar1 = c(0, 1, 0), mar2 = mar1) 
-rbvalog(n, dep, asy, mar1 = c(0, 1, 0), mar2 = mar1) 
+dbvalog(x, dep, asy = c(1, 1), mar1 = c(0, 1, 0), mar2 = mar1,
+    log = FALSE) 
+pbvalog(q, dep, asy = c(1, 1), mar1 = c(0, 1, 0), mar2 = mar1) 
+rbvalog(n, dep, asy = c(1, 1), mar1 = c(0, 1, 0), mar2 = mar1) 
 }
 \arguments{
-  \item{x, q}{a vector of length two or a matrix with two columns,
+  \item{x, q}{A vector of length two or a matrix with two columns,
     in which case the density/distribution is evaluated across
     the rows.}
-  \item{n}{number of observations.}
-  \item{dep}{dependence parameter.}
-  \item{asy}{a vector containing the two asymmetry parameters.}
-  \item{mar1, mar2}{vectors of length three containing marginal
-    parameters.}
-  \item{log}{logical; if \code{TRUE}, the log density is returned.}
+  \item{n}{Number of observations.}
+  \item{dep}{Dependence parameter.}
+  \item{asy}{A vector containing the two asymmetry parameters.}
+  \item{mar1, mar2}{Vectors of length three containing marginal
+    parameters, or matrices with three columns where each
+    column represents a vector of values to be passed to the
+    corresponding marginal parameter.}
+  \item{log}{Logical; if \code{TRUE}, the log density is returned.}
 }
 \details{
   The bivariate asymmetric logistic distribution function with
@@ -43,6 +46,17 @@ rbvalog(n, dep, asy, mar1 = c(0, 1, 0), mar2 = mar1)
   continuity.
   The univariate marginal distributions are generalized extreme
   value.
+
+  When \eqn{t_1 = t_2 = 1}{t1 = t2 = 1} the asymmetric logistic
+  model is equivalent to the logistic model.
+  Independence is obtained when either \eqn{r = 1},
+  \eqn{t_1 = 0}{t1 = 0} or \eqn{t_2 = 0}{t2 = 0}.
+  Complete dependence is obtained in the limit when
+  \eqn{t_1 = t_2 = 1}{t1 = t2 = 1} and \eqn{r}
+  approaches zero.
+  Different limits occur when \eqn{t_1}{t1} and \eqn{t_2}{t2}
+  are fixed and \eqn{r} approaches zero.
+  The model was first introduced by Tawn (1988). 
 }
 \value{
   \code{dbvalog} gives the density, \code{pbvalog} gives the
@@ -50,12 +64,16 @@ rbvalog(n, dep, asy, mar1 = c(0, 1, 0), mar2 = mar1)
 }
 \note{
   \code{rbvalog} uses the bivariate version of Algorithm 1.2 in
-  Stephenson(2002).
+  Stephenson (2002).
 }
-\references{ 
+\references{
   Stephenson, A. G. (2002)
   Simulating multivariate extreme value distributions of logistic type.
   To be published - available on request.
+
+  Tawn, J. A. (1988)
+  Bivariate extreme value theory: models and estimation.
+  \emph{Biometrika}, \bold{75}, 397--415.  
 }
 
 \seealso{\code{\link{abvlog}}, \code{\link{rbvlog}},
