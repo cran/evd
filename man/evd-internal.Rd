@@ -1,7 +1,8 @@
 \name{evd-internal}
 
 \alias{bvmtransform}
-\alias{bvdep}
+\alias{bvdepfn}
+\alias{ccop}
 \alias{mtransform}
 \alias{na.vals}
 

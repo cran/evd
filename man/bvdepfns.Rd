@@ -14,28 +14,28 @@
   bilogistic, negative bilogistic, Husler-Reiss and Coles-Tawn models.
 }
 \usage{
-abvalog(x = 0.5, dep, asy = c(1, 1), plot = FALSE, border = TRUE,
+abvalog(x = 0.5, dep, asy = c(1, 1), plot = FALSE,
     add = FALSE, lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
     xlab = "", ylab = "", \dots) 
-abvaneglog(x = 0.5, dep, asy = c(1, 1), plot = FALSE, border = TRUE,
+abvaneglog(x = 0.5, dep, asy = c(1, 1), plot = FALSE,
     add = FALSE, lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
     xlab = "", ylab = "", \dots) 
-abvhr(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, 
+abvhr(x = 0.5, dep, plot = FALSE, add = FALSE, 
     lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
     ylab = "", \dots) 
-abvlog(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, 
+abvlog(x = 0.5, dep, plot = FALSE, add = FALSE, 
     lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
     ylab = "", \dots) 
-abvneglog(x = 0.5, dep, plot = FALSE, border = TRUE, add = FALSE, 
+abvneglog(x = 0.5, dep, plot = FALSE, add = FALSE, 
     lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", 
     ylab = "", \dots)
-abvbilog(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, add = FALSE,
+abvbilog(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "",
     ylab = "", \dots) 
-abvnegbilog(x = 0.5, alpha, beta, plot = FALSE, border = TRUE,
+abvnegbilog(x = 0.5, alpha, beta, plot = FALSE,
     add = FALSE, lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
     xlab = "", ylab = "", \dots)
-abvct(x = 0.5, alpha, beta, plot = FALSE, border = TRUE, 
+abvct(x = 0.5, alpha, beta, plot = FALSE, 
     add = FALSE, lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
     xlab = "", ylab = "", \dots)  
 }
@@ -47,10 +47,9 @@ abvct(x = 0.5, alpha, beta, plot = FALSE, border = TRUE,
   \item{alpha, beta}{Alpha and beta parameters.}
   \item{plot}{Logical; if \code{TRUE} the function is plotted and
     the values used to create the plot are returned invisibly.}
-  \item{border}{Logical; if \code{TRUE} a border representing the
-    maximal domain is added to the plot.}
   \item{add}{Logical; add to an existing plot?}
-  \item{lty, blty}{Function and border line types.}
+  \item{lty, blty}{Function and border line types.
+    Use zero to suppress.}
   \item{xlim, ylim}{x and y-axis limits.}
   \item{xlab, ylab}{x and y-axis labels.}
   \item{\dots}{Other high-level graphics parameters to be passed to
@@ -65,7 +64,7 @@ abvct(x = 0.5, alpha, beta, plot = FALSE, border = TRUE,
   \deqn{y_i = \{1+s_i(z_i-a_i)/b_i\}^{-1/s_i}}{
     yi = {1+si(zi-ai)/bi}^(-1/si)}
   for \eqn{1+s_i(z_i-a_i)/b_i > 0}{1+si(zi-ai)/bi > 0} and
-  \eqn{i = 1,2}, with the marginal
+  \eqn{i = 1,2}, with the (generalized extreme value) marginal
   parameters given by \eqn{(a_i,b_i,s_i)}{(ai,bi,si)},
   \eqn{b_i > 0}{bi > 0}.
 
@@ -77,6 +76,11 @@ abvct(x = 0.5, alpha, beta, plot = FALSE, border = TRUE,
   \eqn{A(\cdot)}{A()} does not depend on the marginal parameters.
   \eqn{A(1/2)} is returned by default since it is often a useful
   summary of dependence.
+}
+\note{
+  Parametric estimators from fitted models can be plotted and
+  compared with non-parametric estimators using the function
+  \code{\link{bvdp}}.
 }
 
 \value{
@@ -93,8 +97,9 @@ abvct(x = 0.5, alpha, beta, plot = FALSE, border = TRUE,
   for the bilogistic and negative bilogistic models respectively.
 }
 
-\seealso{\code{\link{abvnonpar}}, \code{\link{rbvalog}},
-  \code{\link{rbvaneglog}}, \code{\link{rbvhr}}, \code{\link{rbvlog}},
+\seealso{\code{\link{abvnonpar}}, \code{\link{bvdp}},
+  \code{\link{rbvalog}}, \code{\link{rbvaneglog}},
+  \code{\link{rbvhr}}, \code{\link{rbvlog}},
   \code{\link{rbvneglog}}, \code{\link{rbvbilog}},
   \code{\link{rbvnegbilog}}, \code{\link{rbvct}}}
 

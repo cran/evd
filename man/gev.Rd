@@ -50,7 +50,8 @@ rgev(n, loc=0, scale=1, shape=0)
   \emph{Quart. J. R. Met. Soc.}, \bold{81}, 158--171.
 }	
 
-\seealso{\code{\link{rfrechet}}, \code{\link{rgumbel}}, \code{\link{rrweibull}}}
+\seealso{\code{\link{fgev}}, \code{\link{rfrechet}},
+  \code{\link{rgumbel}}, \code{\link{rrweibull}}}
 
 \examples{
 dgev(2:4, 1, 0.5, 0.8)

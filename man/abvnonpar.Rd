@@ -8,20 +8,19 @@
 \usage{
 abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
     method = c("cfg", "deheuvels", "pickands"), modify = 0,
-    wf = function(t) t, plot = FALSE, border = TRUE, add = FALSE,
-    lty = 1, blty = 3, xlim = c(0, 1), ylim = c(0.5, 1),
-    xlab = "", ylab = "", \dots) 
+    wf = function(t) t, plot = FALSE, add = FALSE, lty = 1, blty = 3,
+    xlim = c(0, 1), ylim = c(0.5, 1), xlab = "", ylab = "", \dots) 
 }
 \arguments{
   \item{x}{A vector of values at which the dependence function is
     evaluated (ignored if plot is \code{TRUE}).}
   \item{data}{A matrix or data frame with two columns, which may contain
     missing values.}
-  \item{nsloc1,nsloc2}{A data frame with the same number of rows as the
-    length of \code{x}, for linear modelling of the location
+  \item{nsloc1, nsloc2}{A data frame with the same number of rows as
+    \code{data}, for linear modelling of the location
     parameter on the first/second margin (see \bold{Details}).
-    The data frames are treated as covariate matrices (excluding the
-    intercept).
+    The data frames are treated as covariate matrices, excluding the
+    intercept.
     A numeric vector can be given as an alternative to a single column
     data frame.}
   \item{method}{The estimation method (see \bold{Details}).}
@@ -31,10 +30,9 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
     method (see \bold{Details}). The function must be vectorized.}
   \item{plot}{Logical; if \code{TRUE} the function is plotted and
     the values used to create the plot are returned invisibly.}
-  \item{border}{Logical; if \code{TRUE} a border representing the
-    maximal domain is added to the plot.}
   \item{add}{Logical; add to an existing plot?}
-  \item{lty, blty}{Function and border line types.}
+  \item{lty, blty}{Function and border line types.
+    Use zero to suppress.}
   \item{xlim, ylim}{x and y-axis limits.}
   \item{xlab, ylab}{x and y-axis labels.}
   \item{\dots}{Other high-level graphics parameters to be passed to
@@ -49,7 +47,7 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
   \deqn{y_i = \{1+s_i(z_i-a_i)/b_i\}^{-1/s_i}}{
     y_i = {1 + s_i(z_i-a_i)/b_i}^(-1/s_i)}
   for \eqn{1 + s_i(z_i-a_i)/b_i > 0} and
-  \eqn{i = 1,2}, with the marginal
+  \eqn{i = 1,2}, with the (generalized extreme value) marginal
   parameters given by \eqn{(a_i,b_i,s_i)},
   \eqn{b_i > 0}.
 
@@ -78,40 +76,39 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
   \eqn{(\hat{a}_2,\hat{b}_2,\hat{s}_2)}{(a'_2,b'_2,s'_2)}
   are the maximum likelihood estimates for the location, scale
   and shape parameters on the first and second margins.
-  If non-stationary fitting is implemented using the \code{nsloc1}
-  or \code{nsloc2} arguments (see \code{\link{fgev}} or
-  \code{\link{fbvlog}}) the marginal location parameters may depend
-  on \eqn{i}.
+  If \code{nsloc1} or \code{nsloc2} are given, the location
+  parameters may depend on \eqn{i} (see \code{\link{fgev}}
+  for details).
 
   Three different estimators of the dependence function can be
   implemented.
   They are defined (on \eqn{0 \leq w \leq 1}{0 <= w <= 1}) as
   follows.
 
-  \eqn{\code{method} = ``pickands''} (Pickands, 1981)
+  \code{method = "pickands"} (Pickands, 1981)
   \deqn{A_p(w) = n\left\{\sum_{i=1}^n \min\left(\frac{y_{i1}}{w},
     \frac{y_{i2}}{1-w}\right)\right\}^{-1}}{
     A_p(w) = n / {sum_{i=1}^n min[y_{i1}/w, y_{i2}/(1-w)]}}
 
-  \eqn{\code{method} = ``deheuvels''} (Deheuvels, 1991)
+  \code{method = "deheuvels"} (Deheuvels, 1991)
   \deqn{A_d(w) = n\left\{\sum_{i=1}^n \min\left(\frac{y_{i1}}{w},
     \frac{y_{i2}}{1-w}\right) - w\sum_{i=1}^n y_{i1} - (1-w)
     \sum_{i=1}^n y_{i2} + n\right\}^{-1}}{
         A_d(w) = n / {sum_{i=1}^n min[y_{i1}/w, y_{i2}(1-w)] -
 	w sum_{i=1}^n y_{i1} - (1-w) sum_{i=1}^n y_{i2} + n}}
 
-  \eqn{\code{method} = ``cfg''}; The Default Method
+  \code{method = "cfg"}; The Default Method
   (Caperaa, Fougeres and Genest, 1997)
-  \deqn{A_c(w) = \exp\left\{ \{1-p(t)\} \int_{0}^{t}
-    \frac{H(x) - x}{x(1-x)} \, \mbox{d}x - p(t) \int_{t}^{1}
+  \deqn{A_c(w) = \exp\left\{ \{1-p(w)\} \int_{0}^{w}
+    \frac{H(x) - x}{x(1-x)} \, \mbox{d}x - p(w) \int_{w}^{1}
     \frac{H(x) - x}{x(1-x)} \, \mbox{d}x \right\}}{
-    A_c(w) = exp{ [1-p(t)] integral_0^t (H(x) - x)/[x(1-x)] dx -
-      p(t) integral_t^1 (H(x) - x)/[x(1-x)] dx }}
+    A_c(w) = exp{ [1-p(w)] integral_0^w (H(x) - x)/[x(1-x)] dx -
+      p(w) integral_w^1 (H(x) - x)/[x(1-x)] dx }}
 
   In the estimator \eqn{A_c(\cdot)}{A_c()}, \eqn{H(x)} is the
   empirical distribution function of \eqn{x_1,\ldots,x_n}, where
   \eqn{x_i = y_{i2} / (y_{i1} + y_{i2})} for \eqn{i = 1,\ldots,n},
-  and \eqn{p(t)} is any bounded function on \eqn{[0,1]}, which
+  and \eqn{p(w)} is any bounded function on \eqn{[0,1]}, which
   can be specified using the argument \code{wf}.
   By default \code{wf} is the identity function.
 
@@ -139,6 +136,10 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
   \eqn{A_n(1/2)} is returned by default since it is often a useful
   summary of dependence.
 }
+\note{
+  Non-parametric estimators can be compared with parametric estimators
+  from fitted models using the function \code{\link{bvdp}}.
+}
 
 \value{
   \code{abvnonpar} gives a non-parametric estimate of the dependence
@@ -160,14 +161,15 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
   \emph{Proc. 43rd Sess. Int. Statist. Inst.}, \bold{49}, 859--878.
 }
 
-\seealso{\code{\link{abvlog}}, \code{\link{fbvlog}}, \code{\link{fgev}}}
+\seealso{\code{\link{abvlog}}, \code{\link{bvdp}},
+  \code{\link{fbvlog}}, \code{\link{fgev}}}
 
 \examples{
 bvdata <- rbvlog(100, dep = 0.7)
 abvnonpar(seq(0, 1, length = 10), data = bvdata, modify = 2)
 \dontrun{abvnonpar(data = bvdata, method = "d", plot = TRUE)}
 }
-\keyword{distribution}
+\keyword{nonparametric}
 
 
 

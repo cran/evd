@@ -16,9 +16,10 @@ rmvalog(n, dep, asy, d = 2, mar = c(0, 1, 0))
     the rows.}
   \item{n}{Number of observations.}
   \item{dep}{A vector of length \eqn{2^d-d-1} containing the dependence
-    parameters.}
+    parameters (see \bold{Details}).}
   \item{asy}{A list with \eqn{2^d-1} vector elements containing
-    asymmetry parameters for each separate component.}
+    asymmetry parameters for each separate component
+    (see \bold{Details}).}
   \item{d}{Dimension.}
   \item{mar}{A vector of length three containing marginal parameters
     for every univariate margin, or a matrix with three columns where
@@ -45,6 +46,9 @@ rmvalog(n, dep, asy, d = 2, mar = c(0, 1, 0))
   for \eqn{1+s_i(z_i-a_i)/b_i > 0}{1+si(zi-ai)/bi > 0} and
   \eqn{i = 1,\ldots,d}.
   If \eqn{s_i = 0}{si = 0} then \eqn{y_i}{yi} is defined by continuity.
+  The univariate marginal distributions are generalized extreme value.
+  The model was first introduced in full generality by Tawn (1990).
+  
   Different parameters on each margin are not implemented, so
   \eqn{\code{mar} = (a_i,b_i,s_i)}{\code{mar} = (ai,bi,si)}
   for every \eqn{i}.
@@ -72,8 +76,6 @@ rmvalog(n, dep, asy, d = 2, mar = c(0, 1, 0))
   \code{asy} must be constructed to ensure that all constraints are
   satisfied or an error will occur.
   See the user's guide for detailed examples.
-  The univariate marginal distributions are generalized extreme value.
-  The model was first introduced in full generality by Tawn (1990).
 }
 \value{
   \code{pmvalog} gives the distribution function and \code{rmvalog}
@@ -85,10 +87,9 @@ rmvalog(n, dep, asy, d = 2, mar = c(0, 1, 0))
   a multidimensional integral and one parameter for each bivariate
   margin.
   Multivariate extensions for the negative logistic model can be derived
-  but are considerably more complex and appear to be less flexible. The
-  obvious multivariate extension, which parallels that for the logistic
-  model, is often called the multivariate negative logistic model
-  (e.g Kotz \emph{et al}, 2000), but it is not a valid distribution
+  but are considerably more complex and appear to be less flexible.
+  The ``multivariate negative logistic model'' often presented in the
+  literature (e.g. Kotz \emph{et al}, 2000) is not a valid distribution
   function and should not be used.
 
   \code{rmvalog} uses Algorithm 2.2 in Stephenson (2002).

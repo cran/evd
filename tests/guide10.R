@@ -68,18 +68,13 @@ data <- rgev(1000, loc = 0.13, scale = 1.1, shape = 0.2)
 fgev(data, start = list(loc = 0, scale = 1, shape = 0), method = "BFGS")
 fgev(data, start = list(loc = 0, scale = 1), shape = 0, method = "BFGS")
 fgev(data, start = list(loc = 0), scale = 1, shape = 0)
-fgev(data, start = list(loc = 0))
 
 -2*sum(dgev(data, loc = 0.1594, scale = 1.1422, shape = 0.2101, log = TRUE))
 
 somedata <- rgev(100,1,1,0.05)
-fgumbel(somedata, start = list(loc = 0.5, scale = 2))
-fgev(somedata, start = list(loc = 0.5, scale = 2))
+fgev(somedata, start = list(loc = 0.5, scale = 2), shape = 0)
 
-ffrechet(data, start = list(loc=-2,scale=1,shape=5), method ="BFGS")
 data2 <- rgev(1000, loc = 0.13, scale = 1.1, shape = -0.25)
-# CHANGE: starting values
-frweibull(data2, start = list(loc = 5, scale = 5, shape = 10), method="BFGS")
 fgev(data2, start = list(loc=0.13,scale=1.1,shape=0), method="BFGS")
 
 data3 <- rext(100, qnorm, mean = 0.56, mlen = 365)
@@ -115,7 +110,7 @@ sqrt(6 * var(oxford))/pi
 mean(oxford) - 0.58 * sqrt(6 * var(oxford))/pi
 oxford.fit <- fgev(oxford, start = list(loc=83.5, scale=3.5, shape=0))
 oxford.fit
-fgev(oxford, start = list(loc=83.8, scale=4.25))$deviance - oxford.fit$deviance
+fgev(oxford, start = list(loc=83.8, scale=4.25), shape = 0)$deviance - oxford.fit$deviance
 
 mle <- oxford.fit$estimate
 as.vector(mle[1] - mle[2]/mle[3])
@@ -141,7 +136,7 @@ tmp$estimate
 sl.fit <- fbvalog(sl, start = list(mar1 = c(3.6, 0.2, 0), mar2 = c(2.6, 0.25, 0), asy = c(0.8, 0.8), dep = 0.6), method = "BFGS", control = list(trace=1))
 sl.fit
 
-fbvalog(sl, start = list(loc1 = 3.6, scale1 = 0.19, loc2 = 2.6, scale2 = 0.2, asy = c(0.7, 0.45), dep = 0.24), method = "BFGS")$deviance - sl.fit$deviance
+fbvalog(sl, start = list(loc1 = 3.6, scale1 = 0.19, loc2 = 2.6, scale2 = 0.2, asy = c(0.7, 0.45), dep = 0.24), shape1 = 0, shape2 = 0, method = "BFGS")$deviance - sl.fit$deviance
 tmp$deviance - sl.fit$deviance
 
 # CHANGE: na.rm = TRUE

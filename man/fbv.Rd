@@ -1,4 +1,4 @@
-\name{bvmle}
+\name{fbv}
 \alias{fbvlog}
 \alias{fbvalog}
 \alias{fbvhr}
@@ -9,42 +9,43 @@
 \alias{fbvct}
 \title{Maximum-likelihood Fitting of Bivariate Extreme Value Distributions}
 \description{
-  Maximum-likelihood estimates for the symmetric/asymmetric logistic,
-  symmetric/asymmetric negative logistic, bilogistic, negative
-  bilogistic, Husler-Reiss and Coles-Tawn models, including linear
-  modelling of the marginal location parameters, and allowing any of
-  the parameters to be held fixed if desired. 
+  Fit models for bivariate extreme value distributions;
+  symmetric/asymmetric logistic, symmetric/asymmetric negative
+  logistic, bilogistic, negative bilogistic, Husler-Reiss and
+  Coles-Tawn models, including linear modelling of the marginal
+  location parameters, and allowing any of the parameters to be held
+  fixed if desired. 
 }
 \usage{
 fbvlog(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-    method = "BFGS")
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
 fbvalog(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-    method = "BFGS")
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
 fbvhr(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-    method = "BFGS")
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
 fbvneglog(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-    method = "BFGS")
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
 fbvaneglog(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
-    method = "BFGS")
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
 fbvbilog(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, 
-    method = "BFGS") 
+    corr = FALSE, method = "BFGS", warn.inf = TRUE) 
 fbvnegbilog(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, 
-    method = "BFGS")
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
 fbvct(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE, 
-    method = "BFGS") 
+    corr = FALSE, method = "BFGS", warn.inf = TRUE) 
 }
 \arguments{
   \item{x}{A matrix or data frame with two columns, which may contain
     missing values.}
   \item{start}{A named list giving the parameters to be optimized with
-    initial values (see \bold{Details}).
+    starting values (see \bold{Details}).
     If \code{start} is omitted the routine attempts to find good
     starting values using marginal maximum likelihood estimators.}
   \item{\dots}{Additional parameters, either for the distribution or for
     \code{optim}. If parameters of the distribution are included they
     will be held fixed (see \bold{Details}).}
-  \item{nsloc1, nsloc2}{A data frame with the same number of rows as the
-    length of \code{x}, for linear modelling of the location
+  \item{nsloc1, nsloc2}{A data frame with the same number of rows as
+    \code{x}, for linear modelling of the location
     parameter on the first/second margin (see \bold{Details}).
     The data frames are treated as covariate matrices, excluding the
     intercept.
@@ -52,16 +53,21 @@ fbvct(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
     data frame.}
   \item{std.err}{Logical; if \code{TRUE} (the default), the ``standard
     errors'' are returned.}
+  \item{corr}{Logical; if \code{TRUE}, the ``correlation matrix'' is
+    returned.}
   \item{method}{The optimization method (see \code{\link{optim}} for
     details).}
+  \item{warn.inf}{Logical; if \code{TRUE} (the default), a warning is
+    given if the negative log-likelihood is infinite when evaluated at
+    the starting values.}
 }
 \details{
   Maximization of the log-likelihood is performed.
-  The \code{std.err} component of the returned list is taken from the
-  observed information, calculated by a numerical approximation.
-  The ``standard errors'' must be interpreted with caution because
-  the usual asymptotic properties of maximum likelihood estimators
-  may not hold (Smith, 1985).
+  The ``standard errors'' and the ``correlation matrix'' in the returned
+  object are taken from the observed information, calculated by a
+  numerical approximation.
+  They must be interpreted with caution because the usual asymptotic
+  properties of maximum likelihood estimators may not hold (Smith, 1985).
 
   For stationary fitting, the named components of \code{start} can be
   any of \code{dep}, \code{asy} (a vector of length two), \code{alpha},
@@ -97,14 +103,36 @@ fbvct(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
   parameters are taken to be zero.  
 }
 \value{
-  A list with with components
+  Returns an object of class \code{c("bvevd","evd")}.
+
+  The generic accessor functions \code{\link{fitted}} (or
+  \code{\link{fitted.values}}), \code{\link{std.errors}} and
+  \code{\link{deviance}} extract various features of the returned
+  object.
+
+  The functions \code{profile} and \code{profile2d} can be
+  used to obtain deviance profiles.
+  The function \code{anova} compares nested models.
+  The function \code{plot} produces diagnostic plots.
+
+  An object of class \code{c("bvevd","evd")} is a list containing
+  the following components
   \item{estimate}{A vector containing the maximum likelihood estimates.}
-  \item{std.err}{A vector containing the ``standard errors'' (if
-    \eqn{\code{std.err} = \code{TRUE}}).}
+  \item{std.err}{A vector containing the ``standard errors''.}
+  \item{fixed}{A vector containing the parameters that have been set
+    to fixed values within the optimization.}
+  \item{param}{A vector containing all parameters (optimized and fixed).}
   \item{deviance}{The deviance at the maximum likelihood estimates.}
-  \item{counts}{A two-element integer vector giving the number of calls
-    to the log-likelihood function and the number gradient approximations
-    respectively.}
+  \item{corr}{The ``correlation matrix''.}
+  \item{convergence,counts,message}{Components taken from the
+    list returned by \code{\link{optim}}.}
+  \item{call}{The call of the current function.}
+  \item{data}{The data passed to the argument \code{x}.}
+  \item{tdata}{The data, transformed to stationarity (for non-stationary
+    models).}
+  \item{nsloc1,nsloc2}{The arguments \code{nsloc1} and \code{nsloc2}.}
+  \item{n}{The number of rows in \code{x}.}
+  \item{model}{A character string describing the fitted model.}
 }
 \references{
   Smith, R. L. (1985)
@@ -112,21 +140,30 @@ fbvct(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
   \emph{Biometrika}, \bold{72}, 67--90.
 }
 
-\seealso{\code{\link{optim}}}
+\seealso{\code{\link{anova.evd}}, \code{\link{optim}},
+  \code{\link{plot.bvevd}}, \code{\link{profile.evd}},
+  \code{\link{profile2d.evd}}}
 
 \examples{
 bvdata <- rbvlog(100, dep = 0.6, mar1 = c(1.2,1.4,0.4),
 mar2 = c(1.2,1.4,0.4))
-fbvlog(bvdata)
-fbvlog(bvdata, dep = 1)
-fgev(bvdata[,1])$estimate
-fgev(bvdata[,2])$estimate
-fbvlog(bvdata, nsloc1 = (-49:50)/100)
-fbvlog(bvdata, nsloc1 = (-49:50)/100, nsloc2 = data.frame(trend =
-(-49:50)/100, random = runif(100, min=-.5, max=.5)))
-fbvlog(bvdata, nsloc1 = (-49:50)/100, nsloc2 = data.frame(trend =
-(-49:50)/100, random = runif(100, min=-.5, max=.5)), loc2random = 0)
+M1 <- fbvlog(bvdata)
+M2 <- fbvlog(bvdata, dep = 0.75)
+anova(M1, M2)
+\dontrun{plot(M1)}
+\dontrun{plot(M1, mar = 1)}
+\dontrun{plot(M1, mar = 2)}
+\dontrun{plot(M2)}
+\dontrun{M1P <- profile(M1, which = "dep")}
+\dontrun{plot(M1P)}
+trend <- (-49:50)/100
+rnd <- runif(100, min = -.5, max = .5)
+fbvlog(bvdata, nsloc1 = trend)
+fbvlog(bvdata, nsloc1 = trend, nsloc2 = data.frame(trend = trend,
+random = rnd))
+fbvlog(bvdata, nsloc1 = trend, nsloc2 = data.frame(trend = trend,
+random = rnd), loc2random = 0)
 }
 
-\keyword{distribution}
+\keyword{models}
 

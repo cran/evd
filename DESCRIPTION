@@ -1,6 +1,6 @@
 Package: evd
-Version: 1.1-0
-Date: 2002/05/10
+Version: 1.2-0
+Date: 2002/05/30
 Title: Functions for extreme value distributions
 Author: Alec Stephenson <a.stephenson@lancaster.ac.uk>.
 Maintainer: Alec Stephenson <a.stephenson@lancaster.ac.uk>
