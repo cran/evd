@@ -1,3 +1,4 @@
+
 "rfrechet"<-
 function(n, loc = 0, scale = 1, shape = 1)
 {
@@ -445,10 +446,6 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, j = 1,
         n = length(x)), class = c("extreme", "evd"))
 }
 
-"fgumbel" <- function (...) .Defunct()
-"frweibull" <- function (...) .Defunct()
-"ffrechet" <- function (...) .Defunct()
-
 "fgev.norm"<-
 function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
@@ -682,7 +679,7 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
     ft <- fgev.quantile(x = x, start = start, ..., nsloc = nsloc, prob = prob,
       std.err = std.err, corr = corr, method = method, warn.inf = warn.inf)
   }
-  structure(c(ft, call = call), class = c("gev", "evd"))
+  structure(c(ft, call = call), class = c("gev", "uvevd", "evd"))
 }
 
 "print.evd" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
@@ -759,13 +756,13 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
               class = c("anova", "data.frame"))
 }
 
-"plot.gev" <-  function(x, which = 1:4, main = c("Probability Plot",
+"plot.uvevd" <-  function(x, which = 1:4, main = c("Probability Plot",
      "Quantile Plot", "Density Plot", "Return Level Plot"),
      ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
      adjust = 1, jitter = FALSE, nplty = 2, ...) 
 {
-    if (!inherits(x, "gev")) 
-        stop("Use only with `gev' objects")
+    if (!inherits(x, "uvevd")) 
+        stop("Use only with `'uvevd objects")
     if (!is.numeric(which) || any(which < 1) || any(which > 4)) 
         stop("`which' must be in 1:4")
     show <- rep(FALSE, 4)
@@ -791,7 +788,12 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
     invisible(x)
 }
 
-"qq" <-  function(x, ci = TRUE, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
+"qq" <- function (x, ...) UseMethod("qq")
+"pp" <- function (x, ...) UseMethod("pp")
+"rl" <- function (x, ...) UseMethod("rl")
+"dens" <- function (x, ...) UseMethod("dens")
+
+"qq.gev" <-  function(x, ci = TRUE, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
 {
     quant <- qgev(ppoints(x$tdata), loc = x$loc,
                  scale = x$param["scale"], shape = x$param["shape"])
@@ -818,7 +820,7 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
     invisible(list(x = quant, y = sort(x$tdata)))
 }
 
-"pp" <-  function(x, ci = TRUE, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+"pp.gev" <-  function(x, ci = TRUE, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 {
     ppx <- ppoints(x$n)
     probs <- pgev(sort(x$tdata), loc = x$loc,
@@ -849,7 +851,7 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
     invisible(list(x = ppoints(x$n), y = probs))
 }
 
-"rl" <-  function(x, ci = TRUE, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
+"rl.gev" <-  function(x, ci = TRUE, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
 {
     ppx <- ppoints(x$tdata)
     rps <- c(1.001,10^(seq(0,3,len=200))[-1])
@@ -882,7 +884,7 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
     invisible(list(x = -1/log(1-p.upper), y = rlev))
 }
 
-"dens" <-  function(x, adjust = 1, nplty = 2, jitter = FALSE, main = "Density Plot", xlab = "Quantile", ylab = "Density", ...)
+"dens.gev" <-  function(x, adjust = 1, nplty = 2, jitter = FALSE, main = "Density Plot", xlab = "Quantile", ylab = "Density", ...)
 {
     xlimit <- range(x$tdata)
     xlimit[1] <- xlimit[1] - diff(xlimit) * 0.075
@@ -935,6 +937,16 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
         if(inherits(fitted, "gev")) {
             call.args$nsloc <- fitted$nsloc
             call.args$prob <- fitted$prob
+        }
+        if(inherits(fitted, "pot")) {
+            call.args$threshold <- fitted$threshold
+            call.args$npp <- fitted$npp
+            call.args$period <- fitted$period
+            call.args$cmax <- fitted$cmax
+            call.args$r <- fitted$r
+            call.args$ulow <- fitted$ulow
+            call.args$rlow <- fitted$rlow
+            call.args$mper <- fitted$mper
         }
         if(inherits(fitted, "bvevd")) {
             call.args$nsloc1 <- fitted$nsloc1

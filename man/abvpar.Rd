@@ -94,7 +94,7 @@ abvpar(x = 0.5, dep, asy = c(1,1), alpha, beta, model = "log",
 \examples{
 abvpar(dep = 2.7, model = "hr")
 abvpar(seq(0,1,0.25), dep = 0.3, asy = c(.7,.9), model = "alog")
-\dontrun{abvpar(alpha = 0.3, beta = 1.2, model = "negbi", plot = TRUE)}
+abvpar(alpha = 0.3, beta = 1.2, model = "negbi", plot = TRUE)
 
 bvdata <- rbvevd(100, dep = 0.7, model = "log")
 M1 <- fitted(fbvevd(bvdata, model = "log"))

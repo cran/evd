@@ -147,12 +147,12 @@ dmvevd(x, dep, asy, model = c("log", "alog"), d = 2, mar = c(0,1,0),
   function and should not be used.
 
   The logistic and asymmetric logistic models respectively are
-  simulated using Algorithms 2.1 and 2.2 in Stephenson(2003).
+  simulated using Algorithms 2.1 and 2.2 in Stephenson(2003b).
 
   The density function of the logistic model is evaluated using
   the representation of Shi(1995).
   The density function of the asymmetric logistic model is evaluated
-  using the representation given in Appendix A of the User's Guide.
+  using the representation given in Stephenson(2003a).
 }
 \references{
   Gumbel, E. J. (1960)
@@ -166,10 +166,14 @@ dmvevd(x, dep, asy, model = c("log", "alog"), d = 2, mar = c(0,1,0),
   Shi, D. (1995)
   Fisher information for a multivariate extreme value distribution.
   \emph{Biometrika}, \bold{82}(3), 644--649.
+
+  Stephenson, A. G. (2003a)
+  \emph{Extreme Value Distributions and their Application}.
+  Ph.D. Thesis, Lancaster University, Lancaster, UK.
   
-  Stephenson, A. G. (2003)
+  Stephenson, A. G. (2003b)
   Simulating multivariate extreme value distributions of logistic type.
-  To be published - available on request.
+  \emph{Extremes}, \bold{6}(1), 49--60.
 
   Tawn, J. A. (1990)
   Modelling multivariate extreme value distributions.
