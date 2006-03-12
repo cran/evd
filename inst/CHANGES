@@ -1,3 +1,34 @@
+CHANGES FROM VERSION 2.1-6 ARE AS FOLLOWS
+
+  The exi function has been simplified; it now returns
+  only a single estimate, but a new estimation method
+  based on inter-exceedance times has been added. A new 
+  function exiplot plots estimates of the extremal index.
+
+  The rlow argument (lower clustering interval) is now
+  hidden in the documentation for fpot, clusters, exi
+  and exiplot.
+
+  Due to numerical problems, the function rmvevd could 
+  return Inf when the dependence parameters were small.
+  This has been fixed. The maintainer thanks 
+  Mohammed Mehdi Gholam Rezaee for reporting this. 
+  
+  The anova function errored when used inside another 
+  function. This is now corrected. The maintainer thanks 
+  William Valdar for reporting this. 
+
+  In function abvnonpar the method "hall" is now 
+  "halltajvidi", and an additional comment has been added
+  to the help file, following a request from Nader Tajvidi.   
+
+  Typographic sign error in User's Guide corrected.
+  The maintainer thanks C L Wong for reporting this.   
+
+  Spelling errors in uccle help file corrected. The
+  maintainer thanks Tobias Verbeke for reporting
+  this. Apologies to residents of Belgium! 
+
 CHANGES FROM VERSION 2.1-5 ARE AS FOLLOWS
 
   The data passed to the bivariate fitting function

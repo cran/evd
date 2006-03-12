@@ -729,19 +729,20 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
     model2 <- deparse(substitute(object2))
     models <- c(model1, model2, dots)
     for(i in 1:narg) {
-        if(!inherits(get(models[i]), "evd")) 
+        if(!inherits(get(models[i], envir = parent.frame()), "evd")) 
             stop("Use only with 'evd' objects")
     }
     for(i in 1:(narg-1)) {
-        a <- names(get(models[i])$estimate)
-        b <- names(get(models[i+1])$estimate)
+        a <- names(get(models[i], envir = parent.frame())$estimate)
+        b <- names(get(models[i+1], envir = parent.frame())$estimate)
         if(!all(b %in% a))
             stop("models are not nested")
     }
     dv <- npar <- numeric(narg)
     for(i in 1:narg) {
-        dv[i] <- get(models[i])$deviance
-        npar[i] <- length(get(models[i])$estimate)
+        evmod <- get(models[i], envir = parent.frame())
+        dv[i] <- evmod$deviance
+        npar[i] <- length(evmod$estimate)
     }
     df <- -diff(npar)
     if(any(df == 0)) stop("models are not nested")

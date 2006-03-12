@@ -640,23 +640,64 @@ function(data, u, r = 1, ulow = -Inf, rlow = 1, cmax = FALSE, keep.names = TRUE,
 }
 
 "exi"<-
-function(data, u, r = 1, ulow = rep(-Inf, ncol(u)), rlow = rep(1, length(r)),
-         dimnames = list(NULL, NULL), drop = TRUE)
+function (data, u, r = 1, ulow = -Inf, rlow = 1) 
 {
-    if(!is.matrix(u)) u <- t(as.matrix(u))
-    if(!is.matrix(ulow)) ulow <- t(as.matrix(ulow))
-    if(ncol(u) != ncol(ulow)) stop("`u' and `ulow' are not compatible")
-    if(length(r) != length(rlow)) stop("`r' and `rlow' are not compatible")
-    n <- ncol(u) ; m <- length(r)
-    mat <- matrix(0, n, m, dimnames = dimnames)
-    for(i in 1:n) {
-       for(j in 1:m) {
-          clstrs <- clusters(data, u = u[,i], r = r[j], ulow = ulow[,i],
-            rlow = rlow[j], keep.names = FALSE)
-          mat[i, j] <- attributes(clstrs)$acs
-       }
+    n <- length(data)
+    if (length(u) != 1) 
+        u <- rep(u, length.out = n)
+    if (length(ulow) != 1) 
+        ulow <- rep(ulow, length.out = n)
+    if (any(ulow > u)) 
+        stop("`u' cannot be less than `ulow'")
+
+    if(r > 0.5) {
+      clstrs <- clusters(data, u = u, r = r, ulow = ulow, 
+        rlow = rlow, keep.names = FALSE)
+      exindex <- 1/attributes(clstrs)$acs
     }
-    if(drop) mat <- drop(mat)
-    1/mat
+    else {
+      extms <- which(data > u)
+      nn <- length(extms)
+      if(nn == 0) return(NaN)
+      if(nn == 1) return(1)
+      iextms <- extms[-1] - extms[-nn]
+      if(max(iextms) > 2.5) {
+        den <- log(nn - 1) + log(sum((iextms - 1) * (iextms - 2)))
+        exindex <- log(2) + 2*log(sum(iextms - 1)) - den
+        exindex <- min(1, exp(exindex))
+      }
+      else {
+        den <- log(nn - 1) + log(sum(iextms^2))
+        exindex <- log(2) + 2*log(sum(iextms)) - den
+        exindex <- min(1, exp(exindex))
+      }
+    }
+    exindex
 }
+
+exiplot <-
+function (data, tlim, r = 1, ulow = -Inf, rlow = 1, add = FALSE, 
+    nt = 100, lty = 1, xlab = "Threshold", ylab = "Ext. Index",
+    ylim = c(0,1), ...) 
+{
+    nn <- length(data)
+    if (all(data <= tlim[2])) 
+        stop("upper limit for threshold is too high")
+    u <- seq(tlim[1], tlim[2], length = nt)
+    x <- numeric(nt)
+    for (i in 1:nt) {
+        x[i] <- exi(data, u = u[i], r = r, ulow = ulow, rlow = rlow)
+    }
+    if(add) {
+      lines(u, x, lty = lty, ...)
+    } 
+    else {
+      plot(u, x, type = "l", lty = lty, xlab = xlab, 
+        ylab = ylab, ylim = ylim, ...)
+    }
+    invisible(list(x = u, y = x))
+}
+
+
+
 
