@@ -438,7 +438,7 @@ Some examples are given below.
 Let $z=(z_1,\dots,z_d)$.
 The $d$-dimensional logistic model \citep{gumb60b} has distribution function
 \begin{equation}
-G(z) = \exp\left\{-\left(\sum\nolimits_{j=1}^d y_j^{-1/\alpha}\right)^\alpha\right\}
+G(z) = \exp\left\{-\left(\sum\nolimits_{j=1}^d y_j^{1/\alpha}\right)^\alpha\right\}
 \label{multlog}
 \end{equation} 
 where $\alpha\in(0,1]$ and $(y_1,\dots,y_d)$ is defined by the transformations \eqref{mtrans}.
@@ -792,7 +792,7 @@ If the argument \verb+plot+ is \verb+FALSE+ (the default), then \verb+clusters+ 
 \label{clust}
 \end{figure}
 
-The function \verb+exi+ returns estimates of the Extremal Index of a (stationary) stochastic process. The Extremal Index is defined in Chapter 3 of \citet{leadling83}. A more informal treatment is given in Chapter 5 of \citet{cole01}. The extremal index can be estimated using the inverse of the average size of extreme clusters, where the cluster size is defined as the number of exceedances that it contains. Given a vector of thresholds and a vector of clustering interval lengths, \verb+exi+ returns a matrix of estimates. 
+The function \verb+exi+ returns estimates of the Extremal Index of a (stationary) stochastic process. The Extremal Index is defined in Chapter 3 of \citet{leadling83}. A more informal treatment is given in Chapter 5 of \citet{cole01}. The extremal index can be estimated using the inverse of the average size of extreme clusters, where the cluster size is defined as the number of exceedances that it contains. 
 
 \section{Fitting Univariate Distributions}
 \setcounter{footnote}{0}

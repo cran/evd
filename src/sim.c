@@ -57,7 +57,7 @@ void rmvlog_tawn(int *n, int *d, double *alpha, double *sim)
   {
     s = rpstable(*alpha);
     for(j=0;j<*d;j++) 
-      sim[i*(*d)+j] = R_pow(s/EXP,*alpha);
+      sim[i*(*d)+j] = exp(*alpha * (s - log(EXP)));
   }
   RANDOUT;
 }
@@ -83,10 +83,11 @@ void rmvalog_tawn(int *n, int *d, int *nb, double *alpha, double *asy,
     for(j=0;j<*nb;j++) {
       if(alpha[j] != 1) 
         s = rpstable(alpha[j]);
-      else s = 1;
+      else s = 0;
       for(k=0;k<*d;k++) {
 	if(asy[j*(*d) + k] != 0) 
-	    gevsim[j*(*d) + k] = asy[j*(*d) + k] * R_pow((s/EXP),alpha[j]);
+	    gevsim[j*(*d) + k] = asy[j*(*d) + k] * exp(alpha[j] * 
+              (s - log(EXP)));
       }
     }
     for(j=0;j<*d;j++) {
@@ -98,6 +99,8 @@ void rmvalog_tawn(int *n, int *d, int *nb, double *alpha, double *asy,
   RANDOUT;
 }
 
+/* returns logarithm
+   needed for rmvlog_tawn rmvalog_tawn */ 
 double rpstable(double cexp)
 {
   double tcexp,u,w,a;
@@ -105,10 +108,10 @@ double rpstable(double cexp)
   if(cexp == 1) return 1;
   tcexp = 1-cexp;
   u = M_PI*UNIF;
-  w = EXP; 
-  a = sin(tcexp*u) * R_pow(sin(cexp*u),(cexp/tcexp)) / 
-      R_pow(sin(u),(1/tcexp));
-  return R_pow((a/w),(tcexp/cexp));
+  w = log(EXP); 
+  a = log(sin(tcexp*u)) + (cexp/tcexp) * log(sin(cexp*u)) - 
+      (1/tcexp) * log(sin(u));
+  return (tcexp/cexp) * (a - w);
 }
 
 double maximum_n(int n, double *x)

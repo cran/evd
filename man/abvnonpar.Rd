@@ -8,14 +8,14 @@
 }
 \synopsis{
 abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
-    method = c("cfg", "pickands", "deheuvels", "hall", "tdo"),
+    method = c("cfg", "pickands", "deheuvels", "halltajvidi", "tdo"),
     convex = FALSE, wf = function(t) t, kmar = NULL, plot = FALSE,
     add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0, 1),
     ylim = c(0.5, 1), xlab = "", ylab = "", \dots)
 }
 \usage{
 abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
-    method = c("cfg", "pickands", "deheuvels", "hall", "tdo"),
+    method = c("cfg", "pickands", "deheuvels", "halltajvidi", "tdo"),
     convex = FALSE, wf = function(t) t, plot = FALSE,
     add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0, 1),
     ylim = c(0.5, 1), xlab = "", ylab = "", \dots)
@@ -104,7 +104,7 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
         A_d(w) = n / {sum_{i=1}^n min[y_{i1}/w, y_{i2}(1-w)] -
 	w sum_{i=1}^n y_{i1} - (1-w) sum_{i=1}^n y_{i2} + n}}
 
-  \code{method = "hall"} (Hall and Tajvidi, 2000)
+  \code{method = "halltajvidi"} (Hall and Tajvidi, 2000)
   \deqn{A_h(w) = n\left\{\sum_{i=1}^n \min\left(\frac{y_{i1}}{\bar{y}_1
       w},\frac{y_{i2}}{\bar{y}_2 (1-w)}\right)\right\}^{-1}}{
     A_h(w) = n (sum_{i=1}^n min[y_{i1}/(by_1 w),
@@ -146,9 +146,14 @@ abvnonpar(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
 \note{
   Appendix A of the User's Guide contains a short simulation
   study that compares the estimators defined above.
+
   The estimators \eqn{A_p(\cdot)}{A_p()}, \eqn{A_d(\cdot)}{A_d()}
   and \eqn{A_h(\cdot)}{A_h()} are very similar, and may not be
   distinguishable when plotted.
+
+  I have been asked to point out that Hall, P. and Tajvidi, N.
+  (2000) suggest putting a constrained smoothing spline on their
+  estimator, but this is not done here.
 }
 
 \value{

@@ -4,72 +4,57 @@
 \description{
   Estimates of the extremal index. 
 }
+\synopsis{
+exi(data, u, r = 1, ulow = -Inf, rlow = 1)
+}
 \usage{
-exi(data, u, r = 1, ulow = rep(-Inf, ncol(u)), rlow =
-    rep(1, length(r)), dimnames = list(NULL, NULL), drop = TRUE)
+exi(data, u, r = 1, ulow = -Inf)
 }
 \arguments{
   \item{data}{A numeric vector, which may contain missing values.}
-  \item{u}{A numeric vector of thresholds, unless time varying
-    thresholds are used, in which case \code{u} should be a matrix,
-    typically with \code{length(data)} rows (or else the usual
-    recycling rules are applied).}
-  \item{r}{A numeric vector of postive integers denoting the
-    clustering interval lengths.}
-  \item{ulow}{A numeric vector of lower thresholds with length
-    \code{length(u)} (if \code{u} is a vector) or \code{ncol(u)}
-    (if \code{u} is a matrix), unless time varying lower
-    thresholds are used, in which case \code{ulow} should be a
-    matrix with \code{length(u)} or \code{ncol(u)} columns, and
-    typically with \code{length(data)} rows (or else the
-    usual recycling rules are applied). By default there are no
-    lower thresholds (or equivalently, the lower thresholds are
-    \code{-Inf}).}
-  \item{rlow}{A numeric vector of postive integers, of length
-    \code{length(r)}, denoting the lower clustering interval
-    lengths. The lower clustering interval length is only
-    relevant if it is less than the clustering interval length
-    and if there exists a lower threshold (greater than
-    \code{-Inf}).}
-  \item{dimnames}{The \code{dimnames} of the result.}
-  \item{drop}{Logical; return a vector if either \code{u} or
-    \code{r} has one element/column?}
+  \item{u}{A single value giving the threshold, unless a time varying
+    threshold is used, in which case \code{u} should be a vector of
+    thresholds, typically with the same length as \code{data} (or else
+    the usual recycling rules are applied).}
+  \item{r}{Either a postive integer denoting the clustering interval
+    length, or zero, in which case the intervals estimator of
+    Ferro and Segers (2003) is used and following arguments are
+    ignored. By default the interval length is one.}
+  \item{ulow}{A single value giving the lower threshold, unless a time
+    varying lower threshold is used, in which case \code{ulow} should
+    be a vector of lower thresholds, typically with the same length as
+    \code{data} (or else the usual recycling rules are applied).
+    By default there is no lower threshold (or equivalently, the
+    lower threshold is \code{-Inf}).}
 }
 \details{
-  The extremal index is estimated using the inverse of the
-  average cluster size, using the clusters of exceedences
-  derived from \code{\link{clusters}}.
-  If the threshold is larger than (or equal to)
-  \code{max(data)}, so that no clusters are derived, then
-  the corresponding estimate is \code{NaN}.
+  If \code{r} is a positive integer the extremal index is estimated
+  using the inverse of the average cluster size, using the clusters
+  of exceedences derived from \code{\link{clusters}}. If \code{r} is
+  zero, an estimate based on inter-exceedance times is used (Ferro
+  and Segers, 2003).
+  
+  If there are no exceedances of the threshold, the estimate is
+  \code{NaN}. If there is only one exceedance, the estimate is
+  one.
 }
 \value{
-  A matrix with \code{length(u)} (if \code{u} is a vector) or
-  \code{ncol(u)} (if \code{u} is a matrix) rows and
-  \code{length(r)} columns, such that the \code{ij}th element
-  is the estimate of the extremal index using the threshold
-  \code{u[i]} or \code{u[,i]}, the clustering interval length
-  \code{r[j]}, the lower threshold \code{ulow[i]} or
-  \code{ulow[,i]}, and the lower clustering interval length
-  \code{rlow[j]}.
-  If \code{drop} is \code{TRUE} (the default), a numeric vector is
-  returned in preference to a matrix with one row/column.
+  A single value estimating the extremal index.
+}
+\references{
+  Ferro, C. A. T. and Segers, J. (2003)
+  Inference for clusters of extreme values.
+  \emph{JRSS B}, \bold{65}, 545--556.
 }
 
-\seealso{\code{\link{clusters}}}
+\seealso{\code{\link{clusters}}, \code{\link{exiplot}}}
 
 \examples{
 data(portpirie)
-exi(portpirie, 4.2, 3, 3.8)
-us <- seq(3.9, 4.2, len = 10)
-exi(portpirie, us, 3)
-exi(portpirie, us, 1:3)
+exi(portpirie, 4.2, r = 3, ulow = 3.8)
 tvu <- c(rep(4.2, 20), rep(4.1, 25), rep(4.2, 20))
-exi(portpirie, as.matrix(tvu), 1:3)
-
-us <- seq(3.9, 4.2, len = 100)
-eis <- exi(portpirie, us, 1:3)
-matplot(us, eis, type = "l", xlab = "Threshold", ylab = "Ext. Index")
+exi(portpirie, tvu, r = 1)
+exi(portpirie, tvu, r = 0)
 }
 \keyword{manip}
 

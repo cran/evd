@@ -652,10 +652,10 @@ function(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
 
 "abvnonpar"<- 
 function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
-         method = c("cfg","pickands","deheuvels","hall","tdo"), convex = FALSE,
-         wf = function(t) t, kmar = NULL, plot = FALSE, add = FALSE,
-         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1), ylim = c(0.5,1),
-         xlab = "", ylab = "", ...)
+         method = c("cfg","pickands","deheuvels","halltajvidi","tdo"),
+         convex = FALSE, wf = function(t) t, kmar = NULL, plot = FALSE,
+         add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0, na.rm=TRUE) ||
        any(x > 1, na.rm=TRUE)) stop("invalid argument for `x'")
@@ -784,7 +784,7 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
             a <- approx(x2, a, xout = x, method="linear")$y
         }
     } 
-    if(method == "hall") {
+    if(method == "halltajvidi") {
         sum1 <- sum(data[,1])
         sum2 <- sum(data[,2])
         if(!convex) {
