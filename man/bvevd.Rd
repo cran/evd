@@ -5,17 +5,17 @@
 \title{Parametric Bivariate Extreme Value Distributions}
 \description{
   Density function, distribution function and random generation
-  for eight parametric bivariate extreme value models. 
+  for nine parametric bivariate extreme value models. 
 }
 \synopsis{
 dbvevd(x, dep, asy = c(1, 1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
     mar1 = c(0, 1, 0), mar2 = mar1, log = FALSE) 
 pbvevd(q, dep, asy = c(1, 1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
     mar1 = c(0, 1, 0), mar2 = mar1, lower.tail = TRUE) 
 rbvevd(n, dep, asy = c(1, 1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
     mar1 = c(0, 1, 0), mar2 = mar1) 
 }
 \usage{
@@ -38,16 +38,17 @@ rbvevd(n, dep, asy = c(1, 1), alpha, beta, model = "log",
     parameters for the asymmetric logistic and asymmetric negative
     logistic models.}
   \item{alpha, beta}{Alpha and beta parameters for the bilogistic,
-    negative bilogistic and Coles-Tawn models.}
+    negative bilogistic, Coles-Tawn and asymmetric mixed models.}
   \item{model}{The specified model; a character string. Must be
     either \code{"log"} (the default), \code{"alog"}, \code{"hr"},
     \code{"neglog"}, \code{"aneglog"}, \code{"bilog"},
-    \code{"negbilog"} or \code{"ct"} (or any unique partial match),
-    for the logistic, asymmetric logistic, Husler-Reiss, negative
-    logistic, asymmetric negative logistic, bilogistic, negative
-    bilogistic and Coles-Tawn models respectively. If parameter
-    arguments are given that do not correspond to the specified
-    model those arguments are ignored, with a warning.}
+    \code{"negbilog"}, \code{"ct"} or \code{"amix"} (or any unique
+    partial match), for the logistic, asymmetric logistic,
+    Husler-Reiss, negative logistic, asymmetric negative logistic,
+    bilogistic, negative bilogistic, Coles-Tawn and asymmetric
+    mixed models respectively. If parameter arguments are given
+    that do not correspond to the specified model those arguments
+    are ignored, with a warning.}
   \item{mar1, mar2}{Vectors of length three containing marginal
     parameters, or matrices with three columns where each
     column represents a vector of values to be passed to the
@@ -252,11 +253,33 @@ rbvevd(n, dep, asy = c(1, 1), alpha, beta, model = "log",
   Different limits occur when one of
   \eqn{\alpha,\beta}{alpha,beta} is fixed and the other
   tends to infinity.
+
+  \code{model = "amix"} (Tawn, 1988)
+
+  The asymmetric mixed distribution function with
+  parameters \eqn{\code{alpha} = \alpha}{\code{alpha} = alpha}
+  and \eqn{\code{beta} = \beta}{\code{beta} = beta} has
+  a dependence function with the following cubic polynomial
+  form.
+  \deqn{A(t) = 1 - (\alpha +\beta)t + \alpha t^2 + \beta t^3}{
+    A(t) = 1 - (\alpha +\beta)t + \alpha t^2 + \beta t^3}
+  where \eqn{\alpha}{alpha} and \eqn{\alpha + 3\beta}{alpha + 3beta}
+  are non-negative, and where \eqn{\alpha + \beta}{alpha + beta}
+  and \eqn{\alpha + 2\beta}{alpha + 2beta} are less than or equal
+  to one.
+  These constraints imply that beta lies in the interval [-0.5,0.5]
+  and that alpha lies in the interval [0,1.5], though alpha can
+  only be greater than one if beta is negative. The strength
+  of dependence increases for increasing alpha (for fixed beta).
+  Complete dependence cannot be obtained.
+  Independence is obtained when both parameters are zero.
+  For the definition of a dependence function, see
+  \code{\link{abvevd}}.
 }
 \value{
   \code{dbvevd} gives the density function, \code{pbvevd} gives the
   distribution function and \code{rbvevd} generates random deviates,
-  for one of eight parametric bivariate extreme value models.
+  for one of nine parametric bivariate extreme value models.
 }
 \note{
   The logistic and asymmetric logistic models respectively are
@@ -326,7 +349,7 @@ rbvevd(n, dep, asy = c(1, 1), alpha, beta, model = "log",
   \emph{Biometrika}, \bold{75}, 397--415.  
 }
 
-\seealso{\code{\link{abvpar}}, \code{\link{rgev}}, \code{\link{rmvevd}}}
+\seealso{\code{\link{abvevd}}, \code{\link{rgev}}, \code{\link{rmvevd}}}
 
 
 \examples{

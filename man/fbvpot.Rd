@@ -173,7 +173,7 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
 }
 \author{Chris Ferro and Alec Stephenson}
 
-\seealso{\code{\link{abvpar}}, \code{\link{anova.evd}},
+\seealso{\code{\link{abvevd}}, \code{\link{anova.evd}},
   \code{\link{fbvevd}}, \code{\link{optim}}, \code{\link{rbvevd}}}
 
 \examples{

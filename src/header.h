@@ -29,6 +29,7 @@ double ccbvbilog(double m1, double m2, double oldm1, double alpha,
 double ccbvnegbilog(double m1, double m2, double oldm1, double alpha, 
                    double beta);
 double ccbvct(double m1, double m2, double oldm1, double alpha, double beta);
+double ccbvamix(double m1, double m2, double oldm1, double alpha, double beta);
 void ccop(double *m1, double *m2, int *cnd, double *dep, double *asy1, 
           double *asy2, double *alpha, double *beta, int *n, int *model, 
           double *ccop);
@@ -50,6 +51,7 @@ void rbvaneglog(int *n, double *dep, double *asy, double *sim);
 void rbvbilog(int *n, double *alpha, double *beta, double *sim);
 void rbvnegbilog(int *n, double *alpha, double *beta, double *sim);
 void rbvct(int *n, double *alpha, double *beta, double *sim);
+void rbvamix(int *n, double *alpha, double *beta, double *sim);
 
 /* from fit.c */
 
@@ -84,6 +86,14 @@ void nlbvct(double *datam1, double *datam2, int *n, int *si, double *alpha,
 	    double *beta, double *loc1, double *scale1, double *shape1, 
             double *loc2, double *scale2, double *shape2, int *split, 
             double *dns);
+void nlbvamix(double *datam1, double *datam2, int *n, int *si, double *alpha,
+	      double *beta, double *loc1, double *scale1, double *shape1, 
+              double *loc2, double *scale2, double *shape2, int *split, 
+	      double *dns);
+
+void nslmvalog(double *data, int *n, int *d, double *deps, double *thetas, 
+               double *mpar, double *psrvs, int *q, int *nslocid, double *nsloc, 
+	       int *depindx, int *thetaindx, double *dns);
 
 /* from bvpot.c (censored) */
 

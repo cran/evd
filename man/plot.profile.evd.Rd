@@ -1,10 +1,10 @@
 \name{plot.profile.evd}
 \alias{plot.profile.evd}
 
-\title{Plot Profile Deviances and Calculate Profile Confidence
+\title{Plot Profile Log-likelihoods and Calculate Profile Confidence
   Intervals}
 \description{
-  Displays profile deviances from a model profiled with
+  Displays profile log-likelihoods from a model profiled with
   \code{\link{profile.evd}}, and invisibly returns profile
   confidence intervals.
 }
@@ -49,7 +49,6 @@
   likelihood estimators may not hold.
   For the GEV model, the usual asymptotic properties hold when the
   shape parameter is greater than \eqn{-0.5} (Smith, 1985).
-  Fortunately, this is usually the case.
 }
 \references{
   Smith, R. L. (1985)

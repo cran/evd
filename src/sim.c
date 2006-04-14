@@ -323,7 +323,7 @@ void rbvbilog(int *n, double *alpha, double *beta, double *sim)
     lval = ccbvbilog(llim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
     uval = ccbvbilog(ulim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
     if(!(sign(lval) != sign(uval))) 
-      error("values at end points are not of opposite sign");
+      error("values at end points are not of opposite sign2");
     for(j=0;j<DOUBLE_DIGITS;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
@@ -397,7 +397,7 @@ void rbvct(int *n, double *alpha, double *beta, double *sim)
     lval = ccbvct(llim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
     uval = ccbvct(ulim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
     if(!(sign(lval) != sign(uval))) 
-      error("values at end points are not of opposite sign2");
+      error("values at end points are not of opposite sign");
     for(j=0;j<DOUBLE_DIGITS;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
@@ -419,7 +419,42 @@ void rbvct(int *n, double *alpha, double *beta, double *sim)
   }
 }
 
+/* produces uniform margins */
+void rbvamix(int *n, double *alpha, double *beta, double *sim)
+{
+  double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
+  int i,j;
 
+  for(i=0;i<*n;i++) 
+  {
+    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    ulim = 1 - llim;
+    ilen = 1;
+    midpt = 0.5;
+    lval = ccbvamix(llim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
+    uval = ccbvamix(ulim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
+    if(!(sign(lval) != sign(uval))) 
+      error("values at end points are not of opposite sign");
+    for(j=0;j<DOUBLE_DIGITS;j++) {
+      ilen = ilen/2;
+      midpt = llim + ilen;
+      midval = ccbvamix(midpt, sim[2*i+1], sim[2*i+0], *alpha, *beta);
+      if(fabs(midval) < eps || fabs(ilen) < delta) 
+        break;
+      if(sign(lval) != sign(midval)) {
+        ulim = midpt;
+        uval = midval;
+      }
+      else {
+        llim = midpt;
+        lval = midval;
+      }
+      if(j == DOUBLE_DIGITS-1) 
+        error("numerical problem in root finding algorithm");
+    }
+    sim[2*i+0] = midpt;
+  }
+}
 
 
 

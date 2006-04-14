@@ -7,21 +7,22 @@
   a P-P plot, a Q-Q plot, a density plot and a return level plot.
 }
 \usage{
-\method{plot}{uvevd}(x, which = 1:4, main = c("Probability Plot",
-    "Quantile Plot", "Density Plot", "Return Level Plot"),
-    ask = nb.fig < length(which) && dev.interactive(),
-    ci = TRUE, adjust = 1, jitter = FALSE, nplty = 2, \dots)
+\method{plot}{uvevd}(x, which = 1:4, main, ask = nb.fig <
+    length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
+    adjust = 1, jitter = FALSE, nplty = 2, \dots)
 }
 \arguments{
   \item{x}{An object that inherits from class \code{"uvevd"}.}
   \item{which}{If a subset of the plots is required, specify a
     subset of the numbers \code{1:4}.}
-  \item{main}{Title of each plot.}
+  \item{main}{Title of each plot. If given, must be a character
+    vector with the same length as \code{which}.}
   \item{ask}{Logical; if \code{TRUE}, the user is asked before
     each plot.}
   \item{ci}{Logical; if \code{TRUE} (the default), plot simulated
     95\% confidence intervals for the P-P, Q-Q and return level
     plots.}
+  \item{cilwd}{Line width for confidence interval lines.}
   \item{adjust, jitter, nplty}{Arguments to the density plot.
     The density of the fitted model is plotted with a rug plot and
     (optionally) a non-parameteric estimate. The argument

@@ -1,5 +1,5 @@
-\name{atvnonpar}
-\alias{atvnonpar}
+\name{amvnonpar}
+\alias{amvnonpar}
 \title{Non-parametric Estimates for Dependence Functions of the
     Trivariate Extreme Value Distribution}
 \description{
@@ -7,16 +7,17 @@
   \eqn{A} of the trivariate extreme value distribution.
 }
 \synopsis{
-atvnonpar(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
-    method = c("pickands", "deheuvels", "hall"), kmar = NULL, plot = FALSE,
+amvnonpar(x = rep(1/3,3), data, epmar = FALSE, nsloc1 = NULL, nsloc2 =
+    NULL, nsloc3 = NULL, method = c("pickands", "deheuvels",
+    "halltajvidi"), madj = 0, kmar = NULL, plot = FALSE,
     col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
     lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
 }
 \usage{
-atvnonpar(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
-    method = c("pickands", "deheuvels", "hall"), plot = FALSE,
-    col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
-    lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
+amvnonpar(x = rep(1/3,3), data, epmar = FALSE, nsloc1 = NULL, nsloc2 =
+    NULL, nsloc3 = NULL, madj = 0, plot = FALSE, col = heat.colors(12),
+    blty = 0, grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3,
+    lab = as.character(1:3), lcex = 1)
 }
 \arguments{
   \item{x}{A vector of length three or a matrix with three columns,
@@ -29,6 +30,9 @@ atvnonpar(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
     dependence.}
   \item{data}{A matrix or data frame with three columns, which may
     contain missing values.}
+  \item{epmar}{If \code{TRUE}, an empirical transformation of the
+    marginals is performed in preference to marginal parametric
+    GEV estimation, and the \code{nsloc} arguments are ignored.}
   \item{nsloc1, nsloc2, nsloc3}{A data frame with the same number of
     rows as \code{data}, for linear modelling of the location
     parameter on the first/second/third margin.
@@ -36,11 +40,8 @@ atvnonpar(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
     intercept.
     A numeric vector can be given as an alternative to a single column
     data frame.}
-  \item{method}{The estimation method; a character string. Must be
-    either \code{"pickands"} (the default), \code{"deheuvels"}
-    or \code{"hall"} (or any unique partial match). The three
-    estimators are very similar, and may not be distinguishable
-    when plotted.}
+  \item{madj}{Performs marginal adjustments. See
+    \code{\link{abvnonpar}}.}
   \item{plot}{Logical; if \code{TRUE} the function is plotted. The
     minimum (evaluated) value is returned invisibly.
     If \code{FALSE} (the default), the following arguments are
@@ -64,7 +65,8 @@ atvnonpar(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
     of the set \eqn{\{1,2,3\}}{{1,2,3}}. The points \eqn{(1,0,0)},
     \eqn{(0,1,0)} and \eqn{(0,0,1)} (the vertices of the simplex)
     are depicted clockwise from the top in the order defined by
-    \code{ord}.}
+    \code{ord}. The argument alters the way in which the function
+    is plotted; it does not change the function definition.}
   \item{lab}{A character vector of length three, in which case the
     \code{i}th margin is labelled using the \code{i}th component,
     or \code{NULL}, in which case no labels are given. By default,
@@ -78,33 +80,37 @@ atvnonpar(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
 \note{
   The rows of \code{data} that contain missing values are not used
   in the estimation of the dependence structure, but every non-missing
-  value is used in estimating the generalized extreme value margins.
+  value is used in estimating the margins.
 
   The dependence function of the trivariate extreme value
-  distribution is defined in \code{\link{atvpar}}.
-  The function \code{\link{atvpar}} calculates and plots dependence
+  distribution is defined in \code{\link{amvevd}}.
+  The function \code{\link{amvevd}} calculates and plots dependence
   functions of trivariate logistic and trivariate asymmetric
   logistic models.
+
+  The estimator plotted or calculated is a trivariate extension of
+  the bivariate Pickands estimator defined in
+  \code{\link{abvnonpar}}.
 }
 
 \value{
-  \code{atvnonpar} calculates or plots a non-parametric estimate of
+  \code{amvnonpar} calculates or plots a non-parametric estimate of
   the dependence function of the trivariate extreme value distribution.
 }
 
-\seealso{\code{\link{atvpar}}, \code{\link{abvnonpar}},
+\seealso{\code{\link{amvevd}}, \code{\link{abvnonpar}},
   \code{\link{fgev}}}
 
 \examples{
 s3pts <- matrix(rexp(30), nrow = 10, ncol = 3)
 s3pts <- s3pts/rowSums(s3pts)
 sdat <- rmvevd(100, dep = 0.6, model = "log", d = 3)
-atvnonpar(s3pts, sdat)
+amvnonpar(s3pts, sdat)
 
-\dontrun{atvnonpar(data = sdat, plot = TRUE)}
-\dontrun{atvnonpar(data = sdat, plot = TRUE, ord = c(2,3,1), lab = LETTERS[1:3])}
-\dontrun{atvpar(dep = 0.6, model = "log", plot = TRUE)}
-\dontrun{atvpar(dep = 0.6, model = "log", plot = TRUE, blty = 1)}
+\dontrun{amvnonpar(data = sdat, plot = TRUE)}
+\dontrun{amvnonpar(data = sdat, plot = TRUE, ord = c(2,3,1), lab = LETTERS[1:3])}
+\dontrun{amvevd(dep = 0.6, model = "log", plot = TRUE)}
+\dontrun{amvevd(dep = 0.6, model = "log", plot = TRUE, blty = 1)}
 }
 \keyword{nonparametric}
 

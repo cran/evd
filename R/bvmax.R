@@ -116,13 +116,35 @@ function(n, alpha, beta, mar1 = c(0,1,0), mar2 = mar1)
     mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
 
+"rbvamix" <-
+function(n, alpha, beta, mar1 = c(0,1,0), mar2 = mar1)
+{
+    if(length(alpha) != 1 || mode(alpha) != "numeric")
+        stop("invalid argument for `alpha'")
+    if(length(beta) != 1 || mode(beta) != "numeric")
+        stop("invalid argument for `beta'")
+    if(alpha < 0)
+        stop("`alpha' must be non-negative")
+    if((alpha + beta) > 1)
+        stop("`alpha' + `beta' cannot be greater than one")
+    if((alpha + 2*beta) > 1)
+        stop("`alpha' + `2*beta' cannot be greater than one")
+    if((alpha + 3*beta) < 0)
+        stop("`alpha' + `3*beta' must be non-negative")
+    sim <- .C("rbvamix",
+        as.integer(n), as.double(alpha), as.double(beta),
+        sim = runif(2*n), PACKAGE = "evd")$sim
+    sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
+    mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
+}
+
 "rbvevd" <-
 function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
     mar1 = c(0,1,0), mar2 = mar1)
 {
   model <- match.arg(model)
-  m1 <- c("bilog", "negbilog", "ct")
+  m1 <- c("bilog", "negbilog", "ct", "amix")
   m2 <- c(m1, "log", "hr", "neglog")
   m3 <- c("log", "alog", "hr", "neglog", "aneglog")
   if((model %in% m1) && !missing(dep))
@@ -145,16 +167,18 @@ function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
       mar2 = mar2),
     negbilog = rbvnegbilog(n = n, alpha = alpha, beta = beta, mar1 = mar1,
       mar2 = mar2),
-    ct = rbvct(n = n, alpha = alpha, beta = beta, mar1 = mar1, mar2 = mar2)) 
+    ct = rbvct(n = n, alpha = alpha, beta = beta, mar1 = mar1, mar2 = mar2),
+    amix = rbvamix(n = n, alpha = alpha, beta = beta, mar1 = mar1,
+      mar2 = mar2)) 
 }
 
 "evmc" <-
 function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
-    margins = c("uniform","exponential","frechet","gumbel"))
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
+    margins = c("uniform","rweibull","frechet","gumbel"))
 {
   model <- match.arg(model)
-  m1 <- c("bilog", "negbilog", "ct")
+  m1 <- c("bilog", "negbilog", "ct", "amix")
   m2 <- c(m1, c("log", "hr", "neglog"))
   m3 <- c("log", "alog", "hr", "neglog", "aneglog")
   if((model %in% m1) && !missing(dep))
@@ -184,15 +208,31 @@ function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     asy <- as.double(asy[c(2,1)])
   }
   if(!(model %in% m3)) {
-    if(length(alpha) != 1 || mode(alpha) != "numeric" || alpha <= 0)
+    if(length(alpha) != 1 || mode(alpha) != "numeric")
         stop("invalid argument for `alpha'")
-    if(length(beta) != 1 || mode(beta) != "numeric" || beta <= 0)
+    if(length(beta) != 1 || mode(beta) != "numeric")
         stop("invalid argument for `beta'")
+    if(model != "amix" && (alpha <= 0 || beta <= 0))
+        stop("`alpha' and `beta' must be positive")
     if(model == "bilog" && any(c(alpha,beta) >= 1))
         stop("`alpha' and `beta' must be in the open interval (0,1)")
-    alpha <- as.double(beta)
-    beta <- as.double(alpha)
-  } 
+    if(model == "amix") {
+      if(alpha < 0)
+        stop("`alpha' must be non-negative")
+      if((alpha + beta) > 1)
+        stop("`alpha' + `beta' cannot be greater than one")
+      if((alpha + 2*beta) > 1)
+        stop("`alpha' + `2*beta' cannot be greater than one")
+      if((alpha + 3*beta) < 0)
+        stop("`alpha' + `3*beta' must be non-negative")
+      alpha <- as.double(alpha + 3*beta)
+      beta <- as.double(-beta)
+    }
+    else {
+      alpha <- as.double(beta)
+      beta <- as.double(alpha)
+    }
+  }
     
   evmc <- runif(n)
   for(i in 2:n) {
@@ -210,12 +250,14 @@ function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
       negbilog = .C("rbvnegbilog", nn, alpha, beta, sim = evmc[c(i,i-1)],
         PACKAGE = "evd")$sim,
       ct = .C("rbvct", nn, alpha, beta, sim = evmc[c(i,i-1)],
+        PACKAGE = "evd")$sim,
+      amix = .C("rbvamix", nn, alpha, beta, sim = evmc[c(i,i-1)],
         PACKAGE = "evd")$sim)
   }
 
   switch(match.arg(margins),
     frechet = -1/log(evmc), uniform = evmc,
-    exponential = -log(evmc), gumbel = -log(-log(evmc))) 
+    rweibull = log(evmc), gumbel = -log(-log(evmc))) 
 }
 
 "pbvlog"<- 
@@ -384,13 +426,42 @@ function(q, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
     pp
 }
 
+"pbvamix"<- 
+function(q, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
+{
+    if(length(alpha) != 1 || mode(alpha) != "numeric")
+        stop("invalid argument for `alpha'")
+    if(length(beta) != 1 || mode(beta) != "numeric")
+        stop("invalid argument for `beta'")
+    if(alpha < 0)
+        stop("`alpha' must be non-negative")
+    if((alpha + beta) > 1)
+        stop("`alpha' + `beta' cannot be greater than one")
+    if((alpha + 2*beta) > 1)
+        stop("`alpha' + `2*beta' cannot be greater than one")
+    if((alpha + 3*beta) < 0)
+        stop("`alpha' + `3*beta' must be non-negative")
+    if(is.null(dim(q))) dim(q) <- c(1,2)
+    q <- mtransform(q, list(mar1, mar2))
+    qsum <- apply(q, 1, sum)  
+    v <- qsum - (alpha + beta) * q[,1] + alpha * (q[,1]^2)/qsum +
+      beta * (q[,1]^3)/(qsum^2)
+    v[is.infinite(q[,1]) || is.infinite(q[,2])] <- Inf
+    v[(q[,1] + q[,2]) == 0] <- 0
+    pp <- exp(-v)
+    if(!lower.tail) {
+      pp <- 1 - pgev(-log(q[,1])) - pgev(-log(q[,2])) + pp
+    }
+    pp
+}
+
 "pbvevd" <-
 function(q, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
     mar1 = c(0,1,0), mar2 = mar1, lower.tail = TRUE)
 {
   model <- match.arg(model)
-  m1 <- c("bilog", "negbilog", "ct")
+  m1 <- c("bilog", "negbilog", "ct", "amix")
   m2 <- c(m1, "log", "hr", "neglog")
   m3 <- c("log", "alog", "hr", "neglog", "aneglog")
   if((model %in% m1) && !missing(dep))
@@ -418,12 +489,15 @@ function(q, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     negbilog = pbvnegbilog(q = q, alpha = alpha, beta = beta, mar1 = mar1,
       mar2 = mar2, lower.tail = lower.tail),
     ct = pbvct(q = q, alpha = alpha, beta = beta, mar1 = mar1,
+      mar2 = mar2, lower.tail = lower.tail),
+    amix = pbvamix(q = q, alpha = alpha, beta = beta, mar1 = mar1,
       mar2 = mar2, lower.tail = lower.tail)) 
 }
 
 "abvlog"<- 
 function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
-         blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
+         blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
+         ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
         stop("invalid argument for `x'")
@@ -433,7 +507,7 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
     idep <- 1/dep
     a <- (x^idep + (1-x)^idep)^dep
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
         return(invisible(list(x = x, y = a)))
     }
     a
@@ -441,7 +515,7 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
 
 "abvalog"<- 
 function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
-         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         lty = 1, lwd = 1, col = 1, blty = 3, blwd = 1, xlim = c(0,1),
          ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -455,7 +529,7 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
     a <- ((asy[1]*x)^idep + (asy[2]*(1-x))^idep)^dep +
         (1-asy[1])*x + (1-asy[2])*(1-x)    
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...) 
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...) 
         return(invisible(list(x = x, y = a)))
     }
     a
@@ -463,7 +537,8 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
 
 "abvhr" <-
 function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
-         blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
+         blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
+         ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
         stop("invalid argument for `x'")
@@ -473,7 +548,7 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
     fn <- function(z) z*pnorm(1/dep + dep * log(z/(1-z)) / 2)
     a <- fn(x) + fn(1-x)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
         return(invisible(list(x = x, y = a)))
     }
     a
@@ -481,7 +556,8 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
 
 "abvneglog"<- 
 function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
-         blty = 3, xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
+         blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1), xlab = "",
+         ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
         stop("invalid argument for `x'")  
@@ -490,7 +566,7 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
     if(plot || add) x <- seq(0, 1, length = 100)
     a <- 1 - (x^(-dep) + (1-x)^(-dep))^(-1/dep)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...) 
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...) 
         return(invisible(list(x = x, y = a)))
     }
     a
@@ -498,7 +574,7 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
 
 "abvaneglog"<- 
 function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
-         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         lty = 1, lwd = 1, col = 1, blty = 3, blwd = 1, xlim = c(0,1),
          ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -510,7 +586,7 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
        max(asy) > 1) stop("invalid argument for `asy'")
     a <- 1 - ((asy[1]*x)^(-dep) + (asy[2]*(1-x))^(-dep))^(-1/dep)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
         return(invisible(list(x = x, y = a)))
     }
     a
@@ -518,7 +594,7 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
 
 "abvbilog"<- 
 function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
-         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         lty = 1, lwd = 1, col = 1, blty = 3, blwd = 1, xlim = c(0,1),
          ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -542,7 +618,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     }
     a <- x * gma^(1-alpha) + (1-x) * (1 - gma)^(1-beta)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
         return(invisible(list(x = x, y = a)))
     }
     a
@@ -550,7 +626,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
 
 "abvnegbilog"<- 
 function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
-         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         lty = 1, lwd = 1, col = 1, blty = 3, blwd = 1, xlim = c(0,1),
          ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -574,7 +650,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     }
     a <- 1 - x * gma^(1+alpha) - (1-x) * (1 - gma)^(1+beta)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
         return(invisible(list(x = x, y = a)))
     }
     a
@@ -582,7 +658,7 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
 
 "abvct" <-
 function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
-         lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
+         lty = 1, lwd = 1, col = 1, blty = 3, blwd = 1, xlim = c(0,1),
          ylim = c(0.5,1), xlab = "", ylab = "", ...)
 {
     if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
@@ -598,7 +674,35 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     a <- (1-x) * pbeta(u, shape1 = alpha, shape2 = beta + 1) +
       x * pbeta(u, shape1 = alpha + 1, shape2 = beta, lower.tail = FALSE)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
+        return(invisible(list(x = x, y = a)))
+    }
+    a
+}
+
+"abvamix" <-
+function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
+         lty = 1, lwd = 1, col = 1, blty = 3, blwd = 1, xlim = c(0,1),
+         ylim = c(0.5,1), xlab = "", ylab = "", ...)
+{
+    if(mode(x) != "numeric" || any(x < 0,na.rm=TRUE) || any(x > 1,na.rm=TRUE))
+        stop("invalid argument for `x'")
+    if(length(alpha) != 1 || mode(alpha) != "numeric")
+        stop("invalid argument for `alpha'")
+    if(length(beta) != 1 || mode(beta) != "numeric")
+        stop("invalid argument for `beta'")
+    if(alpha < 0)
+        stop("`alpha' must be non-negative")
+    if((alpha + beta) > 1)
+        stop("`alpha' + `beta' cannot be greater than one")
+    if((alpha + 2*beta) > 1)
+        stop("`alpha' + `2*beta' cannot be greater than one")
+    if((alpha + 3*beta) < 0)
+        stop("`alpha' + `3*beta' must be non-negative")
+    if(plot || add) x <- seq(0, 1, length = 100)
+    a <- 1 - (alpha + beta) * x + alpha * (x^2) + beta * (x^3)
+    if(plot || add) {
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
         return(invisible(list(x = x, y = a)))
     }
     a
@@ -606,12 +710,27 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
 
 "abvpar" <-
 function(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
-     plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3,
-     xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", ...)
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
+     rev = FALSE, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
+     blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1), xlab = "t",
+     ylab = "A(t)", ...)
+{
+  warning("this function is defunct: please use abvevd")
+  abvevd(x = x, dep = dep, asy = asy, alpha = alpha, beta = beta,
+    model = model, rev = rev, plot = plot, add = add, lty = lty,
+    lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim,
+    ylim = ylim, xlab = xlab, ylab = ylab, ...)
+}
+
+"abvevd" <-
+function(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
+     rev = FALSE, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
+     blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1), xlab = "t",
+     ylab = "A(t)", ...)
 {
   model <- match.arg(model)
-  m1 <- c("bilog", "negbilog", "ct")
+  m1 <- c("bilog", "negbilog", "ct", "amix")
   m2 <- c(m1, "log", "hr", "neglog")
   m3 <- c("log", "alog", "hr", "neglog", "aneglog")
   if((model %in% m1) && !missing(dep))
@@ -622,44 +741,66 @@ function(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     warning("ignoring `alpha' argument")
   if((model %in% m3) && !missing(beta))
     warning("ignoring `beta' argument")
-    
+
+  if(rev && (model %in% c("aneglog", "alog"))) asy <- asy[2:1]
+  if(rev && (model %in% c("bilog", "negbilog", "ct"))) {
+    tmpalpha <- alpha
+    alpha <- beta
+    beta <- tmpalpha
+  }
+  if(rev && (model == "amix")) {
+    tmpalpha <- alpha
+    alpha <- alpha + 3*beta
+    beta <- -beta
+  }
+     
   switch(model,
     log = abvlog(x = x, dep = dep, plot = plot, add = add, lty = lty,
-      lwd = lwd, col = col, blty = blty, xlim = xlim, ylim = ylim,
+      lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim, ylim = ylim,
       xlab = xlab, ylab = ylab, ...),
     alog = abvalog(x = x, dep = dep, asy = asy, plot = plot, add = add,
-      lty = lty, lwd = lwd, col = col, blty = blty, xlim = xlim, ylim = ylim,
-      xlab = xlab, ylab = ylab, ...),
+      lty = lty, lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim,
+      ylim = ylim, xlab = xlab, ylab = ylab, ...),
     hr = abvhr(x = x, dep = dep, plot = plot, add = add, lty = lty,
-      lwd = lwd, col = col, blty = blty, xlim = xlim, ylim = ylim,
+      lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim, ylim = ylim,
       xlab = xlab, ylab = ylab, ...),
     neglog = abvneglog(x = x, dep = dep, plot = plot, add = add, lty = lty,
-      lwd = lwd, col = col, blty = blty, xlim = xlim, ylim = ylim,
+      lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim, ylim = ylim,
       xlab = xlab, ylab = ylab, ...),
     aneglog = abvaneglog(x = x, dep = dep, asy = asy, plot = plot, add = add,
-      lty = lty, lwd = lwd, col = col, blty = blty, xlim = xlim, ylim = ylim,
-      xlab = xlab, ylab = ylab, ...),
+      lty = lty, lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim,
+      ylim = ylim, xlab = xlab, ylab = ylab, ...),
     bilog = abvbilog(x = x, alpha = alpha, beta = beta, plot = plot,
-      add = add, lty = lty, lwd = lwd, col = col, blty = blty, xlim = xlim,
-      ylim = ylim, xlab = xlab, ylab = ylab, ...),
+      add = add, lty = lty, lwd = lwd, col = col, blty = blty, blwd = blwd,
+      xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...),
     negbilog = abvnegbilog(x = x, alpha = alpha, beta = beta, plot = plot,
-      add = add, lty = lty, lwd = lwd, col = col, blty = blty, xlim = xlim,
-      ylim = ylim, xlab = xlab, ylab = ylab, ...),
+      add = add, lty = lty, lwd = lwd, col = col, blty = blty, blwd = blwd,
+      xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...),
     ct = abvct(x = x, alpha = alpha, beta = beta, plot = plot, add = add,
-      lty = lty, lwd = lwd, col = col, blty = blty, xlim = xlim, ylim = ylim,
-      xlab = xlab, ylab = ylab, ...)) 
+      lty = lty, lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim,
+      ylim = ylim, xlab = xlab, ylab = ylab, ...),
+    amix = abvamix(x = x, alpha = alpha, beta = beta, plot = plot, add = add,
+      lty = lty, lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim,
+      ylim = ylim, xlab = xlab, ylab = ylab, ...)) 
 }
 
 "abvnonpar"<- 
-function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
+function(x = 0.5, data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,
          method = c("cfg","pickands","deheuvels","halltajvidi","tdo"),
-         convex = FALSE, wf = function(t) t, kmar = NULL, plot = FALSE,
-         add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3, xlim = c(0,1),
-         ylim = c(0.5,1), xlab = "", ylab = "", ...)
+         convex = FALSE, rev = FALSE, madj = 0, kmar = NULL, plot = FALSE,
+         add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3, blwd = 1,
+         xlim = c(0,1), ylim = c(0.5,1), xlab = "t", ylab = "A(t)", ...)
 {
     if(mode(x) != "numeric" || any(x < 0, na.rm=TRUE) ||
        any(x > 1, na.rm=TRUE)) stop("invalid argument for `x'")
-    if(is.null(kmar)) {
+    if(epmar) {
+      data <- apply(data, 2, rank, na.last = "keep")
+      nasm <- apply(data, 2, function(x) sum(!is.na(x)))
+      data <- data / rep(nasm+1, each = nrow(data))
+      data <- -log(data)
+    }
+    else {
+      if(is.null(kmar)) {
         if(!is.null(nsloc1)) {
             nsloc1 <- nsloc.transform(data, nsloc1)
             nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -669,26 +810,27 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
             nslocmat2 <- cbind(1,as.matrix(nsloc2))
         }
         # Transform to exponential margins
-        mle.m1 <- fgev(data[,1], nsloc = nsloc1, std.err = FALSE)$estimate
+        mle.m1 <- frobgev(data[,1], nsloc = nsloc1)
         loc.mle.m1 <- mle.m1[grep("^loc", names(mle.m1))]
         if(is.null(nsloc1)) loc.mle.m1 <- rep(loc.mle.m1, nrow(data))
         else loc.mle.m1 <- nslocmat1 %*% loc.mle.m1
         mle.m1 <- cbind(loc.mle.m1, mle.m1["scale"], mle.m1["shape"])
-        mle.m2 <- fgev(data[,2], nsloc = nsloc2, std.err = FALSE)$estimate
+        mle.m2 <- frobgev(data[,2], nsloc = nsloc2)
         loc.mle.m2 <- mle.m2[grep("^loc", names(mle.m2))]
         if(is.null(nsloc2)) loc.mle.m2 <- rep(loc.mle.m2, nrow(data))
         else loc.mle.m2 <- nslocmat2 %*% loc.mle.m2
         mle.m2 <- cbind(loc.mle.m2, mle.m2["scale"], mle.m2["shape"])
         data <- mtransform(data, list(mle.m1, mle.m2))       
         # End transform
-    }
-    else {
-        if(length(kmar) != 3 || mode(kmar) != "numeric")
-            stop("`kmar' should be a numeric vector of length three")
+      }
+      else {
         if(!is.null(nsloc1) || !is.null(nsloc2))
             warning("ignoring `nsloc1' and `nsloc2' arguments")
         data <- mtransform(data, kmar)
+      }
     }
+    
+    if(rev) data <- data[,2:1]
     data <- na.omit(data)
     if(plot || add) x <- seq(0, 1, length = 100)
     method <- match.arg(method)
@@ -696,9 +838,13 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
       a[a > b] <- b[a > b]
       a
     }
+    mpmax <- function(a,b) {
+      a[a < b] <- b[a < b]
+      a
+    }
     nn <- nrow(data)
 
-    if(method == "pickands") {
+    if((method == "pickands") && (madj < 0.5)) {
         if(!convex) {
             a <- numeric(length(x))
             for(i in 1:length(x))
@@ -718,7 +864,8 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
             a <- approx(x2, a, xout = x, method="linear")$y
         }
     } 
-    if(method == "deheuvels") {
+    if((method == "deheuvels") ||
+      ((method == "pickands") && (madj >= 0.5) && (madj < 1.5))) {
         if(!convex) {
             a <- numeric(length(x))
             for(i in 1:length(x))
@@ -739,24 +886,22 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
         }
     }
     if(method == "cfg") {
-        zvec <- sort(data[,1] / (data[,1] + data[,2]))
-        if(any(table(zvec) > 1)) zvec <- jitter(zvec)
-        zratio <- log(zvec) - log(1-zvec)
-        qvec <- exp(cumsum(zratio) / nn)
+        slm1 <- sum(log(data[,1]))
+        slm2 <- sum(log(data[,2]))
         if(!convex) {
-            step.pos <- as.numeric(cut(x, breaks = c(-0.1, zvec, 1))) - 1
-            step.pos.r <- step.pos / nn
-            a <- x^step.pos.r * (1-x)^(1 - step.pos.r) * qvec[nn]^wf(x) /
-              c(rep(1, sum(step.pos == 0)), qvec[step.pos])
-            a <- pmin(1, pmax(a, x, 1-x))
+            a <- numeric(length(x))
+            for(i in 1:length(x))
+                a[i] <- sum(log(mpmax((1-x[i])*data[,1], x[i]*data[,2])))
+            a <- (a - (1-x)*slm1 - x*slm2)/nn
+            a <- pmin(1, pmax(exp(a), x, 1-x))
         }
         else {
             x2 <- seq(0, 1, length = 250)
-            step.pos <- as.numeric(cut(x2, breaks = c(-0.1, zvec, 1))) - 1
-            step.pos.r <- step.pos / nn
-            a <- x2^step.pos.r * (1-x2)^(1 - step.pos.r) * qvec[nn]^wf(x2) /
-              c(rep(1, sum(step.pos == 0)), qvec[step.pos])
-            a <- pmin(1, pmax(a, x2, 1-x2))
+            a <- numeric(250)
+            for(i in 1:250)
+                a[i] <- sum(log(mpmax((1-x2[i])*data[,1], x2[i]*data[,2])))
+            a <- (a - (1-x2)*slm1 - x2*slm2)/nn
+            a <- pmin(1, pmax(exp(a), x2, 1-x2))
             inch <- chull(x2, a)
             a <- a[inch] ; x2 <- x2[inch]
             a <- approx(x2, a, xout = x, method="linear")$y
@@ -784,7 +929,8 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
             a <- approx(x2, a, xout = x, method="linear")$y
         }
     } 
-    if(method == "halltajvidi") {
+    if(method == "halltajvidi" ||
+       ((method == "pickands") && (madj >= 1.5))) {
         sum1 <- sum(data[,1])
         sum2 <- sum(data[,2])
         if(!convex) {
@@ -809,10 +955,75 @@ function(x = 0.5, data, nsloc1 = NULL, nsloc2 = NULL,
         }
     } 
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)  
+        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
         return(invisible(list(x = x, y = a)))
-    }
+    } 
     a
+}
+
+"qcbvnonpar"<- 
+function(p = seq(0.75, 0.95, 0.05), data, epmar = FALSE, nsloc1 = NULL,
+         nsloc2 = NULL, mint = 1, method = c("cfg","pickands","deheuvels",
+         "halltajvidi", "tdo"), convex = FALSE, madj = 0, kmar = NULL,
+         plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1, xlim =
+         range(data[,1], na.rm = TRUE), ylim = range(data[,2], na.rm =
+         TRUE), xlab = colnames(data)[1], ylab = colnames(data)[2], ...)
+{
+    if(mode(p) != "numeric" || p <= 0 || p >= 1)
+      stop("`p' must be a vector of probabilities")
+    nxv <- 100
+    x <- seq(0, 1, length = nxv)
+    ax <- abvnonpar(x = x, data = data, epmar = epmar, nsloc1 = nsloc1,
+      nsloc2 = nsloc2, method = method, convex = convex, madj = madj,
+      kmar = kmar, plot = FALSE)
+    np <- length(p)
+    qct <- list()
+    p <- p^mint
+    if(add) {
+      xlim <- par("usr")[1:2]
+      ylim <- par("usr")[1:2]
+      if(par("xlog")) xlim <- 10^xlim
+      if(par("ylog")) ylim <- 10^ylim
+    }
+    for(i in 1:np) {
+      qct[[i]] <- -cbind(x/ax * log(p[i]), (1-x)/ax * log(p[i]))
+      if(epmar) {
+        qct[[i]] <- cbind(quantile(data[,1], probs = exp(-qct[[i]][,1]),
+          na.rm = TRUE), quantile(data[,2], probs = exp(-qct[[i]][,2]),
+          na.rm = TRUE))
+      }
+      else {
+        if(is.null(kmar)) {
+          # Transform from exponential margins
+          mle.m1 <- frobgev(data[,1], nsloc = nsloc1)
+          mle.m2 <- frobgev(data[,2], nsloc = nsloc2)
+          mle.m1 <- mle.m1[c("loc","scale","shape")]
+          mle.m2 <- mle.m2[c("loc","scale","shape")]
+          qct[[i]] <- mtransform(qct[[i]], list(mle.m1, mle.m2), inv = TRUE)
+        }
+        else {
+          if(!is.null(nsloc1) || !is.null(nsloc2))
+            warning("ignoring `nsloc1' and `nsloc2' arguments")
+          qct[[i]] <- mtransform(qct[[i]], kmar, inv = TRUE)
+        }
+      }
+      qct[[i]][1,1] <- 1.5 * xlim[2]
+      qct[[i]][nxv,2] <- 1.5 * ylim[2]
+    }
+    if((!is.null(nsloc1) || !is.null(nsloc2)) && !epmar && is.null(kmar)) {
+        data <- fbvevd(data, model = "log", dep = 1, nsloc1 = nsloc1,
+          nsloc2 = nsloc2, std.err = FALSE)$tdata
+    }
+    if(plot) {
+      plot(data, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
+      for(i in 1:np) lines(qct[[i]], lty = lty, lwd = lwd, col = col)
+      return(invisible(qct))
+    }
+    if(add) {
+      for(i in 1:np) lines(qct[[i]], lty = lty, lwd = lwd, col = col)
+      return(invisible(qct))
+    }
+    qct
 }
 
 "dbvlog"<- 
@@ -1102,13 +1313,57 @@ function(x, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, log = FALSE)
     d   
 }
 
+"dbvamix"<- 
+function(x, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, log = FALSE)
+{
+    if(length(alpha) != 1 || mode(alpha) != "numeric")
+        stop("invalid argument for `alpha'")
+    if(length(beta) != 1 || mode(beta) != "numeric")
+        stop("invalid argument for `beta'")
+    if(alpha < 0)
+        stop("`alpha' must be non-negative")
+    if((alpha + beta) > 1)
+        stop("`alpha' + `beta' cannot be greater than one")
+    if((alpha + 2*beta) > 1)
+        stop("`alpha' + `2*beta' cannot be greater than one")
+    if((alpha + 3*beta) < 0)
+        stop("`alpha' + `3*beta' must be non-negative")
+    if(is.null(dim(x))) dim(x) <- c(1,2)
+    mar1 <- matrix(t(mar1), nrow = nrow(x), ncol = 3, byrow = TRUE)
+    mar2 <- matrix(t(mar2), nrow = nrow(x), ncol = 3, byrow = TRUE)
+    d <- numeric(nrow(x))
+    x <- mtransform(x, list(mar1, mar2))
+    ext <- apply(x,1,function(z) any(z %in% c(0,Inf)))
+    d[ext] <- -Inf
+    if(any(!ext)) {
+        x <- x[!ext, ,drop=FALSE]
+        mar1 <- mar1[!ext, ,drop=FALSE]
+        mar2 <- mar2[!ext, ,drop=FALSE]
+
+        xsum <- apply(x, 1, sum)  
+        v <- xsum - (alpha + beta) * x[,1] + alpha * (x[,1]^2)/xsum +
+          beta * (x[,1]^3)/(xsum^2)
+        lx <- log(x)
+        jac <- (1+mar1[,3])*lx[,1] + (1+mar2[,3])*lx[,2] -
+            log(mar1[,2]*mar2[,2])
+
+        x1a <- x[,1]/xsum; x2a <- x[,2]/xsum
+        v1 <- 1 - alpha * (x2a)^2 - beta * (3 * x2a^2 - 2 * x2a^3)
+        v2 <- 1 - alpha * (x1a)^2 - 2 * beta * x1a^3
+        v12 <- (-2 * alpha * x1a * x2a - 6 * beta * x1a^2 * x2a) / xsum
+        d[!ext] <- log(v1 * v2 - v12) - v + jac
+    }
+    if(!log) d <- exp(d)
+    d   
+}
+
 "dbvevd" <-
 function(x, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
     mar1 = c(0,1,0), mar2 = mar1, log = FALSE)
 {
   model <- match.arg(model)
-  m1 <- c("bilog", "negbilog", "ct")
+  m1 <- c("bilog", "negbilog", "ct", "amix")
   m2 <- c(m1, "log", "hr", "neglog")
   m3 <- c("log", "alog", "hr", "neglog", "aneglog")
   if((model %in% m1) && !missing(dep))
@@ -1133,11 +1388,13 @@ function(x, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     negbilog = dbvnegbilog(x = x, alpha = alpha, beta = beta, mar1 = mar1,
       mar2 = mar2, log = log),
     ct = dbvct(x = x, alpha = alpha, beta = beta, mar1 = mar1,
+      mar2 = mar2, log = log),
+    amix = dbvamix(x = x, alpha = alpha, beta = beta, mar1 = mar1,
       mar2 = mar2, log = log)) 
 }
 
 "fbvlog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvlog <- function(loc1, scale1, shape1, loc2, scale2, shape2, dep)
     {
@@ -1223,12 +1480,13 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-                 sym = FALSE, cmar = c(cloc, cscale, cshape), model = "log") 
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+                 sym = FALSE, cmar = c(cloc, cscale, cshape), model = "log",
+                 warn.inf = warn.inf) 
 }
 
 "fbvalog"<- 
-function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {   
     nlbvalog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                           asy1, asy2, dep)
@@ -1317,12 +1575,13 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-      sym = sym, cmar = c(cloc, cscale, cshape), model = "alog")
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+      sym = sym, cmar = c(cloc, cscale, cshape), model = "alog",
+      warn.inf = warn.inf)
 }
 
 "fbvhr"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvhr <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                        dep)
@@ -1409,12 +1668,13 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "hr")
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "hr",
+      warn.inf = warn.inf)
 }
 
 "fbvneglog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvneglog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                            dep)
@@ -1501,12 +1761,13 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "neglog")
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "neglog",
+      warn.inf = warn.inf)
 }
 
 "fbvaneglog"<- 
-function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvaneglog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                             asy1, asy2, dep)
@@ -1595,12 +1856,13 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-      sym = sym, cmar = c(cloc, cscale, cshape), model = "aneglog")
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+      sym = sym, cmar = c(cloc, cscale, cshape), model = "aneglog",
+      warn.inf = warn.inf)
 }
 
 "fbvbilog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvbilog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                           alpha, beta)
@@ -1688,12 +1950,13 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "bilog")
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "bilog",
+      warn.inf = warn.inf)
 }
 
 "fbvnegbilog"<- 
-function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvnegbilog <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                              alpha, beta)
@@ -1781,12 +2044,13 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = 
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values") 
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "negbilog")
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "negbilog",
+      warn.inf = warn.inf)
 }
 
 "fbvct"<- 
-function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     nlbvct <- function(loc1, scale1, shape1, loc2, scale2, shape2,
                        alpha, beta)
@@ -1875,12 +2139,108 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
-    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr,
-      sym = sym, cmar = c(cloc, cscale, cshape), model = "ct")
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+      sym = sym, cmar = c(cloc, cscale, cshape), model = "ct",
+      warn.inf = warn.inf)
+}
+
+"fbvamix"<- 
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+{
+    nlbvamix <- function(loc1, scale1, shape1, loc2, scale2, shape2,
+                       alpha, beta)
+    {
+        if(cshape) shape2 <- shape1
+        if(cscale) scale2 <- scale1
+        
+        if(any(c(scale1,scale2) < 0.01)) return(1e6)
+        if(alpha < 0 || (alpha + 3*beta) < 0) return(1e6)
+        if((alpha + beta) > 1 || (alpha + 2*beta) > 1) return(1e6) 
+        
+        if(!is.null(nsloc1)) {
+            ns <- numeric(length(loc.param1))
+            for(i in 1:length(ns))
+                ns[i] <- get(loc.param1[i])
+            loc1 <- drop(nslocmat1 %*% ns)
+        }
+        else loc1 <- rep(loc1, length.out = nrow(x))
+        if(cloc) loc2 <- loc1 else {
+          if(!is.null(nsloc2)) {
+            ns <- numeric(length(loc.param2))
+            for(i in 1:length(ns))
+              ns[i] <- get(loc.param2[i])
+            loc2 <- drop(nslocmat2 %*% ns)
+          }
+          else loc2 <- rep(loc2, length.out = nrow(x))
+        }
+        if(spx$n.m1)
+            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2],
+                scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
+        else m1l <- 0
+        if(spx$n.m2)
+            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1],
+                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+        else m2l <- 0
+        bvl <- .C("nlbvamix", spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
+                loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
+                scale2, shape2, cfalse, dns = double(1),
+                PACKAGE = "evd")$dns
+        if(any(is.nan(c(m1l,m2l,bvl)))) {
+            warning("NaN returned in likelihood")
+            return(1e6)
+        }
+        if(any(c(m1l,m2l,bvl) == 1e6)) return(1e6)
+        else return(m1l + m2l + bvl)
+    }
+    if(cloc && !identical(nsloc1, nsloc2))
+      stop("nsloc1 and nsloc2 must be identical")
+    if(!is.null(nsloc1)) {
+        nsloc1 <- nsloc.transform(x, nsloc1)
+        nslocmat1 <- cbind(1,as.matrix(nsloc1))
+    }
+    if(!is.null(nsloc2)) {
+        nsloc2 <- nsloc.transform(x, nsloc2)
+        nslocmat2 <- cbind(1,as.matrix(nsloc2))
+    }
+    loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
+    loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
+    param <- c(loc.param1, "scale1", "shape1")
+    if(!cloc) param <- c(param, loc.param2) else loc.param2 <- NULL
+    if(!cscale) param <- c(param, "scale2")
+    if(!cshape) param <- c(param, "shape2")
+    param <- c(param, "alpha", "beta")
+    nmdots <- names(list(...))
+    start <- bvstart.vals(x, start, nsloc1, nsloc2, nmdots, param,
+      loc.param1, loc.param2, model = "amix")
+    spx <- sep.bvdata(x)
+    cfalse <- as.integer(0)
+    nm <- names(start)
+    l <- length(nm)
+    fixed.param <- list(...)[nmdots %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
+    prind <- (5:8)[c(!cscale, !cshape, TRUE, TRUE)]
+    f <- c(as.list(numeric(length(loc.param1))), formals(nlbvamix)[2:3],
+      as.list(numeric(length(loc.param2))), formals(nlbvamix)[prind])
+    names(f) <- param
+    m <- match(nm, param)
+    if(any(is.na(m))) 
+        stop("`start' specifies unknown arguments")
+    formals(nlbvamix) <- c(f[m], f[-m])
+    nllh <- function(p, ...) nlbvamix(p, ...)
+    if(l > 1) body(nllh) <- parse(text = paste("nlbvamix(",
+      paste("p[",1:l,"]", collapse = ", "), ", ...)"))
+    start.arg <- c(list(p = unlist(start)), fixed.param)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
+        warning("negative log-likelihood is infinite at starting values")
+    opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+    bvpost.optim(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr,
+      sym = FALSE, cmar = c(cloc, cscale, cshape), model = "amix",
+      warn.inf = warn.inf)
 }
 
 "fbvevd" <-
-function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"), start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"), start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc, cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
   call <- match.call()
   model <- match.arg(model)
@@ -1894,34 +2254,33 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     warning("Argument `sym' was ignored")
   
   ft <- switch(model,
-    log = fbvlog(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=nsloc2,
-      cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err,
-      dsm=dsm, corr=corr, method=method, warn.inf=warn.inf),
+    log = fbvlog(x=x, start=start, ..., nsloc1=nsloc1,
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err,
+      corr=corr, method=method, warn.inf=warn.inf),
     alog = fbvalog(x=x, start=start, ..., sym=sym, nsloc1=nsloc1,
       nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
-      std.err=std.err, dsm=dsm, corr=corr, method=method,
-      warn.inf=warn.inf),
-    hr = fbvhr(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=nsloc2,
-      cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err, dsm=dsm,
+      std.err=std.err, corr=corr, method=method, warn.inf=warn.inf),
+    hr = fbvhr(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=
+      nsloc2, cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err,
       corr=corr, method=method, warn.inf=warn.inf),
-    neglog = fbvneglog(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=nsloc2,
-      cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err, dsm=dsm,
+    neglog = fbvneglog(x=x, start=start, ..., nsloc1=nsloc1,
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err,
       corr=corr, method=method, warn.inf=warn.inf),
-    aneglog = fbvaneglog(x=x, start=start, ..., sym=sym, nsloc1=nsloc1,
-      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
-      std.err=std.err, dsm=dsm, corr=corr, method=method,
-      warn.inf=warn.inf),
-    bilog = fbvbilog(x=x, start=start, ..., nsloc1=nsloc1, nsloc2=nsloc2,
-      cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err, dsm=dsm,
+    aneglog = fbvaneglog(x=x, start=start, ..., sym=sym,
+      nsloc1=nsloc1, nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
+      std.err=std.err, corr=corr, method=method, warn.inf=warn.inf),
+    bilog = fbvbilog(x=x, start=start, ..., nsloc1=nsloc1,
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err,
       corr=corr, method=method, warn.inf=warn.inf),
     negbilog = fbvnegbilog(x=x, start=start, ..., nsloc1=nsloc1,
-      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
-      std.err=std.err, dsm=dsm, corr= corr, method=method,
-      warn.inf=warn.inf),
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc, std.err=std.err,
+      corr= corr, method=method, warn.inf=warn.inf),
     ct = fbvct(x=x, start=start, ..., sym=sym, nsloc1=nsloc1,
       nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
-      std.err=std.err, dsm=dsm, corr=corr, method=method,
-      warn.inf=warn.inf))
+      std.err=std.err, corr=corr, method=method, warn.inf=warn.inf),
+    amix = fbvamix(x=x, start=start, ..., nsloc1=nsloc1,
+      nsloc2=nsloc2, cshape=cshape, cscale=cscale, cloc=cloc,
+      std.err=std.err, corr=corr, method=method, warn.inf=warn.inf))
 
   structure(c(ft, call = call), class = c("bvevd","evd"))
 }
@@ -1931,6 +2290,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     cat("\nCall:", deparse(x$call), "\n")
     cat("Deviance:", deviance(x), "\n")
     cat("AIC:", AIC(x), "\n")
+    if(!is.null(x$dep.summary)) cat("Dependence:", x$dep.summary, "\n")
     cat("\nEstimates\n")
     print.default(format(fitted(x), digits = digits), print.gap = 2, 
         quote = FALSE)
@@ -1944,12 +2304,6 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
       print.default(format(x$corr, digits = digits), print.gap = 2, 
           quote = FALSE)
     }
-    if(!is.null(x$dep.summary)) {
-      cat("\nDependence Structure\n")
-      cat("  Dependence One:", x$dep.summary[1], "\n")
-      cat("  Dependence Two:", x$dep.summary[2], "\n")
-      cat("  Asymmetry:", x$dep.summary[3], "\n")
-    }
     cat("\nOptimization Information\n")
     cat("  Convergence:", x$convergence, "\n")
     cat("  Function Evaluations:", x$counts["function"], "\n")
@@ -1960,12 +2314,11 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     invisible(x)
 }
 
-"plot.bvevd" <-  function(x, mar = 0, which = 1:4, main =
-     c("Conditional Plot One", "Conditional Plot Two", "Density Plot",
-       "Dependence Function"),
+"plot.bvevd" <-  function(x, mar = 0, which = 1:4, main,
      ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
-     jitter = FALSE, grid = 50, legend = TRUE, nplty = 2, blty = 3,
-     method = "cfg", convex = FALSE, wf = function(t) t, ...) 
+     cilwd = 1, jitter = FALSE, grid = 50, legend = TRUE, nplty = 2,
+     blty = 3, method = "cfg", convex = FALSE, rev = FALSE,
+     p = seq(0.75, 0.95, 0.05), mint = 1, ...) 
 {
     if (!inherits(x, "bvevd")) 
         stop("Use only with `bvevd' objects")
@@ -1979,27 +2332,36 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
         gev.mar <- structure(list(param = param, tdata = tdata, n = n,
            loc = param["loc"]), class = c("gev", "uvevd", "evd"))
         if(missing(which)) which <- 1:4
-        if(missing(main)) main <- c("Probability Plot", "Quantile Plot",
-           "Density Plot", "Return Level Plot")
         plot(gev.mar, which = which, main = main, ask = ask, ci = ci,
-             jitter = jitter, ...)
+             cilwd = cilwd, jitter = jitter, ...)
         return(invisible(x))
     }
-    if (!is.numeric(which) || any(which < 1) || any(which > 4)) 
-        stop("`which' must be in 1:4")
-    show <- rep(FALSE, 4)
+    if (!is.numeric(which) || any(which < 1) || any(which > 5)) 
+        stop("`which' must be in 1:5")
+    show <- rep(FALSE, 5)
     show[which] <- TRUE
+    if(missing(main)) {
+      main <- c("Conditional Plot One", "Conditional Plot Two",
+       "Density Plot", "Dependence Function", "Quantile Curves")
+    }
+    else {
+      if(length(main) != length(which))
+        stop("number of plot titles is not correct")
+      main2 <- character(5)
+      main2[show] <- main
+      main <- main2
+    }
     if (ask) {
         op <- par(ask = TRUE)
         on.exit(par(op))
     }
     if (show[1]) {
-        bvcpp(x, mar = 1, ci = ci, main = main[1], xlim = c(0,1),
-              ylim = c(0,1), ...)
+        bvcpp(x, mar = 1, ci = ci, cilwd = cilwd, main = main[1],
+              xlim = c(0,1), ylim = c(0,1), ...)
     }
     if (show[2]) {
-        bvcpp(x, mar = 2, ci = ci, main = main[2], xlim = c(0,1),
-              ylim = c(0,1), ...)
+        bvcpp(x, mar = 2, ci = ci, cilwd = cilwd, main = main[2],
+              xlim = c(0,1), ylim = c(0,1), ...)
     }
     if (show[3]) {
         bvdens(x, jitter = jitter, grid = grid, legend = legend,
@@ -2007,12 +2369,15 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     }
     if (show[4]) {
         bvdp(x, nplty = nplty, blty = blty, method = method,
-             wf = wf, main = main[4], ...)
+             convex = convex, rev = rev, main = main[4], ...)
+    }
+    if (show[5]) {
+        bvqc(x, p = p, mint = mint, legend = legend, main = main[5], ...)
     }
     invisible(x)
-} 
+}
 
-"bvcpp" <-  function(x, mar = 2, ci = TRUE, main = "Conditional Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+"bvcpp" <-  function(x, mar = 2, ci = TRUE, cilwd = 1, main = "Conditional Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 { 
     data <- x$tdata
     mle.m1 <- x$param[c("loc1","scale1","shape1")]
@@ -2029,7 +2394,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
       if(x$model  %in% c("alog","aneglog"))
         probs <- ccop(data[,1], data[,2], mar = mar, dep = x$param["dep"],
                       asy = x$param[c("asy1","asy2")], model = x$model)
-      if(x$model  %in% c("bilog","negbilog","ct"))
+      if(x$model  %in% c("bilog","negbilog","ct","amix"))
         probs <- ccop(data[,1], data[,2], mar = mar, alpha = x$param["alpha"],
                       beta = x$param["beta"], model = x$model)
     }
@@ -2040,7 +2405,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
       if(x$model  %in% c("alog","aneglog"))
         probs <- ccop.case(data[,1], data[,2], data[,3], mar = mar, dep =
           x$param["dep"], asy = x$param[c("asy1","asy2")], model = x$model)
-      if(x$model  %in% c("bilog","negbilog","ct"))
+      if(x$model  %in% c("bilog","negbilog","ct","amix"))
         probs <- ccop.case(data[,1], data[,2], data[,3], mar = mar, alpha =
           x$param["alpha"], beta = x$param["beta"], model = x$model)
     }
@@ -2059,11 +2424,27 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
                 ylab = ylab, type = "pnn", pch = 4, ...)
         xyuser <- par("usr")
         smidge <- min(diff(c(xyuser[1], ppx, xyuser[2])))/2
-        segments(ppx-smidge, env[,1], ppx+smidge, env[,1])
-        segments(ppx-smidge, env[,2], ppx+smidge, env[,2])
+        smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+        segments(ppx-smidge, env[,1], ppx+smidge, env[,1], lwd = cilwd)
+        segments(ppx-smidge, env[,2], ppx+smidge, env[,2], lwd = cilwd)
         abline(0, 1)
     }
     invisible(list(x = ppx, y = probs))
+}
+
+"ccop" <- function(x1, x2, mar, dep, asy, alpha, beta, model)
+{
+    model <- match(model, c("log","alog","hr","neglog","aneglog",
+                            "bilog","negbilog","ct","amix"))
+    if(model <= 5) alpha <- beta <- 1
+    else dep <- 1
+    if(model != 2 && model != 5) asy <- c(1,1)
+    n <- length(x1)
+    .C("ccop",
+            as.double(x1), as.double(x2), as.integer(mar), as.double(dep),
+            as.double(asy[1]), as.double(asy[2]), as.double(alpha),
+            as.double(beta), as.integer(n), as.integer(model),
+            ccop = double(n), PACKAGE = "evd")$ccop
 }
 
 "ccop.case" <- function(x1, x2, case, mar, dep, asy, alpha, beta, model)
@@ -2072,7 +2453,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
       stop("x1 and x2 must contain values in (0,1)")
     nlbvfn <- paste("nlbv", model, sep = "")
     modelnm <- match(model, c("log","hr","neglog","alog","aneglog",
-                              "bilog","negbilog","ct"))
+                              "bilog","negbilog","ct","amix"))
     
     "dbvevd.case" <- function(x1, x2, case, mar, dep, asy, alpha, beta)
     {
@@ -2085,7 +2466,10 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
       if(mar == 1) {
         tmp <- x1; x1 <- x2; x2 <- tmp
         if(modelnm %in% c(4,5)) asy <- rev(asy)
-        if(modelnm >= 6) { tmp <- alpha; alpha <- beta; beta <- tmp }
+        if(modelnm >= 6 && modelnm <= 8)
+          { tmp <- alpha; alpha <- beta; beta <- tmp }
+        if(modelnm == 9)
+          { alpha <- alpha + 3*beta; beta <- -beta }
       }
       if(modelnm >= 6)
         nl <- .C(nlbvfn,
@@ -2117,7 +2501,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     for(i in 1:n) {
       if(is.na(case[i])){
         ccv[i] <- ccop(x1[i], x2[i], mar=mar, dep=dep, asy=asy,
-                       beta=beta, model=model)
+                       alpha=alpha, beta=beta, model=model)
       }
       else {
         den <- integrate("dbvevd.case", eps, 1-eps, x2 = cm[i], case = case[i],
@@ -2130,22 +2514,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     ccv
 }
 
-"ccop" <- function(x1, x2, mar, dep, asy, alpha, beta, model)
-{
-    model <- match(model, c("log","alog","hr","neglog","aneglog",
-                            "bilog","negbilog","ct"))
-    if(model <= 5) alpha <- beta <- 1
-    else dep <- 1
-    if(model != 2 && model != 5) asy <- c(1,1)
-    n <- length(x1)
-    .C("ccop",
-            as.double(x1), as.double(x2), as.integer(mar), as.double(dep),
-            as.double(asy[1]), as.double(asy[2]), as.double(alpha),
-            as.double(beta), as.integer(n), as.integer(model),
-            ccop = double(n), PACKAGE = "evd")$ccop
-}
-
-"bvdens" <-  function(x, jitter = FALSE, grid = 50, legend = TRUE, main = "Density Plot", xlab = "", ylab = "", ...)
+"bvdens" <-  function(x, jitter = FALSE, grid = 50, legend = TRUE, main = "Density Plot", xlab = colnames(x$data)[1], ylab = colnames(x$data)[2], ...)
 {
     xlimit <- range(x$tdata[,1], na.rm = TRUE)
     ylimit <- range(x$tdata[,2], na.rm = TRUE)
@@ -2163,7 +2532,7 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     if(x$model  %in% c("alog","aneglog"))
         dfunargs <- list(dep = x$param["dep"],
             asy = x$param[c("asy1","asy2")], mar1 = mar1, mar2 = mar2)
-    if(x$model  %in% c("bilog","negbilog","ct"))
+    if(x$model  %in% c("bilog","negbilog","ct","amix"))
         dfunargs <- list(alpha = x$param["alpha"], beta = x$param["beta"],
             mar1 = mar1, mar2 = mar2)
     dfunargs <- c(list(x = xyvals, model = x$model), dfunargs)
@@ -2188,22 +2557,85 @@ function(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbil
     invisible(list(x = xyvals, y = dens))
 }
 
-"bvdp" <- function(x, method = "cfg", convex = FALSE, wf = function(t) t, add = FALSE, lty = 1, nplty = 2, blty = 3, main = "Dependence Function", xlab = "", ylab = "", ...)
+"bvdp" <- function(x, method = "cfg", convex = FALSE, rev = FALSE, add = FALSE, lty = 1, nplty = 2, blty = 3, main = "Dependence Function", xlab = "t", ylab = "A(t)", ...)
 {
     if(ncol(x$data) == 3) nplty <- 0
     abvnonpar(data = x$data[,1:2], nsloc1 = x$nsloc1, nsloc2 = x$nsloc2,
-              method = method, convex = convex, wf = wf,
-              plot = TRUE, lty = nplty, blty = blty,
-              main = main, xlab = xlab, ylab = ylab, add = add, ...)
+              epmar = FALSE, method = method, convex = convex, rev = rev,
+              plot = TRUE, lty = nplty, blty = blty, main = main, xlab = xlab,
+              ylab = ylab, add = add, ...)
     if(x$model %in% c("log","hr","neglog"))
         afunargs <- list(dep = x$param["dep"])
     if(x$model  %in% c("alog","aneglog"))
         afunargs <- list(dep = x$param["dep"], asy = x$param[c("asy1","asy2")])
-    if(x$model  %in% c("bilog","negbilog","ct"))
+    if(x$model  %in% c("bilog","negbilog","ct","amix"))
         afunargs <- list(alpha = x$param["alpha"], beta = x$param["beta"])
-    afunargs <- c(list(add = TRUE, lty = lty, model = x$model), afunargs)
-    do.call("abvpar", afunargs)
+    afunargs <- c(list(rev = rev, add = TRUE, lty = lty, model = x$model),
+                  afunargs)
+    do.call("abvevd", afunargs)
     invisible(x)
+}
+
+"bvqc"<- 
+function(x, p = seq(0.75, 0.95, 0.05), mint = 1, add = FALSE,
+   legend = TRUE, lty = 1, lwd = 1, col = 1, xlim = range(x$tdata[,1],
+   na.rm = TRUE), ylim = range(x$tdata[,2], na.rm = TRUE), xlab =
+   colnames(x$tdata)[1], ylab = colnames(x$tdata)[2], ...)
+{
+    if(mode(p) != "numeric" || p <= 0 || p >= 1)
+      stop("`p' must be a vector of probabilities")
+    nom <- 100
+    om <- seq(0, 1, length = nom)
+    # Calculate A(t)
+    if(x$model %in% c("log","hr","neglog"))
+        afunargs <- list(dep = x$param["dep"])
+    if(x$model  %in% c("alog","aneglog"))
+        afunargs <- list(dep = x$param["dep"], asy = x$param[c("asy1","asy2")])
+    if(x$model  %in% c("bilog","negbilog","ct","amix"))
+        afunargs <- list(alpha = x$param["alpha"], beta = x$param["beta"])
+    afunargs <- c(list(x = om, plot = FALSE, model = x$model), afunargs)
+    aom <- do.call("abvevd", afunargs)
+    # End Calculate A(t)
+    np <- length(p)
+    qct <- list()
+    p <- p^mint
+    if(add) {
+      xlim <- par("usr")[1:2]
+      ylim <- par("usr")[1:2]
+      if(par("xlog")) xlim <- 10^xlim
+      if(par("ylog")) ylim <- 10^ylim
+    }
+    for(i in 1:np) {
+      qct[[i]] <- -cbind(om/aom * log(p[i]), (1-om)/aom * log(p[i]))
+      mar1 <- x$param[c("loc1","scale1","shape1")]
+      mar2 <- x$param[c("loc2","scale2","shape2")]
+      qct[[i]] <- mtransform(qct[[i]], list(mar1, mar2), inv = TRUE)    
+      qct[[i]][1,1] <- 1.5 * xlim[2]
+      qct[[i]][nom,2] <- 1.5 * ylim[2]
+    }
+    
+    if(!add) {
+      if(ncol(x$tdata) == 2) {
+        plot(x$tdata[,1:2], xlab = xlab, ylab = ylab, xlim = xlim,
+        ylim = ylim, ...)
+      }
+      if(ncol(x$tdata) == 3) {
+        plot(x$tdata[,1:2], xlab = xlab, ylab = ylab, xlim = xlim,
+        ylim = ylim, type = "n", ...)
+        si <- x$tdata[,3] ; data <- x$tdata[,1:2]
+        points(data[is.na(si),], pch = 4)
+        points(data[si & !is.na(si),], pch = 16)
+        points(data[!si & !is.na(si),], pch = 1)
+        legwrd <- c("True","False","Unknown") ; legpch <- c(16,1,4)
+        if(!any(is.na(si))) {legwrd <- legwrd[1:2] ; legpch <- legpch[1:2]}
+        if(legend) legend(xlim[1], ylim[2], legwrd, pch = legpch)
+      }
+      for(i in 1:np) lines(qct[[i]], lty = lty, lwd = lwd, col = col)
+    }
+    else {
+      for(i in 1:np) lines(qct[[i]], lty = lty, lwd = lwd, col = col)
+    }
+    return(invisible(qct))
 }
 
 "mtransform"<- 
@@ -2241,12 +2673,12 @@ function(x, p, inv = FALSE, drp = FALSE)
 }
 
 "bvdepfn" <- 
-function(x, a, add, lty, lwd, col, blty, xlab, ylab, xlim, ylim, ...)
+function(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)
 {
     if(!add)  { 
         plot(x, a, type="n", xlab = xlab, ylab = ylab,
              xlim = xlim, ylim = ylim, ...) 
-        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty)  
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
     }
     lines(x, a, lty = lty, lwd = lwd, col = col)
 }
@@ -2263,8 +2695,8 @@ function(x, start, nsloc1, nsloc2, nmdots, param, loc.param1, loc.param2, model,
     start <- as.list(numeric(length(param)))
     names(start) <- param
     if(obj == "bvevd") {
-      st1 <- as.list(fitted(fgev(x[,1], std.err = FALSE, nsloc = nsloc1)))
-      st2 <- as.list(fitted(fgev(x[,2], std.err = FALSE, nsloc = nsloc2)))
+      st1 <- as.list(frobgev(x[,1], nsloc = nsloc1))
+      st2 <- as.list(frobgev(x[,2], nsloc = nsloc2))
     }
     if(obj == "bvpot") {
       st1 <- as.list(fitted(fpot(x[,1], u[1], std.err = FALSE)))
@@ -2294,6 +2726,10 @@ function(x, start, nsloc1, nsloc2, nmdots, param, loc.param1, loc.param2, model,
     if(model == "ct") {
       start[["alpha"]] <- 0.6
       if("beta" %in% param) start[["beta"]] <- 0.6 
+    }
+    if(model == "amix") {
+      start[["alpha"]] <- 0.75
+      start[["beta"]] <- 0 
     }
     start <- start[!(param %in% nmdots)]
   }
@@ -2375,7 +2811,7 @@ function(x, obj = "bvevd", u = NULL, censored = TRUE)
 }
 
 "bvpost.optim" <- 
-function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr, sym, cmar, model)
+function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, corr, sym, cmar, model, warn.inf)
 {
     if (opt$convergence != 0) {
         warning(paste("optimization for", model, "may not have succeeded"))
@@ -2434,38 +2870,25 @@ function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr, sym, cmar,
         x2[,2] <- x[,2] - trend
     }
     # End transform
-    # Dependence summary
-    if(dsm) {
-      dep.sum <- numeric(3)
+    # Dependence chi
+    if(warn.inf) {
       if(model %in% c("log", "hr", "neglog")) {
         dep <- param["dep"]
-        dep.sum[1] <- 2*(1 - abvpar(dep = dep, model = model))
-        dep.sum[2] <- 4 * integrate(function(x) 1-abvpar(x, dep = dep,
-          model = model), 0, 1)$value
+        dep.sum <- 2*(1 - abvevd(dep = dep, model = model))
       }
       if(model %in% c("alog", "aneglog")) {
         dep <- param["dep"]
         asy <- param[c("asy1", "asy2")]
-        dep.sum[1] <- 2*(1 - abvpar(dep = dep, asy = asy, model = model))
-        dep.sum[2] <- 4 * integrate(function(x) 1-abvpar(x, dep = dep,
-          asy = asy, model = model), 0, 1)$value
-        dffn <- function(x) abvpar(x, dep = dep, asy = asy, model = model) -
-          abvpar(x, dep = dep, asy = rev(asy), model = model)
-        dep.sum[3] <- 4*integrate(dffn, 0, .5)$value / (3 - 2*sqrt(2))
+        dep.sum <- 2*(1 - abvevd(dep = dep, asy = asy, model = model))
       }
-      if(model %in% c("bilog", "negbilog", "ct")) {
+      if(model %in% c("bilog", "negbilog", "ct", "amix")) {
         alpha <- param["alpha"]
         beta <- param["beta"]
-        dep.sum[1] <- 2*(1-abvpar(alpha = alpha, beta = beta, model = model))
-        dep.sum[2] <- 4 * integrate(function(x) 1-abvpar(x, alpha = alpha,
-          beta = beta, model = model), 0, 1)$value
-        dffn <- function(x) abvpar(x, alpha = alpha, beta = beta, model =
-          model) - abvpar(x, alpha = beta, beta = alpha, model = model)
-        dep.sum[3] <- 4*integrate(dffn, 0, .5)$value / (3 - 2*sqrt(2))
+        dep.sum <- 2*(1-abvevd(alpha = alpha, beta = beta, model = model))
       }
     }
     else dep.sum <- NULL
-    # End dependence summary
+    # End dependence chi
     list(estimate = opt$par, std.err = std.err, fixed = fixed,
     fixed2 = fixed2, param = param, deviance = 2*opt$value,
     dep.summary = dep.sum, corr = corr, convergence = opt$convergence,
@@ -2473,6 +2896,7 @@ function(x, opt, nm, nsloc1, nsloc2, fixed.param, std.err, dsm, corr, sym, cmar,
     nsloc1 = nsloc1, nsloc2 = nsloc2, n = nrow(x), sym = sym, cmar =
     cmar, model = model)
 }
+
 
 
 
