@@ -462,7 +462,7 @@ function(x, threshold, model = c("gpd", "pp"), start, npp = length(x), cmax = FA
     invisible(x)
 }
 
-"qq.pot" <-  function(x, ci = TRUE, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
+"qq.pot" <-  function(x, ci = TRUE, cilwd = 1, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
 {
     quant <- qgpd(ppoints(x$nhigh), loc = x$threshold,
                  scale = x$scale, shape = x$param["shape"])
@@ -483,14 +483,15 @@ function(x, threshold, model = c("gpd", "pp"), start, npp = length(x), cmax = FA
               type = "pnn", pch = 4, ...)
       xyuser <- par("usr")
       smidge <- min(diff(c(xyuser[1], quant, xyuser[2])))/2
-      segments(quant-smidge, env[,1], quant+smidge, env[,1])
-      segments(quant-smidge, env[,2], quant+smidge, env[,2])
+      smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+      segments(quant-smidge, env[,1], quant+smidge, env[,1], lwd = cilwd)
+      segments(quant-smidge, env[,2], quant+smidge, env[,2], lwd = cilwd)
       abline(0, 1)
     }
     invisible(list(x = quant, y = sort(x$exceedances)))
 }
 
-"pp.pot" <-  function(x, ci = TRUE, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+"pp.pot" <-  function(x, ci = TRUE, cilwd = 1, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 {
     ppx <- ppoints(x$nhigh)
     probs <- pgpd(sort(x$exceedances), loc = x$threshold,
@@ -514,14 +515,15 @@ function(x, threshold, model = c("gpd", "pp"), start, npp = length(x), cmax = FA
                 ylab = ylab, type = "pnn", pch = 4, ...)
         xyuser <- par("usr")
         smidge <- min(diff(c(xyuser[1], ppx, xyuser[2])))/2
-        segments(ppx-smidge, env[,1], ppx+smidge, env[,1])
-        segments(ppx-smidge, env[,2], ppx+smidge, env[,2])
+        smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+        segments(ppx-smidge, env[,1], ppx+smidge, env[,1], lwd = cilwd)
+        segments(ppx-smidge, env[,2], ppx+smidge, env[,2], lwd = cilwd)
         abline(0, 1)
     }
     invisible(list(x = ppoints(x$nhigh), y = probs))
 }
 
-"rl.pot" <- function(x, ci = TRUE, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
+"rl.pot" <- function(x, ci = TRUE, cilwd = 1, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
 {
     rpstmfc <- c(1.001,10^(seq(0,3,len=200))[-1])
     rlev <- qgpd(1/rpstmfc, loc = x$threshold, scale = x$scale,
@@ -547,8 +549,11 @@ function(x, threshold, model = c("gpd", "pp"), start, npp = length(x), cmax = FA
         lines(rps, rlev)
         xyuser <- par("usr")
         smidge <- min(diff(c(xyuser[1], log10(ppx), xyuser[2])))/2
-        segments(ppx*exp(-smidge), env[,1], ppx*exp(smidge), env[,1])
-        segments(ppx*exp(-smidge), env[,2], ppx*exp(smidge), env[,2])
+        smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+        segments(ppx*exp(-smidge), env[,1], ppx*exp(smidge),
+                 env[,1], lwd = cilwd)
+        segments(ppx*exp(-smidge), env[,2], ppx*exp(smidge),
+                 env[,2], lwd = cilwd)
     }
     invisible(list(x = rps, y = rlev))
 }

@@ -1,5 +1,5 @@
-\name{atvpar}
-\alias{atvpar}
+\name{amvevd}
+\alias{amvevd}
 \title{Parametric Dependence Functions of Trivariate Extreme
     Value Models}
 \description{
@@ -7,7 +7,7 @@
   logistic and trivariate asymmetric logistic models.
 }
 \usage{
-atvpar(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
+amvevd(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
     FALSE, col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
     lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
 }
@@ -58,7 +58,9 @@ atvpar(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
     of the set \eqn{\{1,2,3\}}{{1,2,3}}. The points
     \eqn{(1,0,0)}, \eqn{(0,1,0)} and \eqn{(0,0,1)} (the vertices of
     the simplex) are depicted clockwise from the top in
-    the order defined by \code{ord}.}
+    the order defined by \code{ord}.The argument alters the way in
+    which the function is plotted; it does not change the function
+    definition.}
   \item{lab}{A character vector of length three, in which case the
     \code{i}th margin is labelled using the \code{i}th component,
     or \code{NULL}, in which case no labels are given. The actual
@@ -102,25 +104,25 @@ atvpar(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
 }
 
 \value{
-  \code{atvpar} calculates or plots the dependence function
+  \code{amvevd} calculates or plots the dependence function
   for the trivariate logistic and trivariate asymmetric logistic
   models, at specified parameter values.
 }
 
-\seealso{\code{\link{atvnonpar}}, \code{\link{abvpar}},
+\seealso{\code{\link{amvnonpar}}, \code{\link{abvevd}},
   \code{\link{rmvevd}}, \code{\link{image}}}
 
 \examples{
-atvpar(dep = 0.5, model = "log")
+amvevd(dep = 0.5, model = "log")
 s3pts <- matrix(rexp(30), nrow = 10, ncol = 3)
 s3pts <- s3pts/rowSums(s3pts)
-atvpar(s3pts, dep = 0.5, model = "log")
-\dontrun{atvpar(dep = 0.05, model = "log", plot = TRUE, blty = 1)}
-atvpar(dep = 0.95, model = "log", plot = TRUE, lower = 0.94)
+amvevd(s3pts, dep = 0.5, model = "log")
+\dontrun{amvevd(dep = 0.05, model = "log", plot = TRUE, blty = 1)}
+amvevd(dep = 0.95, model = "log", plot = TRUE, lower = 0.94)
 
 asy <- list(.4, .1, .6, c(.3,.2), c(.1,.1), c(.4,.1), c(.2,.3,.2))
-atvpar(s3pts, dep = 0.15, asy = asy, model = "alog")
-atvpar(dep = 0.15, asy = asy, model = "al", plot = TRUE, lower = 0.7)
+amvevd(s3pts, dep = 0.15, asy = asy, model = "alog")
+amvevd(dep = 0.15, asy = asy, model = "al", plot = TRUE, lower = 0.7)
 }
 \keyword{distribution}
 

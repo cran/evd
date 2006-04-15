@@ -653,23 +653,23 @@ bvtpost.optim <- function(x, u, opt, nm, fixed.param, std.err, dsm, corr, nat, s
     dep.sum <- numeric(3)
     if(model %in% c("log", "hr", "neglog")) {
       dep <- param["dep"]
-      dep.sum[1] <- 2 * (1 - abvpar(dep = dep, model = model))
-      dep.sum[2] <- 4 * integrate(function(x) 1 - abvpar(x, dep = dep, model = model), 0, 1)$value
+      dep.sum[1] <- 2 * (1 - abvevd(dep = dep, model = model))
+      dep.sum[2] <- 4 * integrate(function(x) 1 - abvevd(x, dep = dep, model = model), 0, 1)$value
     }
     if(model %in% c("alog", "aneglog")) {
       dep <- param["dep"]
       asy <- param[c("asy1", "asy2")]
-      dep.sum[1] <- 2 * (1 - abvpar(dep = dep, asy = asy, model = model))
-      dep.sum[2] <- 4 * integrate(function(x) 1 - abvpar(x, dep = dep, asy = asy, model = model), 0, 1)$value
-      dffn <- function(x) abvpar(x, dep = dep, asy = asy, model = model) - abvpar(x, dep = dep, asy = rev(asy), model = model)
+      dep.sum[1] <- 2 * (1 - abvevd(dep = dep, asy = asy, model = model))
+      dep.sum[2] <- 4 * integrate(function(x) 1 - abvevd(x, dep = dep, asy = asy, model = model), 0, 1)$value
+      dffn <- function(x) abvevd(x, dep = dep, asy = asy, model = model) - abvevd(x, dep = dep, asy = rev(asy), model = model)
       dep.sum[3] <- 4 * integrate(dffn, 0, 0.5)$value/(3 - 2 * sqrt(2))
     }
     if(model %in% c("bilog", "negbilog", "ct")) {
       alpha <- param["alpha"]
       beta <- param["beta"]
-      dep.sum[1] <- 2 * (1 - abvpar(alpha = alpha, beta = beta, model = model))
-      dep.sum[2] <- 4 * integrate(function(x) 1 - abvpar(x, alpha = alpha, beta = beta, model = model), 0, 1)$value
-      dffn <- function(x) abvpar(x, alpha = alpha, beta = beta, model = model) - abvpar(x, alpha = beta, beta = alpha, model = model)
+      dep.sum[1] <- 2 * (1 - abvevd(alpha = alpha, beta = beta, model = model))
+      dep.sum[2] <- 4 * integrate(function(x) 1 - abvevd(x, alpha = alpha, beta = beta, model = model), 0, 1)$value
+      dffn <- function(x) abvevd(x, alpha = alpha, beta = beta, model = model) - abvevd(x, alpha = beta, beta = alpha, model = model)
       dep.sum[3] <- 4 * integrate(dffn, 0, 0.5)$value/(3 - 2 * sqrt(2))
     }
   }

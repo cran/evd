@@ -337,10 +337,10 @@ function(depfn, col = heat.colors(12), blty = 0, grid =
     plot(c(-s3, s3), c(0.5-s3, 0.5+s3), type="n", axes=FALSE, xlab="", ylab="")
     if(!is.null(lab)) {
       lab <- lab[ord]
-      eps <- 0.05 * lcex
-      text(0, 1+eps, lab[1], adj = c(0.5, 0.5), cex = lcex)
-      text(s3+0.05*0.75, -0.75*eps, lab[2], adj = c(1, 1), cex = lcex)
-      text(-s3-0.05*0.75, -0.75*eps, lab[3], adj = c(0, 1), cex = lcex)
+      eps <- 0.025
+      text(0, 1+eps, lab[1], adj = c(0.5, 0), cex = lcex)
+      text(s3, -eps, lab[2], adj = c(1, 1), cex = lcex)
+      text(-s3, -eps, lab[3], adj = c(0, 1), cex = lcex)
     }
     image(x, y, z, zlim = c(lower,1), xlim = c(-s3,s3), ylim =
           c(0.5-s3, 0.5+s3), col = col, add = TRUE)
@@ -348,7 +348,7 @@ function(depfn, col = heat.colors(12), blty = 0, grid =
     invisible(mz)
 }
 
-"atvpar" <-
+"amvevd" <-
 function(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
     FALSE, col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
     lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
@@ -377,12 +377,13 @@ function(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
     alog = atvalog(x = x, dep = dep, asy = asy, plot = plot, col = col, blty =
       blty, grid = grid, lower = lower, ord = ord, lab = lab, lcex = lcex))
 }
- 
-"atvnonpar"<- 
-function(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
-    method = c("pickands","deheuvels","hall"), kmar = NULL,
-    plot = FALSE, col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
-    lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
+
+"amvnonpar"<- 
+function(x = rep(1/3,3), data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,
+    nsloc3 = NULL, method = c("pickands","deheuvels","halltajvidi"),
+    madj = 0, kmar = NULL, plot = FALSE, col = heat.colors(12), blty = 0,
+    grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3, lab =
+    as.character(1:3), lcex = 1)
 {
     if(!plot) {
       if(is.vector(x)) x <- as.matrix(t(x))
@@ -397,7 +398,16 @@ function(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
         warning("row(s) of `x' will be rescaled")
       x <- x/rs
     }
-    if(is.null(kmar)) {
+    if(missing(data) || ncol(data) != 3)
+      stop("data must have three columns")
+    if(epmar) {
+      data <- apply(data, 2, rank, na.last = "keep")
+      nasm <- apply(data, 2, function(x) sum(!is.na(x)))
+      data <- data / rep(nasm+1, each = nrow(data))
+      data <- -log(data)
+    }
+    else {
+      if(is.null(kmar)) {
         if(!is.null(nsloc1)) {
             nsloc1 <- nsloc.transform(data, nsloc1)
             nslocmat1 <- cbind(1,as.matrix(nsloc1))
@@ -431,13 +441,12 @@ function(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
 
         data <- mtransform(data, list(mle.m1, mle.m2, mle.m3))
         # End transform
-    }
-    else {
-        if(length(kmar) != 3 || mode(kmar) != "numeric")
-            stop("`kmar' should be a numeric vector of length three")
+      }
+      else {
         if(!is.null(nsloc1) || !is.null(nsloc2) || !is.null(nsloc3))
             warning("ignoring `nsloc1', `nsloc2' and `nsloc3' arguments")
         data <- mtransform(data, kmar)
+      }
     }
     
     data <- na.omit(data)
@@ -448,7 +457,7 @@ function(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
       a
     }
     
-    if(method == "pickands") {
+    if(method == "pickands" && (madj < 0.5)) {
       depfn <- function(x, data) {
         nn <- nrow(data)
         a <- numeric(nrow(x))
@@ -459,7 +468,8 @@ function(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
       }
     }
     
-    if(method == "deheuvels") {
+    if((method == "deheuvels") ||
+       ((method == "pickands") && (madj >= 0.5) && (madj < 1.5))) {
       depfn <- function(x, data) {
         nn <- nrow(data)
         a <- numeric(nrow(x))
@@ -471,7 +481,8 @@ function(x = rep(1/3,3), data, nsloc1 = NULL, nsloc2 = NULL, nsloc3 = NULL,
       }
     }
 
-    if(method == "hall") {
+    if(method == "halltajvidi" ||
+       ((method == "pickands") && (madj >= 1.5))) {
       depfn <- function(x, data) {
         csum <- colSums(data)
         a <- numeric(nrow(x))
@@ -524,7 +535,7 @@ subsets <- function(d) {
     x <- 1:d
     k <- NULL
     for(m in x) 
-    k <- rbind(cbind(TRUE, k), cbind(FALSE, k))
+        k <- rbind(cbind(TRUE, k), cbind(FALSE, k))
     pset <- apply(k, 1, function(z) x[z])
     pset[sort.list(unlist(lapply(pset,length)))[-1]] 
 }

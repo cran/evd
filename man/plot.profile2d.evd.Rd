@@ -1,10 +1,10 @@
 \name{plot.profile2d.evd}
 \alias{plot.profile2d.evd}
 
-\title{Plot Joint Profile Devainces}
+\title{Plot Joint Profile Log-likelihoods}
 \description{
-  Displays an image plot of the joint profile deviance from a
-  model profiled with \code{\link{profile.evd}} and
+  Displays an image plot of the joint profile log-likelihood
+  from a model profiled with \code{\link{profile.evd}} and
   \code{\link{profile2d.evd}}.
 }
 \usage{
@@ -38,7 +38,6 @@
   may not hold.
   For the GEV model, the usual asymptotic properties hold when the
   shape parameter is greater than \eqn{-0.5} (Smith, 1985).
-  Fortunately, this is usually the case.
 }
 \references{
   Smith, R. L. (1985)

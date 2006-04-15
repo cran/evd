@@ -101,7 +101,7 @@ chiplot(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, lty = 1,
   For bivariate extreme value distributions, \eqn{\chi(q) =
     2(1-A(1/2))}{chi(q) = 2(1-A(1/2))}
   for all \eqn{q} in (0,1), where \eqn{A} is the dependence function,
-  as defined in \code{\link{abvpar}}. If a bivariate threshold model
+  as defined in \code{\link{abvevd}}. If a bivariate threshold model
   is to be fitted (using \code{\link{fbvpot}}), this plot can therefore
   act as a threshold identification plot, since e.g. the use of 95\%
   marginal quantiles as threshold values implies that \eqn{\chi(q)}{chi(q)}

@@ -171,6 +171,21 @@ double ccbvct(double m1, double m2, double oldm1, double alpha, double beta)
   return fval;
 }
 
+double ccbvamix(double m1, double m2, double oldm1, double alpha, double beta)
+{
+  double tm1,tm2,tm1a,v,v2,fval;
+
+  tm1 = -log(m1);
+  tm2 = -log(m2);
+  tm1a = tm1/(tm1 + tm2);
+
+  v = tm1 + tm2 - tm1 * ((alpha + beta) - alpha * tm1a - beta * tm1a * tm1a);
+  v2 = 1 - alpha * tm1a * tm1a - 2 * beta * tm1a * tm1a * tm1a; 
+  fval = exp(-v) * (1 / m2) * v2 - oldm1;
+
+  return fval;
+}
+
 /*
    Calculates conditional copula for any model, conditioning on
    the margin `cnd'.
@@ -227,6 +242,12 @@ void ccop(double *m1, double *m2, int *cnd, double *dep, double *asy1, double *a
     for(i=0;i<*n;i++) {
       if(*cnd == 2) ccop[i] = ccbvct(m1[i], m2[i], 0, *alpha, *beta);
       else ccop[i] = ccbvct(m2[i], m1[i], 0, *beta, *alpha);
+    }
+    break;
+    case 9:
+    for(i=0;i<*n;i++) {
+      if(*cnd == 2) ccop[i] = ccbvamix(m1[i], m2[i], 0, *alpha, *beta);
+      else ccop[i] = ccbvamix(m2[i], m1[i], 0, *alpha + 3 * *beta, - *beta);
     }
     break;
   default:

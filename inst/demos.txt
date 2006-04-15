@@ -1,0 +1,64 @@
+This file contains detailed comments on the demo soe9,
+which presents examples from Chapter Nine of the text
+"Statistics of Extremes: Theory and Applications". The 
+R code used in the demo is contained in the file
+demo/soe9.R. The demo can be run from R using the code
+demo(soe9).
+
+Comments:
+
+1) Differences from the text will inevitably exist due
+to the use of different numerical algorithms and random
+number generation. In particular, the optimisation 
+routines used to derive mles will be different, and
+the componentwise maxima will be different since they
+are derived using random permutations.
+
+2) The functions use the empirical transform rank/(n+1),
+which will differ from the definition in the text when
+there are ties in the data, since rank averages over the
+ties. Additionally, the R function quantile is used for
+the empirical quantile function. This function uses
+linear interpolation between data points, so e.g. the
+quantile curve plot in Figure 9.6 (using empirical 
+margins) will not be a step function.
+
+3) The evd package uses the dependence function A(t), but 
+the definition used in the text is B(t) = A(1-t). This
+means that the argument rev must be set to TRUE for all
+asymmetric models excluding the asymmetric mixed model.
+The exclusion occurs because the latter model is 
+specified on the dependence function itself, so the
+different definitions lead to a reversal of the margins
+of its distribution function.
+
+4) Some models are parameterised differently in the text.
+For the negative logistic models, they use r = -1/dep.
+For the Husler-Reiss (Gaussian) model, they use lambda =
+1/dep. The parameterisation of the asymmetric mixed model
+is also implicitly different due to the different
+dependence function definitions (see 3).
+
+5) The evd package only implements empirical margins for
+non-parametric estimators. It does not explicitly implement
+empirical margins for parametric models. The text uses only
+empirical margins and hence there are some differences, as
+follows.
+
+5i) The data is scaled so that it represents $100000 units 
+rather than $1 units. This yields numerically stable 
+likelihood optimisations. To recover the mles for the 
+original data, simply multiply the marginal location and 
+scale parameter estimates by 100000.  
+
+5ii) Figure 9.5(b) and the corresponding likelihood ratio
+tests use parametric gev margins, unlike the text.
+
+5iii) I have added additional examples showing how to 
+calculate the score test for independence with gev margins,
+and showing Figure 9.6 with gev margins.
+
+
+  
+
+

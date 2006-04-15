@@ -1,5 +1,68 @@
 CHANGES FROM VERSION 2.1-6 ARE AS FOLLOWS
 
+  Added the asymmetric mixed bivariate model.
+
+  A demo soe9 has been included, giving examples from
+  Chapter Nine of the book statistics of extremes. An
+  associated file demo.txt has bee added to the /inst
+  directory.
+  
+  The atvnonpar and atvpar functions have been renamed
+  to amvnonpar and amvevd. The abvpar function has been
+  renamed to abvevd, but the former still runs, with a
+  warning.
+
+  An argument rev has been added to abvpar and abvnonpar,
+  allowing the evaluation of A(1-t) rather than A(t).
+  It can also be passed from plot.bvevd.
+
+  The argument epmar has been added to abvnonpar and 
+  atvnonpar. It allows empirical estimation of the
+  margins.
+
+  The formerly internal function mtransform is now 
+  documented. It transforms to and from exponential
+  distributions under the gev model.
+
+  The profile plots now plot profile log-likelihoods 
+  rather than profile deviances.  
+  
+  The plotting functions plot.uvevd and plot.bvevd
+  have an additional argument cilwd to control the
+  line width of confidence intervals.
+
+  The functions abvpar and abvnonpar now have default
+  axes labels and a border line width argument.
+
+  The function abvnonpar is simpler; the "tdo" method 
+  is now undocumented, old methods "deheuvels" and 
+  "halltajvidi" can now be implemented using the 
+  argument madj. For back compatability, the old 
+  interface can still be used. The weight function
+  option for method "cfg" has been removed, and the
+  "cfg" definition now has a simpler equivalent 
+  representation. Similar changes have been made to
+  atvnonpar (now renamed to amvnonpar).
+
+  In fbvevd the dependence summaries, and hence the
+  argument dsm, have been removed, though the former
+  Dependence One value is now automatically given in
+  the output. The argument warn.inf is now undocumented.
+  
+  The marginal option "exponential" to the function evmc
+  has been changed to "rweibull" (negative exponential)
+  because the former swaps the bivariate tails around.
+
+  The function anova now has a logical argument half to
+  deal with non-regular cases where the asymptotic
+  distribution of the deviance difference is known to
+  be one half of a chi-squared. Also, it no longer
+  errors when testing bilog vs log or negbilog vs bilog.
+
+  Added the dataset lossalae on general liability claims. 
+
+CHANGES FROM VERSION 2.1-6 ARE AS FOLLOWS
+
   The exi function has been simplified; it now returns
   only a single estimate, but a new estimation method
   based on inter-exceedance times has been added. A new 

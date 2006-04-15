@@ -1,21 +1,24 @@
-\name{abvpar}
+\name{abvevd}
+\alias{abvevd}
 \alias{abvpar}
 \title{Parametric Dependence Functions of Bivariate Extreme
     Value Models}
 \description{
   Calculate or plot the dependence function \eqn{A} for
-  eight parametric bivariate extreme value models.
+  nine parametric bivariate extreme value models.
 }
 \synopsis{
-abvpar(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct"),
-     plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3,
-     xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", \dots)
+abvevd(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
+    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
+     rev = FALSE, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
+     blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1), xlab = "t",
+     ylab = "A(t)", \dots)
 }
 \usage{
-abvpar(x = 0.5, dep, asy = c(1,1), alpha, beta, model = "log",
-     plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3,
-     xlim = c(0,1), ylim = c(0.5,1), xlab = "", ylab = "", \dots)
+abvevd(x = 0.5, dep, asy = c(1,1), alpha, beta, model = "log",
+     rev = FALSE, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
+     col = 1, blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1),
+     xlab = "t", ylab = "A(t)", \dots)
 }
 \arguments{
   \item{x}{A vector of values at which the dependence function is
@@ -29,28 +32,31 @@ abvpar(x = 0.5, dep, asy = c(1,1), alpha, beta, model = "log",
     parameters for the asymmetric logistic and asymmetric negative
     logistic models.}
   \item{alpha, beta}{Alpha and beta parameters for the bilogistic,
-    negative bilogistic and Coles-Tawn models.}
+    negative bilogistic, Coles-Tawn and asymmetric mixed models.}
   \item{model}{The specified model; a character string. Must be
     either \code{"log"} (the default), \code{"alog"}, \code{"hr"},
     \code{"neglog"}, \code{"aneglog"}, \code{"bilog"},
-    \code{"negbilog"} or \code{"ct"} (or any unique partial match),
-    for the logistic, asymmetric logistic, Husler-Reiss, negative
-    logistic, asymmetric negative logistic, bilogistic, negative
-    bilogistic and Coles-Tawn models respectively. The definition
-    of each model is given in \code{\link{rbvevd}}. If parameter
-    arguments are given that do not correspond to the specified
-    model those arguments are ignored, with a warning.}
+    \code{"negbilog"}, \code{"ct"} or \code{"amix"} (or any unique
+    partial match), for the logistic, asymmetric logistic,
+    Husler-Reiss, negative logistic, asymmetric negative logistic,
+    bilogistic, negative bilogistic, Coles-Tawn and asymmetric
+    mixed models respectively. The definition of each model is given
+    in \code{\link{rbvevd}}. If parameter arguments are given that do
+    not correspond to the specified model those arguments are
+    ignored, with a warning.}
+  \item{rev}{Logical; reverse the dependence function? This is
+    equivalent to evaluating the function at \code{1-x}.}
   \item{plot}{Logical; if \code{TRUE} the function is plotted. The
     x and y values used to create the plot are returned invisibly.
     If \code{plot} and \code{add} are \code{FALSE} (the default),
     the arguments following \code{add} are ignored.}
   \item{add}{Logical; add to an existing plot? The existing plot
-    should have been created using either \code{abvpar} or
+    should have been created using either \code{abvevd} or
     \code{\link{abvnonpar}}, the latter of which plots (or calculates)
     a non-parametric estimate of the dependence function.}
   \item{lty, blty}{Function and border line types. Set \code{blty}
     to zero to omit the border.}
-  \item{lwd}{Line width.}
+  \item{lwd, blwd}{Function an border line widths.}
   \item{col}{Line colour.}
   \item{xlim, ylim}{x and y-axis limits.}
   \item{xlab, ylab}{x and y-axis labels.}
@@ -80,25 +86,28 @@ abvpar(x = 0.5, dep, asy = c(1,1), alpha, beta, model = "log",
   The lower and upper limits of \eqn{A} are obtained under complete
   dependence and independence respectively.
   \eqn{A(\cdot)}{A()} does not depend on the marginal parameters.
+
+  Some authors take B(x) = A(1-x) as the dependence function. If the
+  argument \code{rev = TRUE}, then B(x) is plotted/evaluated.
 }
 
 \value{
-  \code{abvpar} calculates or plots the dependence function
-  for one of eight parametric bivariate extreme value models,
+  \code{abvevd} calculates or plots the dependence function
+  for one of nine parametric bivariate extreme value models,
   at specified parameter values.
 }
 
 \seealso{\code{\link{abvnonpar}}, \code{\link{fbvevd}},
-  \code{\link{rbvevd}}, \code{\link{atvpar}}}
+  \code{\link{rbvevd}}, \code{\link{amvevd}}}
 
 \examples{
-abvpar(dep = 2.7, model = "hr")
-abvpar(seq(0,1,0.25), dep = 0.3, asy = c(.7,.9), model = "alog")
-abvpar(alpha = 0.3, beta = 1.2, model = "negbi", plot = TRUE)
+abvevd(dep = 2.7, model = "hr")
+abvevd(seq(0,1,0.25), dep = 0.3, asy = c(.7,.9), model = "alog")
+abvevd(alpha = 0.3, beta = 1.2, model = "negbi", plot = TRUE)
 
 bvdata <- rbvevd(100, dep = 0.7, model = "log")
 M1 <- fitted(fbvevd(bvdata, model = "log"))
-abvpar(dep = M1["dep"], model = "log", plot = TRUE)
+abvevd(dep = M1["dep"], model = "log", plot = TRUE)
 abvnonpar(data = bvdata, add = TRUE, lty = 2)
 }
 \keyword{distribution}

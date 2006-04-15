@@ -639,4 +639,168 @@ void nlbvct(double *datam1, double *datam2, int *n, int *si, double *alpha,
     for(i=0;i<*n;i++) *dns = *dns - dvec[i];
   }
 }
+
+void nlbvamix(double *datam1, double *datam2, int *n, int *si, double *alpha,
+	     double *beta, double *loc1, double *scale1, double *shape1, 
+             double *loc2, double *scale2, double *shape2, int *split, 
+             double *dns)
+{
+  int i;
+  double *v,*v1,*v2,*v12,*u,*u1,*u2,*jc,*dvec;
+  double apb;
+
+  v1 = (double *)R_alloc(*n, sizeof(double));
+  v2 = (double *)R_alloc(*n, sizeof(double));
+  v12 = (double *)R_alloc(*n, sizeof(double));
+  u = (double *)R_alloc(*n, sizeof(double));
+  u1 = (double *)R_alloc(*n, sizeof(double));
+  u2 = (double *)R_alloc(*n, sizeof(double));
+  v = (double *)R_alloc(*n, sizeof(double));
+  jc = (double *)R_alloc(*n, sizeof(double));
+  dvec = (double *)R_alloc(*n, sizeof(double));
+  
+  for(i=0;i<*n;i++) {
+    datam1[i] = (datam1[i] - loc1[i]) / *scale1;
+    datam2[i] = (datam2[i] - loc2[i]) / *scale2;
+    if(*shape1 == 0) 
+        datam1[i] = -datam1[i];
+    else {
+      datam1[i] = 1 + *shape1 * datam1[i];
+      if(datam1[i] <= 0) {
+        *dns = 1e6;
+        return;
+      }
+      else datam1[i] = -1 / *shape1 * log(datam1[i]);
+    }
+    if(*shape2 == 0) 
+      datam2[i] = -datam2[i];
+    else {
+      datam2[i] = 1 + *shape2 * datam2[i];
+      if(datam2[i] <= 0) {
+        *dns = 1e6;
+        return;
+      }
+      else datam2[i] = -1 / *shape2 * log(datam2[i]);
+    }
+  }
+
+  apb = *alpha + *beta;
+  for(i=0;i<*n;i++) {
+    jc[i] = (1 + *shape1) * datam1[i] + (1 + *shape2) * datam2[i] -
+      log(*scale1 * *scale2);
+    u[i] = exp(datam1[i]) + exp(datam2[i]);
+    u1[i] = exp(datam1[i])/u[i];
+    u2[i] = exp(datam2[i])/u[i];
+    v[i] = u[i] - exp(datam1[i]) * (apb - *alpha * u1[i] - 
+      *beta * u1[i] * u1[i]);
+    v1[i] = 1 - *alpha * u2[i] * u2[i] - *beta * (3 * u2[i]*u2[i] -
+      2 * u2[i]*u2[i]*u2[i]);
+    v2[i] = 1 - *alpha * u1[i]*u1[i] - 2 * *beta * u1[i]*u1[i]*u1[i];
+    v12[i] = (-2 * *alpha * u1[i] * u2[i] - 6 * *beta * u1[i]*u1[i] * 
+      u2[i]) / u[i];
+    if(si[i] == 0) dvec[i] = log(v1[i] * v2[i]) - v[i] + jc[i];
+    else if(si[i] == 1) dvec[i] = log(- v12[i]) - v[i] + jc[i];
+    else dvec[i] = log(v1[i] * v2[i] - v12[i]) - v[i] + jc[i];
+  }
+  
+  if(*split > 0.5) {
+    for(i=0;i<*n;i++) dns[i] = - dvec[i];
+  }
+  else {
+    for(i=0;i<*n;i++) *dns = *dns - dvec[i];
+  }
+}
  
+
+void nslmvalog(double *data, int *n, int *d, double *deps, double *thetas, 
+    double *mpar, double *psrvs, int *q, int *nslocid, double *nsloc, 
+    int *depindx, int *thetaindx, double *dns)
+{
+  int i,j,k,l,dd,nn,qq,niinb,niinbm,ndepp,nthetap,nmp;
+  double iterm1, iterm2, term1, term2, eps;
+  double thetasum, psrv, repdens;
+  double dep, theta, loc;
+  double *tdata, *dvec;
+  int tmp1, tmp2;
+  
+  dd = *d; nn = *n; qq = *q;
+  eps = R_pow(DOUBLE_EPS, 0.3);
+  ndepp = R_pow(2, dd) - 1 - dd; 
+  niinb = R_pow(2, dd - 1);
+  nthetap = dd * (niinb - 1);
+  niinbm = niinb-1;
+  if(*nslocid) nmp = 4;
+  else nmp = 3;
+  *dns = 0;
+  
+  tdata = (double *)Calloc(nn * dd * sizeof(double), double);
+  dvec = (double *)Calloc(nn * sizeof(double), double);
+
+  for(i=0;i<nn;i++) dvec[i] = 0;
+
+  for(i=0;i<nn;i++) {
+
+    for(l=0;l<qq;l++) {
+
+      repdens = 0;
+      for(j=0;j<dd;j++) {
+
+        if(!ISNA(data[i*dd+j])) {
+          if(*nslocid) loc = mpar[4*j] + mpar[4*j+3] * nsloc[i];
+          else loc = mpar[3*j]; 
+          tdata[i*dd+j] = (data[i*dd+j] - loc) / mpar[nmp*j+1];
+          if(fabs(mpar[nmp*j+2]) <= eps) tdata[i*dd+j] = exp(tdata[i*dd+j]);
+          else {
+            tdata[i*dd+j] = 1 + mpar[nmp*j+2] * tdata[i*dd+j];
+            if(tdata[i*dd+j] <= 0) {
+              *dns = 1e6;
+              return;
+	    }
+            tdata[i*dd+j] = R_pow(tdata[i*dd+j], 1 / mpar[nmp*j+2]); 
+          }
+
+          thetasum = iterm1 = iterm2 = 0; 
+          for(k=0;k<niinbm;k++) {
+            tmp1 = depindx[j*niinbm + k];
+            tmp2 = thetaindx[j*niinbm + k];
+            dep = deps[tmp1];
+          
+            if(dep < 0.2) {
+              *dns = 1e6;
+              return;
+	    }	  
+            theta = thetas[tmp2];
+            psrv = psrvs[tmp1 + ndepp * (l + i * qq)];
+            term1 = psrv * R_pow(theta/tdata[i*dd+j], 1/dep);
+            term2 = term1/dep;
+            thetasum = thetasum + theta;
+            iterm1 = iterm1 + term1;
+            iterm2 = iterm2 + term2;    
+          }
+          if(thetasum > 1) {
+            *dns = 1e6;
+            return;
+	  }
+          else {
+            iterm1 = iterm1 + (1-thetasum)/tdata[i*dd+j];
+            iterm2 = iterm2 + (1-thetasum)/tdata[i*dd+j]; 
+          }
+          repdens = repdens + log(iterm2) - iterm1 - log(mpar[nmp*j+1]) -
+            mpar[nmp*j+2] * log(tdata[i*dd+j]);
+        }
+        else tdata[i*dd+j] = NA_REAL;
+      }
+      dvec[i] = dvec[i] + exp(repdens);
+    }
+    dvec[i] = log(dvec[i]) - log(qq);
+  }
+ 
+  for(i=0;i<nn;i++) {
+    *dns = *dns - dvec[i];
+  }
+
+  /*Rprintf("%f\n",*dns);
+    error("stop");*/
+  Free(dvec); Free(tdata);
+  if(!R_FINITE(*dns) || R_IsNaN(*dns)) error("density is NaN/Inf");
+}

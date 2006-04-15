@@ -681,6 +681,22 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
   structure(c(ft, call = call), class = c("gev", "uvevd", "evd"))
 }
 
+# Internal: robustly produces mles.
+# Used for marginal parametric transforms.
+"frobgev"<-
+function(x, start, ..., nsloc = NULL) {
+  mnx <- mean(x, na.rm = TRUE)
+  sdx <- sqrt(var(x, na.rm = TRUE))
+  mles <- fgev(x = (x-mnx)/sdx, start = start, ..., nsloc = nsloc,
+    prob = NULL, std.err = FALSE, corr = FALSE)
+  mles <- fitted(mles)
+  mles["loc"] <- mnx + sdx * mles["loc"]
+  mles["scale"] <- sdx * mles["scale"]
+  trpar <- !(names(mles) %in% c("loc","scale","shape"))
+  mles[trpar] <- sdx * mles[trpar]
+  mles
+}
+
 "print.evd" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
 {
     cat("\nCall:", deparse(x$call), "\n")
@@ -718,25 +734,29 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
     val
 }
 
-"anova.evd" <- function (object, object2, ...) 
+"anova.evd" <- function (object, object2, ..., half = FALSE) 
 {
-    narg <- nargs()
-    if(narg < 2) stop("there must be two or more arguments")
+    if(missing(object)) stop("model one must be specified")
+    if(missing(object2)) stop("model two must be specified")
     dots <- as.list(substitute(list(...)))[-1]
     dots <- sapply(dots,function(x) deparse(x))
     if(!length(dots)) dots <- NULL
     model1 <- deparse(substitute(object))
     model2 <- deparse(substitute(object2))
     models <- c(model1, model2, dots)
+    narg <- length(models)
     for(i in 1:narg) {
         if(!inherits(get(models[i], envir = parent.frame()), "evd")) 
             stop("Use only with 'evd' objects")
     }
     for(i in 1:(narg-1)) {
-        a <- names(get(models[i], envir = parent.frame())$estimate)
-        b <- names(get(models[i+1], envir = parent.frame())$estimate)
-        if(!all(b %in% a))
-            stop("models are not nested")
+        a <- get(models[i], envir = parent.frame())
+        b <- get(models[i+1], envir = parent.frame())
+        if((!all(names(fitted(b)) %in% names(fitted(a)))) &&
+           (!identical(c("bilog","log"), c(a$model, b$model))) &&
+           (!identical(c("negbilog","neglog"), c(a$model, b$model)))) {
+            warning("models may not be nested")
+        }
     }
     dv <- npar <- numeric(narg)
     for(i in 1:narg) {
@@ -745,9 +765,10 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
         npar[i] <- length(evmod$estimate)
     }
     df <- -diff(npar)
-    if(any(df == 0)) stop("models are not nested")
+    if(any(df <= 0)) stop("models are not nested")
     dvdiff <- diff(dv)
-    if(any(dvdiff < 0)) stop("models are not nested")
+    if(any(dvdiff < 0)) stop("negative deviance difference")
+    if(half) dvdiff <- 2*dvdiff 
     pval <- pchisq(dvdiff, df = df, lower.tail = FALSE)
     table <- data.frame(npar, dv, c(NA,df), c(NA,dvdiff), c(NA,pval))
     dimnames(table) <- list(models, c("M.Df", "Deviance", "Df", "Chisq",
@@ -756,34 +777,45 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
               class = c("anova", "data.frame"))
 }
 
-"plot.uvevd" <-  function(x, which = 1:4, main = c("Probability Plot",
-     "Quantile Plot", "Density Plot", "Return Level Plot"),
-     ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
+"plot.uvevd" <-  function(x, which = 1:4, main, ask = nb.fig <
+     length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
      adjust = 1, jitter = FALSE, nplty = 2, ...) 
 {
     if (!inherits(x, "uvevd")) 
         stop("Use only with `'uvevd objects")
     if (!is.numeric(which) || any(which < 1) || any(which > 4)) 
         stop("`which' must be in 1:4")
+    nb.fig <- prod(par("mfcol"))
     show <- rep(FALSE, 4)
     show[which] <- TRUE
-    nb.fig <- prod(par("mfcol"))
+   if(missing(main)) {
+      main <- c("Probability Plot", "Quantile Plot", "Density Plot",
+        "Return Level Plot")
+    }
+    else {
+      if(length(main) != length(which))
+        stop("number of plot titles is not correct")
+      main2 <- character(4)
+      main2[show] <- main
+      main <- main2
+    }
     if (ask) {
         op <- par(ask = TRUE)
         on.exit(par(op))
     }
     if (show[1]) {
-        pp(x, ci = ci, main = main[1], xlim = c(0,1), ylim = c(0,1), ...)
+        pp(x, ci = ci, cilwd = cilwd, main = main[1], xlim = c(0,1),
+           ylim = c(0,1), ...)
     }
     if (show[2]) {
-        qq(x, ci = ci, main = main[2], ...)
+        qq(x, ci = ci, cilwd = cilwd, main = main[2], ...)
     }
     if (show[3]) {
         dens(x, adjust = adjust, nplty = nplty, jitter = jitter,
              main = main[3], ...)
     }
     if (show[4]) {
-        rl(x, ci = ci, main = main[4], ...)
+        rl(x, ci = ci, cilwd = cilwd, main = main[4], ...)
     }
     invisible(x)
 }
@@ -793,7 +825,7 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
 "rl" <- function (x, ...) UseMethod("rl")
 "dens" <- function (x, ...) UseMethod("dens")
 
-"qq.gev" <-  function(x, ci = TRUE, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
+"qq.gev" <-  function(x, ci = TRUE, cilwd = 1, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
 {
     quant <- qgev(ppoints(x$tdata), loc = x$loc,
                  scale = x$param["scale"], shape = x$param["shape"])
@@ -813,14 +845,15 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
               type = "pnn", pch = 4, ...)
       xyuser <- par("usr")
       smidge <- min(diff(c(xyuser[1], quant, xyuser[2])))/2
-      segments(quant-smidge, env[,1], quant+smidge, env[,1])
-      segments(quant-smidge, env[,2], quant+smidge, env[,2])
+      smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+      segments(quant-smidge, env[,1], quant+smidge, env[,1], lwd = cilwd)
+      segments(quant-smidge, env[,2], quant+smidge, env[,2], lwd = cilwd)
       abline(0, 1)
     }
     invisible(list(x = quant, y = sort(x$tdata)))
 }
 
-"pp.gev" <-  function(x, ci = TRUE, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+"pp.gev" <-  function(x, ci = TRUE, cilwd = 1, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 {
     ppx <- ppoints(x$n)
     probs <- pgev(sort(x$tdata), loc = x$loc,
@@ -844,14 +877,15 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
                 ylab = ylab, type = "pnn", pch = 4, ...)
         xyuser <- par("usr")
         smidge <- min(diff(c(xyuser[1], ppx, xyuser[2])))/2
-        segments(ppx-smidge, env[,1], ppx+smidge, env[,1])
-        segments(ppx-smidge, env[,2], ppx+smidge, env[,2])
+        smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+        segments(ppx-smidge, env[,1], ppx+smidge, env[,1], lwd = cilwd)
+        segments(ppx-smidge, env[,2], ppx+smidge, env[,2], lwd = cilwd)
         abline(0, 1)
     }
     invisible(list(x = ppoints(x$n), y = probs))
 }
 
-"rl.gev" <-  function(x, ci = TRUE, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
+"rl.gev" <-  function(x, ci = TRUE, cilwd = 1, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
 {
     ppx <- ppoints(x$tdata)
     rps <- c(1.001,10^(seq(0,3,len=200))[-1])
@@ -876,10 +910,11 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
         lines(-1/log(1-p.upper), rlev)
         xyuser <- par("usr")
         smidge <- min(diff(c(xyuser[1], log10(-1/log(ppx)), xyuser[2])))/2
+        smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
         segments((-1/log(ppx))*exp(-smidge), env[,1],
-                 (-1/log(ppx))*exp(smidge), env[,1])
+                 (-1/log(ppx))*exp(smidge), env[,1], lwd = cilwd)
         segments((-1/log(ppx))*exp(-smidge), env[,2],
-                 (-1/log(ppx))*exp(smidge), env[,2])
+                 (-1/log(ppx))*exp(smidge), env[,2], lwd = cilwd)
     }
     invisible(list(x = -1/log(1-p.upper), y = rlev))
 }
@@ -955,8 +990,7 @@ function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
             call.args$sym <- fitted$sym
             call.args$cloc <- fitted$cmar[1]
             call.args$cscale <- fitted$cmar[2]
-            call.args$cshape <- fitted$cmar[3]
-            call.args$dsm <- FALSE
+            call.args$cshape <- fitted$cmar[3] 
         }
         if(inherits(fitted, "bvpot")) {
             call.args$threshold <- fitted$threshold
@@ -1126,7 +1160,6 @@ profile2d <- function (fitted, ...) {
         call.args$cloc <- fitted$cmar[1]
         call.args$cscale <- fitted$cmar[2]
         call.args$cshape <- fitted$cmar[3]
-        call.args$dsm <- FALSE
     }
     if(inherits(fitted, "bvpot")) {
         call.args$threshold <- fitted$threshold
@@ -1173,13 +1206,13 @@ profile2d <- function (fitted, ...) {
         fls <- toupper(substr(which, 1, 1))
         ols <- substr(which, 2, nchar(which))
         cwhich <- paste(fls, ols, sep = "")
-        main <- paste("Profile Deviance of", cwhich)
+        main <- paste("Profile Log-likelihood of", cwhich)
     }
     for(i in which) {
-        plot(spline(x[[i]][,1], x[[i]][,2], n = 75), type = "l",
-             xlab = i, ylab = "profile deviance",
+        plot(spline(x[[i]][,1], -x[[i]][,2]/2, n = 75), type = "l",
+             xlab = i, ylab = "profile log-likelihood",
              main = main[match(i,which)], ...)
-        cdist <- attributes(x)$deviance + qchisq(ci, df = 1)
+        cdist <- -(attributes(x)$deviance + qchisq(ci, df = 1))/2
         abline(h = cdist, lty = clty)
     }
     invisible(pcint(prof = x, which = which, ci = ci))
@@ -1194,7 +1227,7 @@ profile2d <- function (fitted, ...) {
         fls <- toupper(substr(which, 1, 1))
         ols <- substr(which, 2, nchar(which))
         cwhich <- paste(fls, ols, sep = "")
-        main <- paste("Profile Deviance of", cwhich[1], "and", cwhich[2])
+        main <- paste("Profile Log-likelihood of", cwhich[1], "and", cwhich[2])
     }
     br.pts <- attributes(x)$deviance + qchisq(c(0,ci), df = 2)
     prof <- x$trace[,"deviance"]
@@ -1207,10 +1240,14 @@ profile2d <- function (fitted, ...) {
         options(oldop)
         if(lbak) cat("Loaded package akima", "\n")
     }
+    prof <- -prof/2
+    br.pts <- (-br.pts/2)[length(br.pts):1]
+    col <- col[length(col):1]
+    
     if(!lbak) {
         image(x[[which[1]]], x[[which[2]]],
               matrix(prof, nrow = length(x[[which[1]]])),
-              col = col, breaks = c(br.pts, 2e6+1),
+              col = col, breaks = c(-1e6+1, br.pts),
               main = main, xlab = which[1], ylab = which[2], xaxs = xaxs,
               yaxs = yaxs, ...)
     }
@@ -1220,7 +1257,7 @@ profile2d <- function (fitted, ...) {
         prof.interp <- interp(x$trace[,1], x$trace[,2], prof,
             xo = seq(lim1[1], lim1[2], length = intpts),
             yo = seq(lim2[1], lim2[2], length = intpts))
-        image(prof.interp, col = col, breaks = c(br.pts, max(prof)),
+        image(prof.interp, col = col, breaks = c(min(prof), br.pts),
               main = main, xlab = which[1], ylab = which[2], xaxs = xaxs,
               yaxs = yaxs, ...)
     }
