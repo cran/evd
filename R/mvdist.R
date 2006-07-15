@@ -1,3 +1,15 @@
+"rmvevd" <-
+function(n, dep, asy, model = c("log", "alog"), d = 2, mar = c(0,1,0))
+{
+  model <- match.arg(model)
+  if(model == "log" && !missing(asy))
+    warning("ignoring `asy' argument")
+    
+  switch(model,
+    log = rmvlog(n = n, dep = dep, d = d, mar = mar),
+    alog = rmvalog(n = n, dep = dep, asy = asy, d = d, mar = mar)) 
+}
+
 "rmvlog"<-
 # Uses Algorithm 2.1 in Stephenson(2003)
 function(n, dep, d = 2, mar = c(0,1,0))
@@ -24,16 +36,19 @@ function(n, dep, asy, d = 2, mar = c(0,1,0))
     mtransform(matrix(1/sim, ncol=d, byrow=TRUE), mar, inv = TRUE, drp = TRUE)
 }
 
-"rmvevd" <-
-function(n, dep, asy, model = c("log", "alog"), d = 2, mar = c(0,1,0))
+"pmvevd" <-
+function(q, dep, asy, model = c("log", "alog"), d = 2,
+         mar = c(0,1,0), lower.tail = TRUE)
 {
   model <- match.arg(model)
   if(model == "log" && !missing(asy))
     warning("ignoring `asy' argument")
     
   switch(model,
-    log = rmvlog(n = n, dep = dep, d = d, mar = mar),
-    alog = rmvalog(n = n, dep = dep, asy = asy, d = d, mar = mar)) 
+    log = pmvlog(q = q, dep = dep, d = d, mar = mar,
+      lower.tail = lower.tail),
+    alog = pmvalog(q = q, dep = dep, asy = asy, d = d, mar = mar,
+      lower.tail = lower.tail)) 
 }
 
 "pmvlog"<- 
@@ -88,20 +103,18 @@ function(q, dep, asy, d = 2, mar = c(0,1,0), lower.tail = TRUE)
     pp
 }
 
-"pmvevd" <-
-function(q, dep, asy, model = c("log", "alog"), d = 2,
-         mar = c(0,1,0), lower.tail = TRUE)
+"dmvevd" <-
+function(x, dep, asy, model = c("log", "alog"), d = 2,
+         mar = c(0,1,0), log = FALSE)
 {
   model <- match.arg(model)
   if(model == "log" && !missing(asy))
     warning("ignoring `asy' argument")
-    
+
   switch(model,
-    log = pmvlog(q = q, dep = dep, d = d, mar = mar,
-      lower.tail = lower.tail),
-    alog = pmvalog(q = q, dep = dep, asy = asy, d = d, mar = mar,
-      lower.tail = lower.tail)) 
-}
+    log = dmvlog(x = x, dep = dep, d = d, mar = mar, log = log),
+    alog = dmvalog(x = x, dep = dep, asy = asy, d = d, mar = mar, log = log))
+}   
 
 "dmvlog"<- 
 function(x, dep, d = 2, mar = c(0,1,0), log = FALSE)
@@ -252,18 +265,35 @@ function(x,  dep, asy, d = 2, mar = c(0,1,0), log = FALSE)
     dns
 }
 
-"dmvevd" <-
-function(x, dep, asy, model = c("log", "alog"), d = 2,
-         mar = c(0,1,0), log = FALSE)
+"amvevd" <-
+function(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
+    FALSE, col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
+    lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
 {
   model <- match.arg(model)
   if(model == "log" && !missing(asy))
-    warning("ignoring `asy' argument")
+    warning("ignoring `asy' argument") 
 
+  if(!plot) {
+    if(is.vector(x)) x <- as.matrix(t(x))
+    if(!is.matrix(x) || ncol(x) != 3)
+      stop("`x' must be a vector/matrix with three elements/columns")
+    if(any(x < 0, na.rm = TRUE))
+      stop("`x' must be non-negative")
+    rs <- rowSums(x)
+    if(any(rs <= 0, na.rm = TRUE))
+      stop("row(s) of `x' must have a positive sum")
+    if(max(abs(rs[!is.na(rs)] - 1)) > 1e-6)
+      warning("row(s) of `x' will be rescaled")
+    x <- x/rs
+  }
+     
   switch(model,
-    log = dmvlog(x = x, dep = dep, d = d, mar = mar, log = log),
-    alog = dmvalog(x = x, dep = dep, asy = asy, d = d, mar = mar, log = log))
-}   
+    log = atvlog(x = x, dep = dep, plot = plot, col = col, blty = blty,
+      grid = grid, lower = lower, ord = ord, lab = lab, lcex = lcex),
+    alog = atvalog(x = x, dep = dep, asy = asy, plot = plot, col = col, blty =
+      blty, grid = grid, lower = lower, ord = ord, lab = lab, lcex = lcex))
+}
 
 "atvlog"<- 
 function(x, dep, plot = FALSE, col = heat.colors(12), blty = 0,
@@ -346,160 +376,6 @@ function(depfn, col = heat.colors(12), blty = 0, grid =
           c(0.5-s3, 0.5+s3), col = col, add = TRUE)
     polygon(c(-s3, s3, 0), c(0, 0, 1), lty = blty)
     invisible(mz)
-}
-
-"amvevd" <-
-function(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
-    FALSE, col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
-    lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
-{
-  model <- match.arg(model)
-  if(model == "log" && !missing(asy))
-    warning("ignoring `asy' argument") 
-
-  if(!plot) {
-    if(is.vector(x)) x <- as.matrix(t(x))
-    if(!is.matrix(x) || ncol(x) != 3)
-      stop("`x' must be a vector/matrix with three elements/columns")
-    if(any(x < 0, na.rm = TRUE))
-      stop("`x' must be non-negative")
-    rs <- rowSums(x)
-    if(any(rs <= 0, na.rm = TRUE))
-      stop("row(s) of `x' must have a positive sum")
-    if(max(abs(rs[!is.na(rs)] - 1)) > 1e-6)
-      warning("row(s) of `x' will be rescaled")
-    x <- x/rs
-  }
-     
-  switch(model,
-    log = atvlog(x = x, dep = dep, plot = plot, col = col, blty = blty,
-      grid = grid, lower = lower, ord = ord, lab = lab, lcex = lcex),
-    alog = atvalog(x = x, dep = dep, asy = asy, plot = plot, col = col, blty =
-      blty, grid = grid, lower = lower, ord = ord, lab = lab, lcex = lcex))
-}
-
-"amvnonpar"<- 
-function(x = rep(1/3,3), data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,
-    nsloc3 = NULL, method = c("pickands","deheuvels","halltajvidi"),
-    madj = 0, kmar = NULL, plot = FALSE, col = heat.colors(12), blty = 0,
-    grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3, lab =
-    as.character(1:3), lcex = 1)
-{
-    if(!plot) {
-      if(is.vector(x)) x <- as.matrix(t(x))
-      if(!is.matrix(x) || ncol(x) != 3)
-        stop("`x' must be a vector/matrix with three elements/columns")
-      if(any(x < 0, na.rm = TRUE))
-        stop("`x' must be non-negative")
-      rs <- rowSums(x)
-      if(any(rs <= 0, na.rm = TRUE))
-        stop("row(s) of `x' must have a positive sum")
-      if(max(abs(rs[!is.na(rs)] - 1)) > 1e-6)
-        warning("row(s) of `x' will be rescaled")
-      x <- x/rs
-    }
-    if(missing(data) || ncol(data) != 3)
-      stop("data must have three columns")
-    if(epmar) {
-      data <- apply(data, 2, rank, na.last = "keep")
-      nasm <- apply(data, 2, function(x) sum(!is.na(x)))
-      data <- data / rep(nasm+1, each = nrow(data))
-      data <- -log(data)
-    }
-    else {
-      if(is.null(kmar)) {
-        if(!is.null(nsloc1)) {
-            nsloc1 <- nsloc.transform(data, nsloc1)
-            nslocmat1 <- cbind(1,as.matrix(nsloc1))
-        }
-        if(!is.null(nsloc2)) {
-            nsloc2 <- nsloc.transform(data, nsloc2)
-            nslocmat2 <- cbind(1,as.matrix(nsloc2))
-        }
-        if(!is.null(nsloc3)) {
-            nsloc3 <- nsloc.transform(data, nsloc3)
-            nslocmat3 <- cbind(1,as.matrix(nsloc3))
-        }
-        # Transform to exponential margins
-        mle.m1 <- fgev(data[,1], nsloc = nsloc1, std.err = FALSE)$estimate
-        loc.mle.m1 <- mle.m1[grep("^loc", names(mle.m1))]
-        if(is.null(nsloc1)) loc.mle.m1 <- rep(loc.mle.m1, nrow(data))
-        else loc.mle.m1 <- nslocmat1 %*% loc.mle.m1
-        mle.m1 <- cbind(loc.mle.m1, mle.m1["scale"], mle.m1["shape"])
-        
-        mle.m2 <- fgev(data[,2], nsloc = nsloc2, std.err = FALSE)$estimate
-        loc.mle.m2 <- mle.m2[grep("^loc", names(mle.m2))]
-        if(is.null(nsloc2)) loc.mle.m2 <- rep(loc.mle.m2, nrow(data))
-        else loc.mle.m2 <- nslocmat2 %*% loc.mle.m2
-        mle.m2 <- cbind(loc.mle.m2, mle.m2["scale"], mle.m2["shape"])
-
-        mle.m3 <- fgev(data[,3], nsloc = nsloc3, std.err = FALSE)$estimate
-        loc.mle.m3 <- mle.m3[grep("^loc", names(mle.m3))]
-        if(is.null(nsloc3)) loc.mle.m3 <- rep(loc.mle.m3, nrow(data))
-        else loc.mle.m3 <- nslocmat3 %*% loc.mle.m3
-        mle.m3 <- cbind(loc.mle.m3, mle.m3["scale"], mle.m3["shape"])
-
-        data <- mtransform(data, list(mle.m1, mle.m2, mle.m3))
-        # End transform
-      }
-      else {
-        if(!is.null(nsloc1) || !is.null(nsloc2) || !is.null(nsloc3))
-            warning("ignoring `nsloc1', `nsloc2' and `nsloc3' arguments")
-        data <- mtransform(data, kmar)
-      }
-    }
-    
-    data <- na.omit(data)
-    method <- match.arg(method)
-    mpmin <- function(a,b,c) {
-      a[a > b] <- b[a > b]
-      a[a > c] <- c[a > c]
-      a
-    }
-    
-    if(method == "pickands" && (madj < 0.5)) {
-      depfn <- function(x, data) {
-        nn <- nrow(data)
-        a <- numeric(nrow(x))
-        for(i in 1:nrow(x))
-          a[i] <- sum(mpmin(data[,1]/x[i,1], data[,2]/x[i,2], data[,3]/x[i,3]))
-        a <- nn / a
-        pmin(1, pmax(a, x[,1], x[,2], x[,3]))
-      }
-    }
-    
-    if((method == "deheuvels") ||
-       ((method == "pickands") && (madj >= 0.5) && (madj < 1.5))) {
-      depfn <- function(x, data) {
-        nn <- nrow(data)
-        a <- numeric(nrow(x))
-        for(i in 1:nrow(x))
-          a[i] <- sum(mpmin(data[,1]/x[i,1], data[,2]/x[i,2], data[,3]/x[i,3]))
-        a <- nn / (a - x[,1] * sum(data[,1]) - x[,2] * sum(data[,2]) -
-          x[,3] * sum(data[,3]) + nn)
-        pmin(1, pmax(a, x[,1], x[,2], x[,3]))
-      }
-    }
-
-    if(method == "halltajvidi" ||
-       ((method == "pickands") && (madj >= 1.5))) {
-      depfn <- function(x, data) {
-        csum <- colSums(data)
-        a <- numeric(nrow(x))
-        for(i in 1:nrow(x))
-          a[i] <- sum(mpmin(data[,1]/(csum[1] * x[i,1]),
-            data[,2]/(csum[2] * x[i,2]), data[,3]/(csum[3] * x[i,3])))
-        a <- 1 / a
-        pmin(1, pmax(a, x[,1], x[,2], x[,3]))
-      }
-    }
-
-    if(plot) {
-      mz <- tvdepfn(depfn = depfn, col = col, blty = blty, grid = grid,
-        lower = lower, ord = ord, lab = lab, lcex = lcex, data = data)
-      return(invisible(mz))
-    }
-    depfn(x = x, data = data)
 }
 
 mvalog.check <- function(asy, dep, d, ss = FALSE)

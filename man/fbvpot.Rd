@@ -1,26 +1,24 @@
 \name{fbvpot}
 \alias{fbvpot}
 \alias{print.bvpot}
-\alias{plot.bvpot}
 
 \title{Maximum-likelihood Fitting of Bivariate Extreme Value
   Distributions to Threshold Exceedances}
 \description{
-  Fit models for one of seven parametric bivariate extreme-value
+  Fit models for one of nine parametric bivariate extreme-value
   distributions using threshold exceedances, allowing any of the
   parameters to be held fixed if desired.
 }
 \synopsis{
 fbvpot(x, threshold, model = c("log", "bilog", "alog", "neglog",
-    "negbilog", "aneglog", "ct", "hr"), likelihood = c("censored",
-    "poisson"), start, \dots, sym = FALSE, cshape = cscale,
-    cscale = FALSE, std.err = TRUE, dsm = TRUE, corr = FALSE,
-    method = "BFGS", warn.inf = TRUE)
+    "negbilog", "aneglog", "ct", "hr", "amix"), likelihood =
+    c("censored", "poisson"), start, \dots, sym = FALSE, cshape =
+    cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method =
+    "BFGS", warn.inf = TRUE)
 }
 \usage{
-fbvpot(x, threshold, model = "log", likelihood = "censored", start,
-    \dots, sym = FALSE, cshape = cscale, cscale = FALSE, std.err =
-    TRUE, dsm = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
+fbvpot(x, threshold, model = "log", start, \dots, sym = FALSE, cshape =
+   cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS")
 }
 \arguments{
   \item{x}{A matrix or data frame with two columns. If this
@@ -30,12 +28,12 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
   \item{model}{The specified model; a character string. Must be
     either \code{"log"} (the default), \code{"alog"}, \code{"hr"},
     \code{"neglog"}, \code{"aneglog"}, \code{"bilog"},
-    \code{"negbilog"} or \code{"ct"} (or any unique partial match),
-    for the logistic, asymmetric logistic, Husler-Reiss, negative
-    logistic, asymmetric negative logistic, bilogistic, negative
-    bilogistic and Coles-Tawn models respectively. The definition
-    of each model is given in \code{\link{rbvevd}}.}
-  \item{likelihood}{Unimplemented.}
+    \code{"negbilog"}, \code{"ct"} or \code{"amix"} (or any unique
+    partial match), for the logistic, asymmetric logistic,
+    Husler-Reiss, negative logistic, asymmetric negative logistic,
+    bilogistic, negative bilogistic, Coles-Tawn and asymmetric mixed
+    models respectively. The definition of each model is given in
+    \code{\link{rbvevd}}.}
   \item{start}{A named list giving the initial values for all of the
     parameters in the model. If \code{start} is omitted the routine
     attempts to find good starting values using marginal maximum
@@ -56,20 +54,16 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
     parameters are fitted.}
   \item{std.err}{Logical; if \code{TRUE} (the default), the standard
     errors are returned.}
-  \item{dsm}{Logical; if \code{TRUE} (the default), summaries of the
-    dependence structure are returned.}
   \item{corr}{Logical; if \code{TRUE}, the correlation matrix is
     returned.}
   \item{method}{The optimization method (see \code{\link{optim}} for
     details).}
-  \item{warn.inf}{Logical; if \code{TRUE} (the default), a warning is
-    given if the negative log-likelihood is infinite when evaluated at
-    the starting values.}
 }
 \details{
   The bivariate peaks over threshold models are fitted by
   maximizing the censored likelihood as given in e.g. Section
-  8.3.1 of Coles(2001).
+  8.3.1 of Coles(2001). Declustering of the series is not
+  currently implemented.
   
   The dependence parameter names are one or more of \code{dep},
   \code{asy1}, \code{asy2}, \code{alpha} and \code{beta}, depending on
@@ -96,20 +90,12 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
   
   Bilogistic and negative bilogistic models constrained to
   symmetry are logistic and negative logistic models
-  respectively. The mixed model (e.g. Tawn, 1998)
-  is obtained by the asymmetric negative logistic model upon
-  setting the dependence parameter to be one, and constraining
-  the asymmetry parameters to be equal to each other. It can
-  therefore be fitted using \code{model = "anegl"} with
-  \code{dep = 1} and \code{sym = TRUE}.
-  
-  If \code{dsm} is \code{TRUE}, three values are returned which
-  summarize the dependence structure, based on the fitted
-  dependence function \eqn{A} (see \code{\link{fbvevd}} for
-  details).
+  respectively. The (symmetric) mixed model (e.g. Tawn, 1998)
+  can be obtained as a special case of the asymmetric
+  logistic or asymmetric mixed models (see \bold{fbvevd}).
 
   For numerical reasons the parameters of each model are subject the
-  artificial constraints given in Table 1 of the User's Guide.  
+  artificial constraints given in \code{\link{fbvevd}}.  
 }
 \value{
   Returns an object of class \code{c("bvpot","evd")}.
@@ -138,8 +124,8 @@ fbvpot(x, threshold, model = "log", likelihood = "censored", start,
     those fixed to specific values, and those set to be
     equal to other model parameters).}
   \item{deviance}{The deviance at the maximum likelihood estimates.}
-  \item{dep.summary}{A vector of three values, summarizing the
-    dependence structure of the fitted model (see \bold{Details}).}
+  \item{dep.summary}{A value summarizing the strength of
+    dependence in the fitted model (see \bold{fbvevd}).}
   \item{corr}{The correlation matrix.}
   \item{convergence, counts, message}{Components taken from the
     list returned by \code{\link{optim}}.}

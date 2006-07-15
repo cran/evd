@@ -126,6 +126,10 @@ void nllbvcct(double *data1, double *data2, int *nn, int *n, double *thid,
 void nllbvchr(double *data1, double *data2, int *nn, int *n, double *thid, 
               double *lambda, double *dep, double *scale1, double *shape1, 
               double *scale2, double *shape2, double *dns);
+void nllbvcamix(double *data1, double *data2, int *nn, int *n, double *thid, 
+                double *lambda, double *alpha, double *beta, double *scale1, 
+                double *shape1, double *scale2, double *shape2, double *dns);
+
 
 /* from bvpot.c (poisson) */
 
@@ -151,3 +155,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n,
                     double *alpha, double *beta, double *scale1, 
                     double *shape1, double *scale2, double *shape2, 
                     double *dns);
+void nllbvphr(double *data1, double *data2, int *nn, int *n, double *thid, 
+              double *r1, double *r2, double *p, double *dep, 
+              double *scale1, double *shape1, double *scale2, 
+              double *shape2, double *dns);

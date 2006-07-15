@@ -7,10 +7,11 @@
   Process representation. 
 }
 \usage{
-tcplot(data, tlim, model = c("gpd","pp"), cmax = FALSE, r = 1,
-    ulow = -Inf, rlow = 1, nt = 25, which = 1:npar, conf = 0.95,
-    lty = 1, lwd = 1, type = "b", cilty = 1, ask = nb.fig <
-    length(which) && dev.interactive(), \dots)
+tcplot(data, tlim, model = c("gpd","pp"), pscale = FALSE, cmax =
+    FALSE, r = 1, ulow = -Inf, rlow = 1, nt = 25, which = 1:npar,
+    conf = 0.95, lty = 1, lwd = 1, type = "b", cilty = 1, vci =
+    TRUE, xlab, xlim, ylabs, ylims, ask = nb.fig < length(which) &&
+    dev.interactive(), \dots)
 }
 \arguments{
   \item{data}{A numeric vector.}
@@ -19,6 +20,8 @@ tcplot(data, tlim, model = c("gpd","pp"), cmax = FALSE, r = 1,
   \item{model}{The model; either \code{"gpd"} (the default) or
     \code{"pp"}, for the Generalized Pareto or Point Process
     representations respectively.}
+  \item{pscale}{If \code{TRUE}, then the x-axis gives the threshold
+    exceedance probability rather than the threshold itself.}
   \item{cmax}{Logical; if \code{FALSE} (the default), the models
     are fitted using all exceedences over the thresholds. If
     \code{TRUE}, the models are fitted using cluster maxima, using
@@ -43,6 +46,16 @@ tcplot(data, tlim, model = c("gpd","pp"), cmax = FALSE, r = 1,
     \code{"l"} for an unbroken line with no points.}
   \item{cilty}{The line type of the lines depicting the
     confidence intervals.}
+  \item{vci}{If \code{TRUE} (the default), confidence intervals
+    are plotted using vertical lines.}
+  \item{xlab, xlim}{Label and limits for the x-axis; if given,
+    these arguments apply to every plot.}
+  \item{ylabs, ylims}{A vector of y-axis labels and a matrix of
+    y-axis limits. If given, \code{ylabs} should have the same
+    length as \code{which}, and \code{ylims} should have two
+    columns and \code{length(which)} rows. If the length of
+    \code{which} is one, then \code{ylims} can be a vector of
+    length two.} 
   \item{ask}{Logical; if \code{TRUE}, the user is asked before
     each plot.}
   \item{\dots}{Other arguments to be passed to the model fit

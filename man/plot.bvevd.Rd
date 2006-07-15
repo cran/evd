@@ -3,30 +3,27 @@
 
 \title{Plot Diagnostics for a Bivariate EVD Object}
 \description{
-  Five plots (selectable by \code{which}) are currently provided:
+  Six plots (selectable by \code{which}) are currently provided:
   two conditional P-P plots (1,2), conditioning on each margin, a
-  density plot (3), a dependence function plot (4) and a quantile
-  curves plot (5).
+  density plot (3), a dependence function plot (4), a quantile
+  curves plot (5) and a spectral density plot (6).
   Plot diagnostics for the generalized extreme value margins
   (selectable by \code{mar} and \code{which}) are also available.
 }
 \usage{
-\method{plot}{bvevd}(x, mar = 0, which = 1:4, main, ask = nb.fig <
+\method{plot}{bvevd}(x, mar = 0, which = 1:6, main, ask = nb.fig <
     length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
-    jitter = FALSE, grid = 50, legend = TRUE, nplty = 2, blty = 3,
-    method = "cfg", convex = FALSE, rev = FALSE, p = seq(0.75, 0.95,
-    0.05), mint = 1, \dots)
+    grid = 50, legend = TRUE, nplty = 2, blty = 3, method = "cfg",
+    convex = FALSE, rev = FALSE, p = seq(0.75, 0.95, 0.05),
+    mint = 1, half = FALSE, \dots)
 }
 \arguments{
   \item{x}{An object of class \code{"bvevd"}.}
   \item{mar}{If \code{mar = 1} or \code{mar = 2} diagnostics
     are given for the first or second genereralized extreme
-    value margin respectively. The values of the remaining
-    parameters are then passed to the plot method
-    \code{\link{plot.uvevd}}.}
-  \item{which}{A subset of the numbers \code{1:5} selecting
-    the plots to be shown. By default only the first four
-    are plotted.}
+    value margin respectively.}
+  \item{which}{A subset of the numbers \code{1:6} selecting
+    the plots to be shown. By default all are plotted.}
   \item{main}{Title of each plot. If given, should be a
     character vector with the same length as \code{which}.}
   \item{ask}{Logical; if \code{TRUE}, the user is asked before
@@ -34,12 +31,10 @@
   \item{ci}{Logical; if \code{TRUE} (the default), plot simulated
     95\% confidence intervals for the conditional P-P plots.}
   \item{cilwd}{Line width for confidence interval lines.}
-  \item{jitter, grid}{Arguments for the density plot. The
-    (possibly transformed) data is plotted with a contour plot of the
+  \item{grid}{Argument for the density plot. The (possibly
+    transformed) data is plotted with a contour plot of the
     bivariate density of the fitted model. The density is evaluated
-    at \code{grid^2} points. If \code{jitter} is \code{TRUE}, the
-    data are jittered. This need only be used if the data contains
-    repeated values.}
+    at \code{grid^2} points.}
   \item{legend}{If \code{legend} is \code{TRUE} and if the
     fitted data contained a third column of mode \code{logical},
     then a legend is included in the density and quantile curve
@@ -56,11 +51,13 @@
   \item{p, mint}{Arguments to the quantile curves plot. See
     \code{\link{qcbvnonpar}} for a description of the plot and
     the arguments.}
+  \item{half}{Argument to the spectral density plot. See
+    \code{\link{hbvevd}}.}
   \item{\dots}{Other arguments to be passed through to plotting
     functions.}
 }
 \details{
-  In all plot descriptions we assume that the fitted model is
+  In all plots we assume that the fitted model is
   stationary. For non-stationary models the data are transformed
   to stationarity. The plot then corresponds to the distribution
   obtained when all covariates are zero. In particular, the

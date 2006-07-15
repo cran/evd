@@ -1,6 +1,6 @@
 ########################################################
 # Examples from Ch9 of "Statistics of Extremes"        #
-# Read the file demos.txt for detailed information. #
+# Read the file demos.txt for detailed information.    #
 ########################################################
 
 # Graphics Settings
@@ -45,8 +45,8 @@ abvevd(dep = 1/0.5, model = "hr", add = TRUE, lty = 3)
 # Random Cwise Maxima Derivation 
 set.seed(50)
 cmla <- lossalae[sample(nn),]
-grps <- rep(1:50, each = 30)
-cmla <- cbind(tapply(cmla[,1], grps, max), tapply(cmla[,2], grps, max))
+xx <- rep(1:50, each = 30)
+cmla <- cbind(tapply(cmla[,1], xx, max), tapply(cmla[,2], xx, max))
 colnames(cmla) <- colnames(lossalae)
 
 # Figure 9.4 (a-b)
@@ -81,9 +81,9 @@ pnorm((25 * log(50))^(-1/2) * sum(tawn))
 
 # Tawn Score Test (Using Gev Margins)
 mmles <- list(fitted(fgev(cmla[,1])), fitted(fgev(cmla[,2])))
-ecmla2 <- mtransform(cmla, mmles)
-rsm <- rowSums(ecmla2); rsl <- rowSums(ecmla2 * log(ecmla2))
-tawn <- rsl - log(apply(ecmla2, 1, prod)) - (rsm - 2) * log(rsm) - 1/rsm
+ecmla <- mtransform(cmla, mmles)
+rsm <- rowSums(ecmla); rsl <- rowSums(ecmla * log(ecmla))
+tawn <- rsl - log(apply(ecmla, 1, prod)) - (rsm - 2) * log(rsm) - 1/rsm
 pnorm((25 * log(50))^(-1/2) * sum(tawn))
 
 # Likelihood Ratio Tests (Using Gev Margins)
@@ -91,15 +91,73 @@ anova(m3, m2)
 anova(m1, m2, half = TRUE)
 
 # Figure 9.6 (Using Empirical Margins)
-lts <- c(0.01,100); tp <- c(0.98,0.99,0.995)
+lts <- c(0.01,100)
 plot(lossalae, log = "xy", col = "grey", xlim = lts, ylim = lts)
 points(cmla)
-qcbvnonpar(tp, data = cmla, epmar = TRUE, mint = 30, add = TRUE)
+qcbvnonpar(c(0.98,0.99,0.995), data = cmla, epmar = TRUE, mint = 30, add = TRUE)
 
 # Figure 9.6 (Using Gev Margins)
 plot(lossalae, log = "xy", col = "grey", xlim = lts, ylim = lts)
 points(cmla)
-qcbvnonpar(tp, data = cmla, mint = 30, add = TRUE)
+qcbvnonpar(c(0.98,0.99,0.995), data = cmla, mint = 30, add = TRUE)
 
+#################################
+# 9.4 Excesses Over a Threshold #
+#################################
+
+# Figure 9.7 (a-b)
+fla <- -1/log(ula); pla <- 1/(1-ula)
+rr <- rowSums(fla); ww <- fla/rr
+rro <- sort(rr, decreasing = TRUE)[-1]
+k <- 1:(nn-1)
+plot(k, rro*k/nn, ylab = "")
+abline(h = 2, v = 337)
+xx <- yy <- seq(0, 1, len = 100)
+for(k in 1:100) yy[k] <- sum(rr > rro[337] & ww[,1] <= xx[k])
+plot(xx, 2/337 * yy, type = "l", ylab = "H([0,w])")
+abline(h = c(0,2))
+
+# Marginal Fits
+thresh <- apply(lossalae, 2, sort, decreasing = TRUE)[170,]
+fitted(fpot(lossalae[,1], thresh[1]))
+fitted(fpot(lossalae[,2], thresh[2]))
+
+# Table 9.2
+m1 <- fbvpot(lossalae, thresh, model = "alog", asy1 = 1)
+m2 <- fbvpot(lossalae, thresh, model = "bilog")
+m3 <- fbvpot(lossalae, thresh, model = "bilog", likelihood = "poisson")
+fitted(m1); std.errors(m1)
+fitted(m2); std.errors(m2)
+fitted(m3); std.errors(m3)
+
+# Figure 9.8 (a-b)
+abvnonpar(data = lossalae, k = 337, epmar = TRUE, plot = TRUE, rev = TRUE, lty = 3)
+plot(m1, which = 2, rev = TRUE, add = TRUE)
+plot(m2, which = 2, rev = TRUE, add = TRUE, lty = 4)
+plot(m3, which = 2, rev = TRUE, add = TRUE, lty = 2)
+lts <- c(1e-04, 100)
+plot(lossalae, log = "xy", col = "grey", xlim = lts, ylim = lts)
+plot(m1, which = 3, p = c(0.98,0.99,0.995,0.999), tlty = 0, add = TRUE)
+
+# Figure 9.9
+chiplot(lossalae, ylim1 = c(-1,1), nq = 200, qlim = c(0.02,0.98), which = 1, xlab = "u", ylab1 = "Chi(u)", main1 = "", spcases = TRUE)
+chiplot(lossalae, nq = 200, qlim = c(0.02,0.98), which = 2, xlab = "u", ylab2 = "Chib(u)", main2 = "", spcases = TRUE)
+
+# Figure 9.10
+fla <- apply(fla, 1, min); pla <- apply(pla, 1, min)
+thresh <- quantile(fla, probs = c(0.025, 0.975))
+tcplot(fla, thresh, nt = 100, pscale = TRUE, which = 2, vci = FALSE, cilty = 2, type = "l", ylim = c(-0.2,1.2), ylab = "eta")
+abline(h = c(0,1))
+thresh <- quantile(pla, probs = c(0.025, 0.975))
+tcplot(pla, thresh, nt = 100, pscale = TRUE, which = 2, vci = FALSE, cilty = 2, type = "l", ylim = c(-0.2,1.2), ylab = "eta")
+abline(h = c(0,1))
+
+# Example of Likelihood Ratio Test
+thresh <- quantile(fla, probs = 0.8)
+m1 <- fpot(fla, thresh = thresh)
+m2 <- fpot(fla, thresh = thresh, shape = 1)
+anova(m1, m2, half = TRUE)
+
+# Figure 9.11 Omitted
 # Return Graphics Settings
 par(opar)
