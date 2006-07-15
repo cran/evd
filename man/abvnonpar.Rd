@@ -1,5 +1,6 @@
 \name{abvnonpar}
 \alias{abvnonpar}
+\alias{abvnonparpot}
 \title{Non-parametric Estimates for Dependence Functions of the
     Bivariate Extreme Value Distribution}
 \description{
@@ -7,11 +8,12 @@
   \eqn{A} of the bivariate extreme value distribution.
 }
 \synopsis{
-abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,
-    method = c("cfg", "pickands", "deheuvels", "halltajvidi", "tdo"),
-    convex = FALSE, rev = FALSE, madj = 0, kmar = NULL, plot = FALSE,
-    add = FALSE, lty = 1, lwd = 1, col = 1, blty = 3, blwd = 1, xlim =
-    c(0, 1), ylim = c(0.5, 1), xlab = "t", ylab = "A(t)", \dots)
+abvnonpar(x = 0.5, data, k = NULL, epmar = FALSE, nsloc1 = NULL,
+    nsloc2 = NULL, method = c("cfg", "pickands", "deheuvels",
+    "halltajvidi", "tdo"), convex = FALSE, rev = FALSE, madj = 0,
+    kmar = NULL, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
+    col = 1, blty = 3, blwd = 1, xlim = c(0, 1), ylim = c(0.5, 1),
+    xlab = "t", ylab = "A(t)", \dots)
 }
 \usage{
 abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,

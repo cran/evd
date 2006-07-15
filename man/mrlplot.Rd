@@ -5,9 +5,9 @@
   The empirical mean residual life plot. 
 }
 \usage{
-mrlplot(data, tlim, nt = max(100, length(data)), lty = c(2,1,2),
-    col = 1, conf = 0.95, main = "Mean Residual Life Plot", xlab =
-    "Threshold", ylab = "Mean Excess", \dots)
+mrlplot(data, tlim, pscale = FALSE, nt = max(100, length(data)), lty =
+    c(2,1,2), col = 1, conf = 0.95, main = "Mean Residual Life Plot",
+    xlab = "Threshold", ylab = "Mean Excess", \dots)
 }
 \arguments{
   \item{data}{A numeric vector.}
@@ -15,6 +15,8 @@ mrlplot(data, tlim, nt = max(100, length(data)), lty = c(2,1,2),
     the thresholds at which the mean residual life plot is
     evaluated. If \code{tlim} is not given, sensible defaults
     are used.}
+  \item{pscale}{If \code{TRUE}, then the x-axis gives the threshold
+    exceedance probability rather than the threshold itself.}
   \item{nt}{The number of thresholds at which the mean residual life
     plot is evaluated.}
   \item{lty, col}{Arguments passed to \code{matplot}. The first

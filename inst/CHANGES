@@ -1,10 +1,52 @@
-CHANGES FROM VERSION 2.1-6 ARE AS FOLLOWS
+CHANGES FROM VERSION 2.2-0 ARE AS FOLLOWS
 
-  Added the asymmetric mixed bivariate model.
+  New function hbvevd for plotting the spectral density
+  of bivariate extreme value models. The spectral density
+  is also now plotted from plot.bvevd.
+
+  Plotting diagnostics are now implemented for bivariate
+  threshold methods using the method function plot.bvpot.
+
+  The fbvpot function is now consistent with fbvevd;
+  the dsm argument has been removed, and the 
+  asymmetric mixed model has been added. Also, the
+  Husler-Reiss model has been added for (undocumented) 
+  Poisson process likelihood fitting.
+
+  The new argument boot in the function chiplot allows
+  bootstrap confidence intervals. The new argument
+  spcase plots lines corresponding to special cases
+  for comparison.
+
+  The functions mrlplot and tcplot have a new argument 
+  pscale allowing the x-axis to be the threshold
+  exceedance probability rather than the threshold.
+
+  The default plotting charater in bivariate density 
+  plots is now a circle, to be consistent with quantile
+  curves plots. Also, all plotting functions now produce
+  all available plots by default.
+
+  The function tcplot has a new argument vci allowing
+  control over the plotting style of the confidence
+  intervals. Other arguments allow more control over
+  labels and limits. 
+
+  The clusters function with plot = TRUE would produce 
+  an error if no data points were above the threshold. 
+  This has been fixed.
+
+  The demo soe9 has been expanded to include all of
+  Chapter Nine of the text Statistics of Extremes.
+
+CHANGES FROM VERSION 2.1-7 ARE AS FOLLOWS
+
+  Added the asymmetric mixed bivariate model to the
+  function fbvevd.
 
   A demo soe9 has been included, giving examples from
   Chapter Nine of the book statistics of extremes. An
-  associated file demo.txt has bee added to the /inst
+  associated file demo.txt has been added to the /inst
   directory.
   
   The atvnonpar and atvpar functions have been renamed

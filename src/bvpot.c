@@ -845,6 +845,97 @@ void nllbvchr(double *data1, double *data2, int *nn, int *n, double *thid, doubl
   *dns = *dns - (*n - *nn) * zdn;
 }
 
+void nllbvcamix(double *data1, double *data2, int *nn, int *n, double *thid, double *lambda, double *alpha, double *beta, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+{
+  int i;
+  double *dvec, *t1, *t2, *v, *v1, *v2, *v12;
+  double *x;
+  double lambda2[2], zdn;
+
+  dvec = (double *)R_alloc(*nn, sizeof(double));
+  t1 = (double *)R_alloc(*nn, sizeof(double));
+  t2 = (double *)R_alloc(*nn, sizeof(double));
+  v = (double *)R_alloc(*nn, sizeof(double));
+  v1 = (double *)R_alloc(*nn, sizeof(double));
+  v2 = (double *)R_alloc(*nn, sizeof(double));
+  v12 = (double *)R_alloc(*nn, sizeof(double));
+  x = (double *)R_alloc(*nn, sizeof(double));
+
+  if(*scale1 < 0.01 || *scale2 < 0.01 || 
+     *alpha < 0 || *alpha + 3 * *beta < 0 || 
+     *alpha + *beta > 1 || *alpha + 2 * *beta > 1) {
+     *dns = 1e6;
+     return;
+  }
+
+  lambda2[0] = -1/log(1 - lambda[0]);
+  lambda2[1] = -1/log(1 - lambda[1]);
+  lambda2[0] = 1/lambda2[0];
+  lambda2[1] = 1/lambda2[1];
+  zdn = lambda2[0]/(lambda2[0] + lambda2[1]);
+  zdn = -lambda2[0] - lambda2[1] + (*alpha + *beta) * lambda2[0] -
+    *alpha * lambda2[0] * zdn - *beta * lambda2[0] * zdn * zdn; 
+
+  for(i=0;i<*nn;i++)  {
+
+      data1[i] = data1[i] / *scale1;
+      data2[i] = data2[i] / *scale2;
+    
+      if(*shape1 == 0) 
+        t1[i] = exp(-data1[i]);       
+      else {
+        t1[i] = 1 + *shape1 * data1[i];
+        if(t1[i] <= 0) {
+          *dns = 1e6;
+          return;
+        }
+        t1[i] = R_pow(t1[i], -1 / *shape1);
+      }
+      data1[i] = -1/log(1 - lambda[0] * t1[i]);
+    
+      if(*shape2 == 0) 
+        t2[i] = exp(-data2[i]);       
+      else {
+        t2[i] = 1 + *shape2 * data2[i];
+        if(t2[i] <= 0) {
+          *dns = 1e6;
+          return;
+        }
+        t2[i] = R_pow(t2[i], -1 / *shape2);
+      }
+      data2[i] = -1/log(1 - lambda[1] * t2[i]);
+
+      t1[i] = R_pow(data1[i], 2) * R_pow(t1[i], 1 + *shape1) /
+        (1 - lambda[0] * t1[i]);
+      t1[i] = lambda[0] * t1[i] / *scale1;
+      t2[i] = R_pow(data2[i], 2) * R_pow(t2[i], 1 + *shape2) /
+        (1 - lambda[1] * t2[i]);
+      t2[i] = lambda[1] * t2[i] / *scale2;
+      
+      x[i] = 1 / (data1[i] + data2[i]);
+      v[i] = 1/data1[i] + 1/data2[i] - (*alpha + *beta) / data1[i] +
+        *alpha * data2[i] * x[i] / data1[i] + 
+        *beta * data2[i] * data2[i] * x[i] * x[i] / data1[i];  
+      v1[i] = -1 / (data1[i] * data1[i]) + *alpha * x[i] * x[i] +
+        *beta * x[i] * x[i] * x[i] * (data1[i] + 3 * data2[i]);
+      v2[i] = -1 / (data2[i] * data2[i]) + *alpha * x[i] * x[i] +
+        2 * *beta * x[i] * x[i] * x[i] * data2[i];
+      v12[i] = -2 * *alpha * x[i] * x[i] * x[i] - 
+        6 * *beta * x[i] * x[i] * x[i] * x[i] * data2[i];
+      
+      if(thid[i] < 1.5) 
+        dvec[i] = log(-v1[i]) + log(t1[i]) - v[i];
+      if(thid[i] >= 1.5 && thid[i] < 2.5)
+        dvec[i] = log(-v2[i]) + log(t2[i]) - v[i];
+      if(thid[i] >= 2.5) dvec[i] = log(v1[i] * v2[i] - v12[i]) + 
+        log(t1[i]) + log(t2[i]) - v[i];
+  }
+
+  for(i=0;i<*nn;i++) 
+    *dns = *dns - dvec[i];
+  *dns = *dns - (*n - *nn) * zdn;
+}
+
 /* Point Process Likelihood Routines */
 
 void nllbvplog(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
@@ -1348,4 +1439,84 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
   
   *dns = *dns + *n * v;
 }
+
+void nllbvphr(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+{
+  int i;
+  double *dvec, *r, *w, *jac, *h;
+  double idep, v, utt[2];
+
+  dvec = (double *)R_alloc(*nn, sizeof(double));
+  r = (double *)R_alloc(*nn, sizeof(double));
+  w = (double *)R_alloc(*nn, sizeof(double));
+  jac = (double *)R_alloc(*nn, sizeof(double));
+  h = (double *)R_alloc(*nn, sizeof(double));
+
+  if(*scale1 < 0.01 || *scale2 < 0.01 || *dep < 0.2 || *dep > 10) {
+     *dns = 1e6;
+     return;
+  } 
+
+  for(i=0;i<*nn;i++)  {
+
+    data1[i] = data1[i] / *scale1;
+    data2[i] = data2[i] / *scale2;
+    
+    if(*shape1 == 0) 
+      data1[i] = exp(-data1[i]);       
+    else {
+      data1[i] = 1 + *shape1 * data1[i];
+      if(data1[i] <= 0) {
+        *dns = 1e6;
+        return;
+      }
+      data1[i] = R_pow(data1[i], -1 / *shape1);
+    }
+    data1[i] = -1/log(1 - r1[i] * data1[i]);
+    
+    if(*shape2 == 0) 
+      data2[i] = exp(-data2[i]);       
+    else {
+      data2[i] = 1 + *shape2 * data2[i];
+      if(data2[i] <= 0) {
+        *dns = 1e6;
+        return;
+      }
+      data2[i] = R_pow(data2[i], -1 / *shape2);
+    }
+    data2[i] = -1/log(1 - r2[i] * data2[i]);
+
+    r[i] = log(data1[i] + data2[i]) - log(*n);
+    w[i] = data1[i] / (*n * exp(r[i]));
+
+    if(thid[i] < 1.5) 
+      jac[i] = 2 * log(data1[i]) + 1 / data1[i] + (1 + *shape1) * log(1 - 
+        exp(-1 / data1[i])) - log(*scale1) - *shape1 * log(p[0]);
+    if(thid[i] >= 1.5 && thid[i] < 2.5)
+      jac[i] = 2 * log(data2[i]) + 1 / data2[i] + (1 + *shape2) * log(1 - 
+        exp(-1 / data2[i])) - log(*scale2) - *shape2 * log(p[1]);
+    if(thid[i] >= 2.5)
+      jac[i] = 2 * log(data1[i]) + 1 / data1[i] + (1 + *shape1) * log(1 - 
+        exp(-1 / data1[i])) - log(*scale1) - *shape1 * log(p[0]) +
+        2 * log(data2[i]) + 1 / data2[i] + (1 + *shape2) * log(1 - 
+        exp(-1 / data2[i])) - log(*scale2) - *shape2 * log(p[1]);
+
+    idep = 1 / *dep;
+    h[i] = log(*dep / 2) - 2 * log(w[i]) - log(1-w[i]) +
+      dnorm(idep + *dep * (log(1-w[i]) - log(w[i]))/2, 0, 1, 1);
+
+    dvec[i] = jac[i] + h[i] - 3 * r[i];
+  }
+  
+  for(i=0;i<*nn;i++)
+    *dns = *dns - dvec[i];  
+
+  utt[0] = -1 / log(1 - p[0]);
+  utt[1] = -1 / log(1 - p[1]);
+  v = pnorm(1 / *dep + *dep * log(utt[1]/utt[0]) / 2, 0, 1, 1, 0) / utt[0] + 
+    pnorm(1 / *dep + *dep * log(utt[0]/utt[1]) / 2, 0, 1, 1, 0) / utt[1];
+  
+  *dns = *dns + *n * v;
+}
+
 

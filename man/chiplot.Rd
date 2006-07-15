@@ -6,11 +6,11 @@
   for bivariate data. 
 }
 \usage{
-chiplot(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, lty = 1,
-    cilty = 2, col = 1, cicol = 1, xlim = c(0,1), ylim1 = NULL,
-    ylim2 = c(-1,1), main1 = "Chi Plot", main2 = "Chi Bar Plot", xlab =
-    "Quantile", ylab1 = "Chi", ylab2 = "Chi Bar", ask = nb.fig <
-    length(which) && dev.interactive(), \dots)
+chiplot(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, boot =
+    FALSE, spcases = FALSE, lty = 1, cilty = 2, col = 1, cicol = 1,
+    xlim = c(0,1), ylim1 = NULL, ylim2 = c(-1,1), main1 = "Chi Plot",
+    main2 = "Chi Bar Plot", xlab = "Quantile", ylab1 = "Chi", ylab2 =
+    "Chi Bar", ask = nb.fig < length(which) && dev.interactive(), \dots)
 }
 \arguments{
   \item{data}{A matrix or data frame with two columns. Rows
@@ -24,6 +24,12 @@ chiplot(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, lty = 1,
     for chi and \code{2} for chi-bar.}
   \item{conf}{The confidence coefficient of the plotted confidence
     intervals.}
+  \item{boot}{If \code{TRUE}, plots confidence intervals using
+    bootstrap replications. A normal approximation is used by
+    default.}
+  \item{spcases}{If \code{TRUE}, plots greyed lines corresponding
+    to the special cases of perfect positive/negative dependence
+    and exact independence.}
   \item{lty, cilty}{Line types for the estimates of the measures and
     for the confidence intervals respectively. Use zero to supress.}
   \item{col, cicol}{Colour types for the estimates of the measures
