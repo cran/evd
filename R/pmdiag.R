@@ -1,3 +1,4 @@
+
 "mrlplot"<-
 function(data, tlim, pscale = FALSE, nt = max(100, length(data)), lty =
     c(2,1,2), col = 1, conf = 0.95, main = "Mean Residual Life Plot",
@@ -171,7 +172,7 @@ function(data, tlim, model = c("gpd", "pp"), pscale = FALSE, cmax = FALSE,
    invisible(rtlist)
 }
 
-chiplot <- function(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, boot = FALSE, spcases = FALSE, lty = 1, cilty = 2, col = 1, cicol = 1, xlim = c(0,1), ylim1 = NULL, ylim2 = c(-1,1), main1 = "Chi Plot", main2 = "Chi Bar Plot", xlab = "Quantile", ylab1 = "Chi", ylab2 = "Chi Bar", ask = nb.fig < length(which) && dev.interactive(), ...)
+chiplot <- function(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, trunc = TRUE, spcases = FALSE, lty = 1, cilty = 2, col = 1, cicol = 1, xlim = c(0,1), ylim1 = c(-1,1), ylim2 = c(-1,1), main1 = "Chi Plot", main2 = "Chi Bar Plot", xlab = "Quantile", ylab1 = "Chi", ylab2 = "Chi Bar", ask = nb.fig < length(which) && dev.interactive(), ...)
 {
     data <- na.omit(data)
     n <- nrow(data)
@@ -193,33 +194,23 @@ chiplot <- function(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, boot 
     chiu <- 2 - log(cu)/log(u)
     chibaru <- (2 * log(1 - u))/log(cbaru) - 1
 
-    if(!boot) {
-      cnst <- qnorm((1 + conf)/2)
-      varchi <- ((1/log(u)^2 * 1)/cu^2 * cu * (1 - cu))/n
-      varchi <- cnst * sqrt(varchi)
-      varchibar <- (((4 * log(1 - u)^2)/(log(cbaru)^4 * cbaru^2)) * cbaru * (
-    	1 - cbaru))/n
-      varchibar <- cnst * sqrt(varchibar)
-      chiu <- cbind(chilow = chiu-varchi, chi = chiu, chiupp = chiu+varchi) 
-      chibaru <- cbind(chiblow = chibaru-varchibar, chib = chibaru, chibupp =
-        chibaru+varchibar)
-    }
-    else {
-      cui <- cbarui <- matrix(0, nrow = nq, ncol = 100)
-      for(i in 1:100) {
-        datai <- data[sample(n, replace = TRUE),]
-        rowmaxi <- apply(datai, 1, max)
-        rowmini <- apply(datai, 1, min)
-        for(j in 1:nq) cui[j,i] <- mean(rowmaxi < u[j])
-        for(j in 1:nq) cbarui[j,i] <- mean(rowmini > u[j])
-      }
-      chiucon <- 2 - log(cui)/log(u)
-      chibarucon <- (2 * log(1 - u))/log(cbarui) - 1
-      chiucon <- apply(chiucon, 1, quantile, probs = c(0.025, 0.975))
-      chibarucon <- apply(chibarucon, 1, quantile, probs = c(0.025, 0.975))
-      chiu <- cbind(chilow = chiucon[1,], chi = chiu, chiupp = chiucon[2,]) 
-      chibaru <- cbind(chiblow = chibarucon[1,], chib = chibaru, chibupp =
-        chibarucon[2,])
+    cnst <- qnorm((1 + conf)/2)
+    varchi <- ((1/log(u)^2 * 1)/cu^2 * cu * (1 - cu))/n
+    varchi <- cnst * sqrt(varchi)
+    varchibar <- (((4 * log(1 - u)^2)/(log(cbaru)^4 * cbaru^2)) * cbaru * (
+      1 - cbaru))/n
+    varchibar <- cnst * sqrt(varchibar)
+    chiu <- cbind(chilow = chiu-varchi, chi = chiu, chiupp = chiu+varchi) 
+    chibaru <- cbind(chiblow = chibaru-varchibar, chib = chibaru, chibupp =
+      chibaru+varchibar)
+
+    chiulb <- 2-log(pmax(2*u-1,0))/log(u)
+    chibarulb <- 2*log(1-u)/log(1-2*u+pmax(2*u-1,0)) - 1
+    if(trunc) {
+      chiu[chiu > 1] <- 1
+      chibaru[chibaru > 1] <- 1
+      chiu <- apply(chiu, 2, function(x) pmax(x, chiulb))
+      chibaru <- apply(chibaru, 2, function(x) pmax(x, chibarulb))
     }
 
     show <- logical(2)
@@ -231,25 +222,24 @@ chiplot <- function(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, boot 
       op <- par(ask = TRUE)
       on.exit(par(op))
     }
-    
-    if(is.null(ylim1)) ylim1 <- c(min(c(chiu, 0)), 1)
+
     if(show[1]) {
-      matplot(u, chiu, type = "l", lty = lty, col = col, xlim = xlim, ylim = ylim1,
-              main = main1, xlab = xlab, ylab = ylab1, ...)
+      matplot(u, chiu, type = "l", lty = lty, col = col, xlim = xlim, ylim =
+         ylim1, main = main1, xlab = xlab, ylab = ylab1, ...)
       if(spcases) {
-        segments(0,0,1,0, lty = 5, col = "grey")
-        segments(0,1,1,1, lty = 5, col = "grey")
-        lines(u, 2-log(pmax(2*u-1,0))/log(u), lty = 5, col = "grey")
+        segments(qlim[1],0,qlim[2],0, lty = 5, col = "grey")
+        segments(qlim[1],1,qlim[2],1, lty = 5, col = "grey")
+        lines(u, chiulb, lty = 5, col = "grey")
       }
     }
 
     if(show[2]) {
-      matplot(u, chibaru, type = "l", lty = lty, col = col, xlim = xlim, ylim = ylim2,
-              main = main2, xlab = xlab, ylab = ylab2, ...)
+      matplot(u, chibaru, type = "l", lty = lty, col = col, xlim = xlim,
+         ylim = ylim2, main = main2, xlab = xlab, ylab = ylab2, ...)
       if(spcases) {
-        segments(0,0,1,0, lty = 5, col = "grey")
-        segments(0,1,1,1, lty = 5, col = "grey")
-        lines(u, 2*log(1-u)/log(1-2*u+pmax(2*u-1,0)) - 1, lty = 5, col = "grey")
+        segments(qlim[1],0,qlim[2],0, lty = 5, col = "grey")
+        segments(qlim[1],1,qlim[2],1, lty = 5, col = "grey")
+        lines(u, chibarulb, lty = 5, col = "grey")
       }
     }
 

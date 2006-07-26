@@ -1,45 +1,4 @@
-"anova.evd" <- function (object, object2, ..., half = FALSE) 
-{
-    if(missing(object)) stop("model one must be specified")
-    if(missing(object2)) stop("model two must be specified")
-    dots <- as.list(substitute(list(...)))[-1]
-    dots <- sapply(dots,function(x) deparse(x))
-    if(!length(dots)) dots <- NULL
-    model1 <- deparse(substitute(object))
-    model2 <- deparse(substitute(object2))
-    models <- c(model1, model2, dots)
-    narg <- length(models)
-    for(i in 1:narg) {
-        if(!inherits(get(models[i], envir = parent.frame()), "evd")) 
-            stop("Use only with 'evd' objects")
-    }
-    for(i in 1:(narg-1)) {
-        a <- get(models[i], envir = parent.frame())
-        b <- get(models[i+1], envir = parent.frame())
-        if((!all(names(fitted(b)) %in% names(fitted(a)))) &&
-           (!identical(c("bilog","log"), c(a$model, b$model))) &&
-           (!identical(c("negbilog","neglog"), c(a$model, b$model)))) {
-            warning("models may not be nested")
-        }
-    }
-    dv <- npar <- numeric(narg)
-    for(i in 1:narg) {
-        evmod <- get(models[i], envir = parent.frame())
-        dv[i] <- evmod$deviance
-        npar[i] <- length(evmod$estimate)
-    }
-    df <- -diff(npar)
-    if(any(df <= 0)) stop("models are not nested")
-    dvdiff <- diff(dv)
-    if(any(dvdiff < 0)) stop("negative deviance difference")
-    if(half) dvdiff <- 2*dvdiff 
-    pval <- pchisq(dvdiff, df = df, lower.tail = FALSE)
-    table <- data.frame(npar, dv, c(NA,df), c(NA,dvdiff), c(NA,pval))
-    dimnames(table) <- list(models, c("M.Df", "Deviance", "Df", "Chisq",
-                                      "Pr(>chisq)"))
-    structure(table, heading = c("Analysis of Deviance Table\n"),
-              class = c("anova", "data.frame"))
-}
+### Univariate GEV and POT Models ###
 
 "plot.uvevd" <-  function(x, which = 1:4, main, ask = nb.fig <
      length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
@@ -314,6 +273,8 @@
     invisible(list(x = xvec, y = dens))
 }
 
+### Bivariate EVD Models ###
+
 "plot.bvevd" <-  function(x, mar = 0, which = 1:6, main,
      ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
      cilwd = 1, grid = 50, legend = TRUE, nplty = 2,
@@ -380,10 +341,13 @@
     invisible(x)
 }
 
+"bvcpp" <- function (x, ...) UseMethod("bvcpp")
 "bvdens" <- function (x, ...) UseMethod("bvdens")
+"bvdp" <- function (x, ...) UseMethod("bvdp")
 "bvqc" <- function (x, ...) UseMethod("bvqc")
+"bvh" <- function (x, ...) UseMethod("bvh")
 
-"bvcpp" <-  function(x, mar = 2, ci = TRUE, cilwd = 1, main = "Conditional Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+"bvcpp.bvevd" <-  function(x, mar = 2, ci = TRUE, cilwd = 1, main = "Conditional Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 { 
     data <- x$tdata
     mle.m1 <- x$param[c("loc1","scale1","shape1")]
@@ -393,28 +357,15 @@
     data <- data[!narow,, drop=FALSE]
     n <- nrow(data)
     ppx <- ppoints(n)
-    if(ncol(data) == 2) {
-      if(x$model %in% c("log","hr","neglog")) {
-        probs <- ccop(data[,1], data[,2], mar = mar, dep = x$param["dep"],
-                      model = x$model)}
-      if(x$model  %in% c("alog","aneglog"))
-        probs <- ccop(data[,1], data[,2], mar = mar, dep = x$param["dep"],
-                      asy = x$param[c("asy1","asy2")], model = x$model)
-      if(x$model  %in% c("bilog","negbilog","ct","amix"))
-        probs <- ccop(data[,1], data[,2], mar = mar, alpha = x$param["alpha"],
-                      beta = x$param["beta"], model = x$model)
-    }
-    if(ncol(data) == 3) {
-      if(x$model %in% c("log","hr","neglog")) {
-        probs <- ccop.case(data[,1], data[,2], data[,3], mar = mar, dep =
-          x$param["dep"], model = x$model)}
-      if(x$model  %in% c("alog","aneglog"))
-        probs <- ccop.case(data[,1], data[,2], data[,3], mar = mar, dep =
-          x$param["dep"], asy = x$param[c("asy1","asy2")], model = x$model)
-      if(x$model  %in% c("bilog","negbilog","ct","amix"))
-        probs <- ccop.case(data[,1], data[,2], data[,3], mar = mar, alpha =
-          x$param["alpha"], beta = x$param["beta"], model = x$model)
-    }
+    if(x$model %in% c("log","hr","neglog")) {
+      probs <- ccbvevd(data, mar = mar, dep = x$param["dep"],
+                    model = x$model)}
+    if(x$model  %in% c("alog","aneglog"))
+      probs <- ccbvevd(data, mar = mar, dep = x$param["dep"],
+                    asy = x$param[c("asy1","asy2")], model = x$model)
+    if(x$model  %in% c("bilog","negbilog","ct","amix"))
+      probs <- ccbvevd(data, mar = mar, alpha = x$param["alpha"],
+                    beta = x$param["beta"], model = x$model)
     probs <- sort(probs)
     if(!ci) {
         plot(ppx, probs, main = main, xlab = xlab, ylab = ylab, ...)
@@ -436,88 +387,6 @@
         abline(0, 1)
     }
     invisible(list(x = ppx, y = probs))
-}
-
-"ccop" <- function(x1, x2, mar, dep, asy, alpha, beta, model)
-{
-    model <- match(model, c("log","alog","hr","neglog","aneglog",
-                            "bilog","negbilog","ct","amix"))
-    if(model <= 5) alpha <- beta <- 1
-    else dep <- 1
-    if(model != 2 && model != 5) asy <- c(1,1)
-    n <- length(x1)
-    .C("ccop",
-            as.double(x1), as.double(x2), as.integer(mar), as.double(dep),
-            as.double(asy[1]), as.double(asy[2]), as.double(alpha),
-            as.double(beta), as.integer(n), as.integer(model),
-            ccop = double(n), PACKAGE = "evd")$ccop
-}
-
-"ccop.case" <- function(x1, x2, case, mar, dep, asy, alpha, beta, model)
-{
-    if(min(c(x1,x2)) <= 0 || max(c(x1,x2)) >= 1)
-      stop("x1 and x2 must contain values in (0,1)")
-    nlbvfn <- paste("nlbv", model, sep = "")
-    modelnm <- match(model, c("log","hr","neglog","alog","aneglog",
-                              "bilog","negbilog","ct","amix"))
-    
-    "dbvevd.case" <- function(x1, x2, case, mar, dep, asy, alpha, beta)
-    {
-      n <- max(length(x1), length(x2))
-      x1 <- rep(-1/log(x1), length = n)
-      x2 <- rep(-1/log(x2), length = n)
-      case <- rep(case, length = n)
-      mpar <- as.double(1)
-      split <- as.integer(1)
-      if(mar == 1) {
-        tmp <- x1; x1 <- x2; x2 <- tmp
-        if(modelnm %in% c(4,5)) asy <- rev(asy)
-        if(modelnm >= 6 && modelnm <= 8)
-          { tmp <- alpha; alpha <- beta; beta <- tmp }
-        if(modelnm == 9)
-          { alpha <- alpha + 3*beta; beta <- -beta }
-      }
-      if(modelnm >= 6)
-        nl <- .C(nlbvfn,
-          as.double(x1), as.double(x2), n, case,
-          as.double(alpha), as.double(beta), rep(mpar,n), mpar, mpar,
-          rep(mpar,n), mpar, mpar, split, dns = double(n),
-          PACKAGE = "evd")$dns
-      if(modelnm <= 3)
-        nl <- .C(nlbvfn,
-          as.double(x1), as.double(x2), n, case,
-          as.double(dep), rep(mpar,n), mpar, mpar, rep(mpar,n), mpar,
-          mpar, split, dns = double(n), PACKAGE = "evd")$dns
-      if(modelnm %in% c(4,5))
-        nl <- .C(nlbvfn,
-          as.double(x1), as.double(x2), n, case,
-          as.double(dep), as.double(asy[1]), as.double(asy[2]), rep(mpar,n),
-          mpar, mpar, rep(mpar,n), mpar, mpar, split, dns = double(n),
-          PACKAGE = "evd")$dns
-      jac.alt <- 1/x1 + 1/x2 + 2*log(x1 * x2)
-      exp(jac.alt - nl)
-    }
-
-    n <- length(x1)
-    ccv <- numeric(n)
-    eps <- .Machine$double.eps^0.5
-    case <- as.integer(case)
-    if(mar == 2) { fm <- x1 ; cm <- x2 }
-    if(mar == 1) { fm <- x2 ; cm <- x1 }
-    for(i in 1:n) {
-      if(is.na(case[i])){
-        ccv[i] <- ccop(x1[i], x2[i], mar=mar, dep=dep, asy=asy,
-                       alpha=alpha, beta=beta, model=model)
-      }
-      else {
-        den <- integrate("dbvevd.case", eps, 1-eps, x2 = cm[i], case = case[i],
-          mar=mar, dep=dep, asy=asy, alpha=alpha, beta=beta)$value
-        num <- integrate("dbvevd.case", eps, fm[i], x2 = cm[i], case = case[i],
-          mar=mar, dep=dep, asy=asy, alpha=alpha, beta=beta)$value
-        ccv[i] <- num/den
-      }
-    }
-    ccv
 }
 
 "bvdens.bvevd" <-  function(x, grid = 50, legend = TRUE, pch = 1, main = "Density Plot", xlab = colnames(x$data)[1], ylab = colnames(x$data)[2], ...)
@@ -559,7 +428,7 @@
     invisible(list(x = xyvals, y = dens))
 }
 
-"bvdp" <- function(x, method = "cfg", convex = FALSE, rev = FALSE, add = FALSE, lty = 1, nplty = 2, blty = 3, main = "Dependence Function", xlab = "t", ylab = "A(t)", ...)
+"bvdp.bvevd" <- function(x, method = "cfg", convex = FALSE, rev = FALSE, add = FALSE, lty = 1, nplty = 2, blty = 3, main = "Dependence Function", xlab = "t", ylab = "A(t)", ...)
 {
     if(ncol(x$data) == 3) nplty <- 0
     abvnonpar(data = x$data[,1:2], nsloc1 = x$nsloc1, nsloc2 = x$nsloc2,
@@ -578,7 +447,7 @@
     invisible(x)
 }
 
-"bvh" <- function(x, half = FALSE, add = FALSE, lty = 1, main = "Spectral Density", xlab = "t", ylab = "h(t)", ...)
+"bvh.bvevd" <- function(x, half = FALSE, add = FALSE, lty = 1, main = "Spectral Density", xlab = "t", ylab = "h(t)", ...)
 {
     if(x$model %in% c("log","hr","neglog"))
         afunargs <- list(dep = x$param["dep"])
@@ -586,7 +455,7 @@
         afunargs <- list(dep = x$param["dep"], asy = x$param[c("asy1","asy2")])
     if(x$model  %in% c("bilog","negbilog","ct","amix"))
         afunargs <- list(alpha = x$param["alpha"], beta = x$param["beta"])
-    afunargs <- c(list(half = half, add = add, plot = !add, lty = lty, main = main,
+    afunargs <- c(list(half = half, add = add, plot = TRUE, lty = lty, main = main,
        xlab = xlab, ylab = ylab, model = x$model), afunargs)
     do.call("hbvevd", afunargs)
     invisible(x)
@@ -656,6 +525,8 @@ function(x, p = seq(0.75, 0.95, 0.05), mint = 1, add = FALSE,
     return(invisible(qct))
 }
 
+### Bivariate POT Models ###
+
 "plot.bvpot" <-  function(x, mar = 0, which = 1:4, main,
      ask = nb.fig < length(which) && dev.interactive(), grid = 50,
      above = FALSE, levels = NULL, tlty = 1, blty = 3, rev = FALSE,
@@ -703,7 +574,7 @@ function(x, p = seq(0.75, 0.95, 0.05), mint = 1, add = FALSE,
                tlty = tlty, main = main[1], ...)
     }
     if (show[2]) {
-        bvdp(x, nplty = 0, blty = blty, rev = rev, main = main[2], ...)
+        bvdp(x, blty = blty, rev = rev, main = main[2], ...)
     }
     if (show[3]) {
         bvqc(x, p = p, above = above, tlty = tlty, main = main[3], ...)
@@ -777,6 +648,20 @@ function(x, p = seq(0.75, 0.95, 0.05), mint = 1, add = FALSE,
     invisible(list(x = xyvals, y = dens))
 }
 
+"bvdp.bvpot" <- function(x, rev = FALSE, add = FALSE, lty = 1, blty = 3, main = "Dependence Function", xlab = "t", ylab = "A(t)", ...)
+{
+    if(x$model %in% c("log","hr","neglog"))
+        afunargs <- list(dep = x$param["dep"])
+    if(x$model  %in% c("alog","aneglog"))
+        afunargs <- list(dep = x$param["dep"], asy = x$param[c("asy1","asy2")])
+    if(x$model  %in% c("bilog","negbilog","ct","amix"))
+        afunargs <- list(alpha = x$param["alpha"], beta = x$param["beta"])
+    afunargs <- c(list(rev = rev, add = add, plot = TRUE, lty = lty, blty = blty,
+      main = main, xlab = xlab, ylab = ylab, model = x$model), afunargs)
+    do.call("abvevd", afunargs)
+    invisible(x)
+}
+
 "bvqc.bvpot"<- 
 function(x, p = seq(0.75, 0.95, 0.05), above = FALSE, tlty = 1,
    add = FALSE, lty = 1, lwd = 1, col = 1, xlim =
@@ -837,7 +722,23 @@ function(x, p = seq(0.75, 0.95, 0.05), above = FALSE, tlty = 1,
     return(invisible(qct))
 }
 
-"mtransform"<- 
+"bvh.bvpot" <- function(x, half = FALSE, add = FALSE, lty = 1, main = "Spectral Density", xlab = "t", ylab = "h(t)", ...)
+{
+    if(x$model %in% c("log","hr","neglog"))
+        afunargs <- list(dep = x$param["dep"])
+    if(x$model  %in% c("alog","aneglog"))
+        afunargs <- list(dep = x$param["dep"], asy = x$param[c("asy1","asy2")])
+    if(x$model  %in% c("bilog","negbilog","ct","amix"))
+        afunargs <- list(alpha = x$param["alpha"], beta = x$param["beta"])
+    afunargs <- c(list(half = half, add = add, plot = TRUE, lty = lty,
+       main = main, xlab = xlab, ylab = ylab, model = x$model), afunargs)
+    do.call("hbvevd", afunargs)
+    invisible(x)
+}
+
+### Documented Ancillary Functions ###
+
+"mtransform"<-
 function(x, p, inv = FALSE, drp = FALSE)
 {
     if(is.list(p)) {
@@ -871,7 +772,101 @@ function(x, p, inv = FALSE, drp = FALSE)
     x
 }
 
+"ccbvevd" <- function(x, mar = 2, dep, asy = c(1, 1), alpha, beta, model =
+  c("log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct",
+  "amix"), lower.tail = TRUE)
+{
+  if(min(x[,1:2]) <= 0 || max(x[,1:2]) >= 1)
+    stop("x must contain values in (0,1)")
+  model <- match.arg(model)
+  m1 <- c("bilog", "negbilog", "ct", "amix")
+  m2 <- c(m1, "log", "hr", "neglog")
+  m3 <- c("log", "alog", "hr", "neglog", "aneglog")
+  if((model %in% m1) && !missing(dep))
+    warning("ignoring `dep' argument")
+  if((model %in% m2) && !missing(asy)) 
+    warning("ignoring `asy' argument")
+  if((model %in% m3) && !missing(alpha))
+    warning("ignoring `alpha' argument")
+  if((model %in% m3) && !missing(beta)) 
+    warning("ignoring `beta' argument")
+  if(model %in% m1) dep <- 1
+  if(model %in% m3) alpha <- beta <- 1
+  imodel <- match(model, c("log","alog","hr","neglog","aneglog",
+    "bilog","negbilog","ct","amix"))
+  n <- nrow(x)
+  
+  if(ncol(x) == 2) {
+    ccop <- .C("ccop", as.double(x[,1]), as.double(x[,2]), as.integer(mar),
+      as.double(dep), as.double(asy[1]), as.double(asy[2]), as.double(alpha),
+      as.double(beta), as.integer(n), as.integer(imodel), ccop = double(n),
+      PACKAGE = "evd")$ccop
+  }
+  
+  if(ncol(x) == 3) {
 
+    "dbvevd.case" <- function(x1, x2, case, mar, dep, asy, alpha, beta)
+    {
+      nlbvfn <- paste("nlbv", model, sep = "")
+      n <- max(length(x1), length(x2))
+      x1 <- rep(-1/log(x1), length = n)
+      x2 <- rep(-1/log(x2), length = n)
+      case <- rep(case, length = n)
+      mpar <- as.double(1)
+      split <- as.integer(1)
+      if(mar == 1) {
+        tmp <- x1; x1 <- x2; x2 <- tmp
+        if(model %in% c("alog","aneglog")) asy <- rev(asy)
+        if(model %in% c("bilog","negbilog","ct"))
+          { tmp <- alpha; alpha <- beta; beta <- tmp }
+        if(model == "amix")
+          { alpha <- alpha + 3*beta; beta <- -beta }
+      }
+      if(model %in% c("bilog","negbilog","ct","amix"))
+        nl <- .C(nlbvfn,
+          as.double(x1), as.double(x2), n, case,
+          as.double(alpha), as.double(beta), rep(mpar,n), mpar, mpar,
+          rep(mpar,n), mpar, mpar, split, dns = double(n),
+          PACKAGE = "evd")$dns
+      if(model %in% c("log","hr","neglog"))
+        nl <- .C(nlbvfn,
+          as.double(x1), as.double(x2), n, case,
+          as.double(dep), rep(mpar,n), mpar, mpar, rep(mpar,n), mpar,
+          mpar, split, dns = double(n), PACKAGE = "evd")$dns
+      if(model %in% c("alog","aneglog"))
+        nl <- .C(nlbvfn,
+          as.double(x1), as.double(x2), n, case,
+          as.double(dep), as.double(asy[1]), as.double(asy[2]), rep(mpar,n),
+          mpar, mpar, rep(mpar,n), mpar, mpar, split, dns = double(n),
+          PACKAGE = "evd")$dns
+      jac.alt <- 1/x1 + 1/x2 + 2*log(x1 * x2)
+      exp(jac.alt - nl)
+    }
 
+    ccop <- numeric(n)
+    case <- as.integer(x[,3])
+    eps <- .Machine$double.eps^0.5
+    if(mar == 2) { fm <- x[,1] ; cm <- x[,2] }
+    if(mar == 1) { fm <- x[,2] ; cm <- x[,1] }
+    for(i in 1:n) {
+      if(is.na(case[i])) {
+        ccop[i] <- .C("ccop", as.double(x[i,1]), as.double(x[i,2]),
+          as.integer(mar), as.double(dep), as.double(asy[1]),
+          as.double(asy[2]), as.double(alpha), as.double(beta),
+          as.integer(1), as.integer(imodel), ccop = double(1),
+          PACKAGE = "evd")$ccop
+      }
+      else {
+        den <- integrate("dbvevd.case", eps, 1-eps, x2 = cm[i], case =
+          case[i], mar=mar, dep=dep, asy=asy, alpha=alpha, beta=beta)$value
+        num <- integrate("dbvevd.case", eps, fm[i], x2 = cm[i], case =
+          case[i], mar=mar, dep=dep, asy=asy, alpha=alpha, beta=beta)$value
+        ccop[i] <- num/den
+      }
+    }
+  }
+  if(!lower.tail) ccop <- 1 - ccop
+  ccop
+}
 
 

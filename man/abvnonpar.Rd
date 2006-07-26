@@ -1,6 +1,5 @@
 \name{abvnonpar}
 \alias{abvnonpar}
-\alias{abvnonparpot}
 \title{Non-parametric Estimates for Dependence Functions of the
     Bivariate Extreme Value Distribution}
 \description{
@@ -8,9 +7,9 @@
   \eqn{A} of the bivariate extreme value distribution.
 }
 \synopsis{
-abvnonpar(x = 0.5, data, k = NULL, epmar = FALSE, nsloc1 = NULL,
-    nsloc2 = NULL, method = c("cfg", "pickands", "deheuvels",
-    "halltajvidi", "tdo"), convex = FALSE, rev = FALSE, madj = 0,
+abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL,
+    nsloc2 = NULL, method = c("cfg", "pickands", "tdo", "pot"),
+     k = nrow(data)/4, convex = FALSE, rev = FALSE, madj = 0,
     kmar = NULL, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
     col = 1, blty = 3, blwd = 1, xlim = c(0, 1), ylim = c(0.5, 1),
     xlab = "t", ylab = "A(t)", \dots)
@@ -158,7 +157,7 @@ abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,
 \examples{
 bvdata <- rbvevd(100, dep = 0.7, model = "log")
 abvnonpar(seq(0, 1, length = 10), data = bvdata, convex = TRUE)
-abvnonpar(data = bvdata, method = "p", plot = TRUE)
+abvnonpar(data = bvdata, method = "pick", plot = TRUE)
 
 M1 <- fitted(fbvevd(bvdata, model = "log"))
 abvevd(dep = M1["dep"], model = "log", plot = TRUE)

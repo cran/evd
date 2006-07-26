@@ -80,6 +80,7 @@ void nllbvclog(double *data1, double *data2, int *nn, int *n, double *thid, doub
       log(t1[i]) + log(t2[i]) - v[i];
   }
 
+  
   for(i=0;i<*nn;i++) 
     *dns = *dns - dvec[i];
   *dns = *dns - (*n - *nn) * zdn;

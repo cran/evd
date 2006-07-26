@@ -127,6 +127,7 @@ fbvpot(x, threshold, model = "log", start, \dots, sym = FALSE, cshape =
   \item{dep.summary}{A value summarizing the strength of
     dependence in the fitted model (see \bold{fbvevd}).}
   \item{corr}{The correlation matrix.}
+  \item{var.cov}{The variance covariance matrix.}
   \item{convergence, counts, message}{Components taken from the
     list returned by \code{\link{optim}}.}
   \item{data}{The data passed to the argument \code{x}.}

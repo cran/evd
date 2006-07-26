@@ -62,9 +62,9 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE,
         }
         else corr <- NULL
     }
-    else std.err <- corr <- NULL
+    else std.err <- var.cov <- corr <- NULL
     structure(list(estimate = opt$par, std.err = std.err,
-        deviance = 2*opt$value, corr = corr,
+        deviance = 2*opt$value, corr = corr, var.cov = var.cov,
         convergence = opt$convergence, counts = opt$counts,
         message = opt$message, call = call, data = x,
         n = length(x)), class = c("extreme", "evd"))
@@ -133,10 +133,10 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, j = 1,
         }
         else corr <- NULL
     }
-    else std.err <- corr <- NULL
+    else std.err <- var.cov <- corr <- NULL
     names(std.err) <- nm
     structure(list(estimate = opt$par, std.err = std.err,
-        deviance = 2*opt$value, corr = corr,
+        deviance = 2*opt$value, corr = corr, var.cov = var.cov,
         convergence = opt$convergence, counts = opt$counts,
         message = opt$message, call = call, data = x,
         n = length(x)), class = c("extreme", "evd"))
@@ -180,7 +180,9 @@ function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BF
             PACKAGE = "evd")$dns
     }
     if(!is.null(nsloc)) {
-        nsloc <- nsloc.transform(x, nsloc)
+        if(is.vector(nsloc)) nsloc <- data.frame(trend = nsloc)
+        if(nrow(nsloc) != length(x))
+           stop("`nsloc' and data are not compatible")
         nsloc <- nsloc[!is.na(x), ,drop = FALSE]
         nslocmat <- cbind(1,as.matrix(nsloc))
     }
@@ -241,7 +243,7 @@ function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BF
         }
         else corr <- NULL
     }
-    else std.err <- corr <- NULL
+    else std.err <- var.cov <- corr <- NULL
     param <- c(opt$par, unlist(fixed.param))
     if(!is.null(nsloc)) {
         trend <- param[paste("loc", names(nsloc), sep="")]
@@ -251,7 +253,7 @@ function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BF
     else x2 <- x
     list(estimate = opt$par, std.err = std.err,
         fixed = unlist(fixed.param), param = param,
-        deviance = 2*opt$value, corr = corr,
+        deviance = 2*opt$value, corr = corr, var.cov = var.cov,
         convergence = opt$convergence, counts = opt$counts,
         message = opt$message,
         data = x, tdata = x2, nsloc = nsloc,
@@ -307,7 +309,9 @@ function(x, start, ..., nsloc = NULL, prob, std.err = TRUE, corr = FALSE, method
     if(!length(start))
         stop("there are no parameters left to maximize over")
     if(!is.null(nsloc)) {
-        nsloc <- nsloc.transform(x, nsloc)
+        if(is.vector(nsloc)) nsloc <- data.frame(trend = nsloc)
+        if(nrow(nsloc) != length(x))
+           stop("`nsloc' and data are not compatible")
         nsloc <- nsloc[!is.na(x), ,drop = FALSE]
         nslocmat <- as.matrix(nsloc)
     }
@@ -356,7 +360,7 @@ function(x, start, ..., nsloc = NULL, prob, std.err = TRUE, corr = FALSE, method
         else corr <- NULL
     }
     else {
-        std.err <- corr <- NULL
+        std.err <- var.cov <- corr <- NULL
     }
     param <- c(opt$par, unlist(fixed.param))
     if(!is.null(nsloc)) {
@@ -372,77 +376,10 @@ function(x, start, ..., nsloc = NULL, prob, std.err = TRUE, corr = FALSE, method
           (1 - (-log(1-prob))^(-param["shape"]))
     list(estimate = opt$par, std.err = std.err,
         fixed = unlist(fixed.param), param = param,
-        deviance = 2*opt$value, corr = corr, convergence = opt$convergence,
-        counts = opt$counts, message = opt$message,
-        data = x, tdata = x2, nsloc = nsloc, n = length(x),
-        prob = prob, loc = loc)
-}
-
-# Internal: robustly produces mles.
-# Used for marginal parametric transforms.
-"frobgev"<-
-function(x, start, ..., nsloc = NULL) {
-  mnx <- mean(x, na.rm = TRUE)
-  sdx <- sqrt(var(x, na.rm = TRUE))
-  mles <- fgev(x = (x-mnx)/sdx, start = start, ..., nsloc = nsloc,
-    prob = NULL, std.err = FALSE, corr = FALSE)
-  mles <- fitted(mles)
-  mles["loc"] <- mnx + sdx * mles["loc"]
-  mles["scale"] <- sdx * mles["scale"]
-  trpar <- !(names(mles) %in% c("loc","scale","shape"))
-  mles[trpar] <- sdx * mles[trpar]
-  mles
-}
-
-"print.evd" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
-{
-    cat("\nCall:", deparse(x$call), "\n")
-    cat("Deviance:", x$deviance, "\n")
-    cat("\nEstimates\n")
-    print.default(format(x$estimate, digits = digits), print.gap = 2, 
-        quote = FALSE)
-    if(!is.null(x$std.err)) {
-    cat("\nStandard Errors\n")
-    print.default(format(x$std.err, digits = digits), print.gap = 2, 
-        quote = FALSE)
-    }
-    if(!is.null(x$corr)) {
-    cat("\nCorrelations\n")
-    print.default(format(x$corr, digits = digits), print.gap = 2, 
-        quote = FALSE)
-    }
-    cat("\nOptimization Information\n")
-    cat("  Convergence:", x$convergence, "\n")
-    cat("  Function Evaluations:", x$counts["function"], "\n")
-    if(!is.na(x$counts["gradient"]))
-        cat("  Gradient Evaluations:", x$counts["gradient"], "\n")
-    if(!is.null(x$message)) cat("  Message:", x$message, "\n")
-    cat("\n")
-    invisible(x)
-}
-
-"fitted.evd" <- function (object, ...) object$estimate
-"std.errors" <- function (object, ...) UseMethod("std.errors")
-"std.errors.evd" <- function (object, ...) object$std.err
-"logLik.evd" <- function(object, ...) {
-    val <- -deviance(object)/2
-    attr(val, "df") <- length(fitted(object))
-    class(val) <- "logLik"
-    val
-}
-
-"nsloc.transform" <- 
-function(x, nsloc)
-{
-    if(is.vector(nsloc))
-        nsloc <- data.frame(trend = nsloc)
-    if(!is.data.frame(nsloc))
-        stop("`nsloc' must be a vector or data frame")
-    if(is.null(dim(x))) ndat <- length(x)
-    else ndat <- nrow(x)
-    if(nrow(nsloc) != ndat)
-        stop("`nsloc' and data are not compatible")
-    nsloc
+        deviance = 2*opt$value, corr = corr, var.cov = var.cov,
+        convergence = opt$convergence, counts = opt$counts,
+        message = opt$message, data = x, tdata = x2, nsloc = nsloc,
+        n = length(x), prob = prob, loc = loc)
 }
 
 "fpot"<-
@@ -567,15 +504,15 @@ function(x, threshold, model, start, npp = length(x), cmax = FALSE, r = 1, ulow 
         }
         else corr <- NULL
     }
-    else std.err <- corr <- NULL
+    else std.err <- var.cov <- corr <- NULL
     param <- c(opt$par, unlist(fixed.param))
    if(model == "gpd") scale <- param["scale"]
    if(model == "pp") scale <- param["scale"] + param["shape"] * (threshold -
      param["loc"])
     
     list(estimate = opt$par, std.err = std.err, fixed = unlist(fixed.param),
-        param = param, deviance = 2*opt$value, corr = corr, convergence =
-        opt$convergence, counts = opt$counts, message = opt$message,
+        param = param, deviance = 2*opt$value, corr = corr, var.cov = var.cov,
+        convergence = opt$convergence, counts = opt$counts, message = opt$message,
         threshold = threshold, r = r, ulow = ulow, rlow = rlow, npp = npp,
         nhigh = nhigh, nat = nat, pat = pat, extind = extind,
         data = x, exceedances = exceed, mper = NULL, scale = scale)
@@ -674,17 +611,120 @@ function(x, threshold, start, npp = length(x), cmax = FALSE, r = 1, ulow = -Inf,
         }
         else corr <- NULL
     }
-    else std.err <- corr <- NULL
+    else std.err <- var.cov <- corr <- NULL
     param <- c(opt$par, unlist(fixed.param))
     rlevel <- param["rlevel"] - threshold
     if(param["shape"] == 0) scale <- rlevel / log(adjmper)
     else scale <- param["shape"] * rlevel / (adjmper^param["shape"] - 1) 
     list(estimate = opt$par, std.err = std.err, fixed = unlist(fixed.param),
-        param = param, deviance = 2*opt$value, corr = corr, convergence =
-        opt$convergence, counts = opt$counts, message = opt$message,
+        param = param, deviance = 2*opt$value, corr = corr, var.cov = var.cov,
+        convergence = opt$convergence, counts = opt$counts, message = opt$message,
         threshold = threshold, r = r, ulow = ulow, rlow = rlow, npp = npp,
         nhigh = nhigh, nat = nat, pat = pat, extind = extind,
         data = x, exceedances = exceed, mper = mper, scale = scale)
+}
+
+### Method Functions ###
+
+"print.evd" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
+{
+    cat("\nCall:", deparse(x$call), "\n")
+    cat("Deviance:", x$deviance, "\n")
+    cat("\nEstimates\n")
+    print.default(format(x$estimate, digits = digits), print.gap = 2, 
+        quote = FALSE)
+    if(!is.null(x$std.err)) {
+    cat("\nStandard Errors\n")
+    print.default(format(x$std.err, digits = digits), print.gap = 2, 
+        quote = FALSE)
+    }
+    if(!is.null(x$corr)) {
+    cat("\nCorrelations\n")
+    print.default(format(x$corr, digits = digits), print.gap = 2, 
+        quote = FALSE)
+    }
+    cat("\nOptimization Information\n")
+    cat("  Convergence:", x$convergence, "\n")
+    cat("  Function Evaluations:", x$counts["function"], "\n")
+    if(!is.na(x$counts["gradient"]))
+        cat("  Gradient Evaluations:", x$counts["gradient"], "\n")
+    if(!is.null(x$message)) cat("  Message:", x$message, "\n")
+    cat("\n")
+    invisible(x)
+}
+
+"confint.evd" <- function (object, parm, level = 0.95, ...) 
+{
+    cf <- fitted(object)
+    pnames <- names(cf)
+    if (missing(parm)) 
+        parm <- seq(along = pnames)
+    else if (is.character(parm)) 
+        parm <- match(parm, pnames, nomatch = 0)
+    if(any(!parm))
+        stop("`parm' contains unknown parameters")
+    a <- (1 - level)/2
+    a <- c(a, 1 - a)
+    pct <- paste(round(100 * a, 1), "%")
+    ci <- array(NA, dim = c(length(parm), 2), dimnames = list(pnames[parm], 
+        pct))
+    ses <- std.errors(object)[parm]
+    ci[] <- cf[parm] + ses %o% qnorm(a)
+    ci
+}
+
+"anova.evd" <- function (object, object2, ..., half = FALSE) 
+{
+    if(missing(object)) stop("model one must be specified")
+    if(missing(object2)) stop("model two must be specified")
+    dots <- as.list(substitute(list(...)))[-1]
+    dots <- sapply(dots,function(x) deparse(x))
+    if(!length(dots)) dots <- NULL
+    model1 <- deparse(substitute(object))
+    model2 <- deparse(substitute(object2))
+    models <- c(model1, model2, dots)
+    narg <- length(models)
+    for(i in 1:narg) {
+        if(!inherits(get(models[i], envir = parent.frame()), "evd")) 
+            stop("Use only with 'evd' objects")
+    }
+    for(i in 1:(narg-1)) {
+        a <- get(models[i], envir = parent.frame())
+        b <- get(models[i+1], envir = parent.frame())
+        if((!all(names(fitted(b)) %in% names(fitted(a)))) &&
+           (!identical(c("bilog","log"), c(a$model, b$model))) &&
+           (!identical(c("negbilog","neglog"), c(a$model, b$model)))) {
+            warning("models may not be nested")
+        }
+    }
+    dv <- npar <- numeric(narg)
+    for(i in 1:narg) {
+        evmod <- get(models[i], envir = parent.frame())
+        dv[i] <- evmod$deviance
+        npar[i] <- length(evmod$estimate)
+    }
+    df <- -diff(npar)
+    if(any(df <= 0)) stop("models are not nested")
+    dvdiff <- diff(dv)
+    if(any(dvdiff < 0)) stop("negative deviance difference")
+    if(half) dvdiff <- 2*dvdiff 
+    pval <- pchisq(dvdiff, df = df, lower.tail = FALSE)
+    table <- data.frame(npar, dv, c(NA,df), c(NA,dvdiff), c(NA,pval))
+    dimnames(table) <- list(models, c("M.Df", "Deviance", "Df", "Chisq",
+                                      "Pr(>chisq)"))
+    structure(table, heading = c("Analysis of Deviance Table\n"),
+              class = c("anova", "data.frame"))
+}
+
+"fitted.evd" <- function (object, ...) object$estimate
+"std.errors" <- function (object, ...) UseMethod("std.errors")
+"std.errors.evd" <- function (object, ...) object$std.err
+"vcov.evd" <- function (object, ...) object$var.cov
+"logLik.evd" <- function(object, ...) {
+    val <- -deviance(object)/2
+    attr(val, "df") <- length(fitted(object))
+    class(val) <- "logLik"
+    val
 }
 
 "print.pot" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
@@ -727,8 +767,4 @@ function(x, threshold, start, npp = length(x), cmax = FALSE, r = 1, ulow = -Inf,
     cat("\n")
     invisible(x)
 }
-
-
-
-
 

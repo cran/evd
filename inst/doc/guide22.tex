@@ -327,7 +327,7 @@ Different limits occur when $\theta_1$ and $\theta_2$ are fixed and $\alpha\down
 For the asymmetric negative logistic model independence is obtained when either $r\downarrow0$, $\theta_1\downarrow0$ or $\theta_2\downarrow0$. 
 Different limits occur when $\theta_1$ and $\theta_2$ are fixed and $r\rightarrow\infty$.
 
-The remaining five bivariate models are defined in Appendix A. Density, distribution and simulation functions for each of the nine models are provided by \verb+dbvevd+, \verb+pbvevd+ and \verb+rbvevd+ respectively.
+The remaining four bivariate models are defined in Appendix A. Density, distribution and simulation functions for each of the nine models are provided by \verb+dbvevd+, \verb+pbvevd+ and \verb+rbvevd+ respectively.
 The argument \verb+model+ denotes the specified model, which must be either \verb+"log"+ (the default), \verb+"alog"+, \verb+"hr"+, \verb+"neglog"+, \verb+"aneglog"+, \verb+"bilog"+, \verb+"negbilog"+, \verb+"ct"+ or \verb+"amix"+ (or any unique partial match).
 The first argument in \verb+pbvevd+ and \verb+dbvevd+ should be a vector of length two or a matrix with two columns, so that each row specifies a value for $(z_1,z_2)$.
 
@@ -1181,10 +1181,9 @@ Standard Errors
 
 The fitted shape is negative, so the fitted distribution is Weibull.
 It is often of interest to test the hypothesis that the shape is zero (the Gumbel distribution).
-A 95\% confidence interval for the shape parameter can be constructed using $-0.287 \pm 1.96 \times 0.0683$.
-The corresponding Wald test can be performed by dividing the maximum likelihood estimate by its standard error.
-The Wald test would be rejected at significance level $0.05$ since the 95\% confidence interval does not contain zero.
-A likelihood ratio test is performed in the following snippet.
+The code \verb+confint(ox.fit)+ returns the 95\% Wald confidence intervals for the model parameters, roughly equal to the fitted estimates plus or minus twice their standard errors. The interval for the shape parameter is given by $(-0.42,-0.15)$.
+The corresponding Wald test for $\xi = 0$ would be rejected at significance level $0.05$ since the 95\% confidence interval does not contain zero.
+A likelihood ratio test for $\xi = 0$ is performed in the following snippet.
 The hypothesis is rejected at any significance level above $0.00053$.
 
 \begin{verbatim}
@@ -1207,10 +1206,7 @@ Profile log-likelihoods of the parameters can be plotted using
 
 \begin{verbatim}
 > ox.prof <- profile(ox.fit)
-> pcis <- plot(ox.prof)
-> pcis[["scale"]]
-  lower  upper 
-  3.643  5.117 
+> plot(ox.prof)
 \end{verbatim}
 
 \begin{figure}
@@ -1227,9 +1223,9 @@ Profile log-likelihoods of the parameters can be plotted using
 \end{figure}
 
 The profile log-likelihoods for the scale and shape parameters are the first two plots of Figure \ref{oxprof}. A horizontal line is (optionally) drawn on each plot so that the intersection of the line with the profile log-likelihood yields a profile confidence interval, with (default) confidence coefficient 0.95.
-The end points of the intervals can be derived by assigning the expression \verb+plot(ox.prof)+ to an object, as above.
-The profile confidence intervals for the location and shape parameters are approximately the same as the intervals constructed using their standard errors, since the profile log-likelihoods are approximately symmetric.
-The profile log-likelihood for the scale parameter is asymmetric; both end points of the profile confidence interval $(3.64, 5.12)$ are larger than the corresponding end points of the interval $(3.54, 4.98)$, constructed using the standard error. The joint profile log-likelihood of the scale and shape parameters can be plotted using
+The end points of the intervals can be derived using \verb+confint(ox.prof)+.
+The profile confidence intervals for the location and shape parameters are approximately the same as the Wald confidence intervals, since the profile log-likelihoods are approximately symmetric.
+The profile log-likelihood for the scale parameter is asymmetric; both end points of the profile confidence interval $(3.64, 5.12)$ are larger than the corresponding end points of the Wald interval $(3.54, 4.98)$. The joint profile log-likelihood of the scale and shape parameters can be plotted using
 
 \begin{verbatim}
 > ox.prof2d <- profile2d(ox.fit, ox.prof, which = c("scale", "shape"))
@@ -1280,17 +1276,16 @@ The profile log-likelihood for $z_0$ can be plotted using the following code.
 \begin{verbatim}
 > ox.qfit <- fgev(ox, prob = 0)
 > ox.qprof <- profile(ox.qfit, which = "quantile", conf = 0.99)
-> pcis <- plot(ox.qprof, ci = c(0.95, 0.99))
-> pcis[["quantile"]]
-       lower upper
-  0.95 95.78 113.0
-  0.99 95.49 131.8
+> plot(ox.qprof)
+> confint(ox.qprof)
+           lower upper
+  quantile 95.78 113.0
 \end{verbatim}
 
 The argument \verb+conf+ of the function \verb+profile+ controls the range of the profile trace. 
 The profile trace is constructed so that profile confidence intervals with confidence coefficients \verb+conf+ or less can be derived from it.
 By default, $\verb+conf+ = 0.999$, though a smaller value is often appropriate when the profile log-likelihood exhibits strong asymmetry. 
-The 95\% and 99\% profile confidence intervals for the upper end point $z_0$ are derived as (95.8,113.0) and (95.5,131.8) respectively. 
+The 95\% profile confidence interval for the upper end point $z_0$ is derived as (95.8,113.0). 
 
 \section{Example: Rainfall Data}
 \setcounter{footnote}{0}
@@ -1340,7 +1335,7 @@ The fitted density tail is close to the non-parametric estimator, and most point
 \end{figure}
 
 Profile log-likelihoods of the shape parameter and the 100-year return level (not shown) can be plotted using the following code. The argument $\verb+mper+ = m$ re-parameterises the model so that \verb+fpot+ produces maximum likelihood estimates for $(z_m,\xi)$, where $z_m$ is the $m$ period return level, as defined in Section \ref{potfit}. 
- Horizontal lines denoting 95\% profile confidence intervals are depicted on each plot. The end points of profile confidence intervals can be derived by assigning the plotting expression to an object (see Section \ref{egoxford}).
+ Horizontal lines denoting 95\% profile confidence intervals are depicted on each plot. The end points of profile confidence intervals can be derived using \verb+confint(prgp3)+.
  
 \begin{verbatim}
 potgp3 <- fpot(rain, 30, npp = 365.25, mper = 100)
@@ -1411,7 +1406,7 @@ The third model assumes stationarity.
 %In particular, notice how the trend terms affect the parameter estimates.
 %Marginal Weibull distributions (negative shapes) are estimated when the trends are not included, but marginal Fr\'{e}chet distributions (positive shapes) are estimated upon their inclusion.
 
-The maximum likelihood estimates of the parameters can be compared with their standard errors to perform Wald tests or construct confidence intervals.
+The maximum likelihood estimates of the parameters can be compared with their standard errors to perform Wald tests. Wald confidence intervals can be derived using e.g.\ \verb+confint(m1)+.
 Likelihood ratio tests are performed in the following snippet. 
 The p-values confirm the statistical significance of the linear trend terms.
 
@@ -1467,7 +1462,7 @@ m8    7    -35.8  2  0.67       0.72
 
 Diagnostic plots for the fitted (generalised extreme value) marginal distributions can be produced using \verb+plot+ with \verb+mar = 1+ or \verb+mar = 2+.
 The plots produced are of the same structure as those given in Section \ref{egoxford}.
-Diagnostic plots for the fitted dependence structure can be produced using \verb+plot+. There are five plots available, though only four are plotted by default (see the \verb+plot.bvevd+ help file for details). Two diagnostic plots are depicted within Figure \ref{seadiag}.
+Diagnostic plots for the fitted dependence structure can be produced using \verb+plot+. There are six plots available (see the \verb+plot.bvevd+ help file for details). Two diagnostic plots are depicted within Figure \ref{seadiag}.
 
 \begin{verbatim}
 > plot(m1, mar = 1)
@@ -1495,14 +1490,13 @@ The argument \verb+xmax+ denotes the upper bound of the parameter.
 
 \begin{verbatim}
 > m1.prof <- profile(m1, which = "dep", xmax = 1)
-> pcis <- plot(m1.prof)
-> pcis[["dep"]]
-   lower  upper 
-  0.5282 0.8865
+> plot(m1.prof)
+> confint(m1.prof)
+      lower upper 
+  dep 0.528 0.887
 \end{verbatim}
  
-A horizontal line is (optionally) drawn so that the intersection of the line with the profile log-likelihood yields a profile confidence interval, with (default) confidence coefficient 0.95.
-The end points of the interval can be derived by assigning the expression \verb+plot(m1.prof)+ to an object, as above.
+A horizontal line is (optionally) drawn so that the intersection of the line with the profile log-likelihood yields a profile confidence interval, with (default) confidence coefficient 0.95. The interval is derived as $(0.53,0.89)$.
 
 Further analysis with models other than the (symmetric) logistic yields the following conclusions.
 The two models in Section \ref{biv} that include three parameters with which to describe the dependence structure (the asymmetric logistic and asymmetric negative logistic) are inappropriate.

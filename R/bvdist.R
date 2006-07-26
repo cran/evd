@@ -1,3 +1,4 @@
+
 "rbvevd" <-
 function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
@@ -481,8 +482,13 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
     idep <- 1/dep
     a <- (x^idep + (1-x)^idep)^dep
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
-        return(invisible(list(x = x, y = a)))
+      if(!add)  { 
+        plot(x, a, type="n", xlab = xlab, ylab = ylab,
+             xlim = xlim, ylim = ylim, ...) 
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
     a
 }
@@ -501,8 +507,13 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
     a <- ((asy[1]*x)^idep + (asy[2]*(1-x))^idep)^dep +
         (1-asy[1])*x + (1-asy[2])*(1-x)    
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...) 
-        return(invisible(list(x = x, y = a)))
+      if(!add)  { 
+        plot(x, a, type="n", xlab = xlab, ylab = ylab,
+             xlim = xlim, ylim = ylim, ...) 
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
     a
 }
@@ -518,8 +529,13 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
     fn <- function(z) z*pnorm(1/dep + dep * log(z/(1-z)) / 2)
     a <- fn(x) + fn(1-x)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
-        return(invisible(list(x = x, y = a)))
+      if(!add)  { 
+        plot(x, a, type="n", xlab = xlab, ylab = ylab,
+             xlim = xlim, ylim = ylim, ...) 
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
     a
 }
@@ -534,8 +550,13 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
     if(plot || add) x <- seq(0, 1, length = 100)
     a <- 1 - (x^(-dep) + (1-x)^(-dep))^(-1/dep)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...) 
-        return(invisible(list(x = x, y = a)))
+      if(!add)  { 
+        plot(x, a, type="n", xlab = xlab, ylab = ylab,
+             xlim = xlim, ylim = ylim, ...) 
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
     a
 }
@@ -552,8 +573,13 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
        max(asy) > 1) stop("invalid argument for `asy'")
     a <- 1 - ((asy[1]*x)^(-dep) + (asy[2]*(1-x))^(-dep))^(-1/dep)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
-        return(invisible(list(x = x, y = a)))
+      if(!add)  { 
+        plot(x, a, type="n", xlab = xlab, ylab = ylab,
+             xlim = xlim, ylim = ylim, ...) 
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
     a
 }
@@ -582,8 +608,13 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     }
     a <- x * gma^(1-alpha) + (1-x) * (1 - gma)^(1-beta)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
-        return(invisible(list(x = x, y = a)))
+      if(!add)  { 
+        plot(x, a, type="n", xlab = xlab, ylab = ylab,
+             xlim = xlim, ylim = ylim, ...) 
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
     a
 }
@@ -612,8 +643,13 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     }
     a <- 1 - x * gma^(1+alpha) - (1-x) * (1 - gma)^(1+beta)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
-        return(invisible(list(x = x, y = a)))
+      if(!add)  { 
+        plot(x, a, type="n", xlab = xlab, ylab = ylab,
+             xlim = xlim, ylim = ylim, ...) 
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
     a
 }
@@ -634,8 +670,13 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     a <- (1-x) * pbeta(u, shape1 = alpha, shape2 = beta + 1) +
       x * pbeta(u, shape1 = alpha + 1, shape2 = beta, lower.tail = FALSE)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
-        return(invisible(list(x = x, y = a)))
+      if(!add)  { 
+        plot(x, a, type="n", xlab = xlab, ylab = ylab,
+             xlim = xlim, ylim = ylim, ...) 
+        polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
     a
 }
@@ -660,21 +701,15 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     if(plot || add) x <- seq(0, 1, length = 100)
     a <- 1 - (alpha + beta) * x + alpha * (x^2) + beta * (x^3)
     if(plot || add) {
-        bvdepfn(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)  
-        return(invisible(list(x = x, y = a)))
-    }
-    a
-}
-
-"bvdepfn" <- 
-function(x, a, add, lty, lwd, col, blty, blwd, xlab, ylab, xlim, ylim, ...)
-{
-    if(!add)  { 
+      if(!add)  { 
         plot(x, a, type="n", xlab = xlab, ylab = ylab,
              xlim = xlim, ylim = ylim, ...) 
         polygon(c(0, 0.5, 1), c(1, 0.5, 1), lty = blty, lwd = blwd)  
+      }
+      lines(x, a, lty = lty, lwd = lwd, col = col) 
+      return(invisible(list(x = x, y = a)))
     }
-    lines(x, a, lty = lty, lwd = lwd, col = col)
+    a
 }
 
 "hbvevd" <-
@@ -728,10 +763,14 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, half = FALSE, lty = 1, xlab = 
     idep <- 1/dep
     h <- (idep - 1) * (x * (1-x))^(-1-idep) * (x^(-idep) + (1-x)^(-idep))^(dep-2)
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -749,10 +788,14 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
     h <- (idep - 1) * (asy[1] * asy[2])^idep * (x * (1-x))^(-1-idep) *
       ((asy[1]/x)^idep + (asy[2]/(1-x))^idep)^(dep-2)
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -766,10 +809,14 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, half = FALSE, lty = 1, xlab = 
     h <- dep * dnorm(1/dep + dep * log(x/(1-x)) / 2)
     h <- h / (2 * x * (1-x)^2)
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -782,10 +829,14 @@ function(x = 0.5, dep, plot = FALSE, add = FALSE, half = FALSE, lty = 1, xlab = 
     if(plot || add) x <- seq(0, 1, length = 100)
     h <- (1 + dep) * (x * (1-x))^(dep-1) * (x^dep + (1-x)^dep)^(-1/dep-2)
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -802,10 +853,14 @@ function(x = 0.5, dep, asy = c(1,1), plot = FALSE, add = FALSE,
     h <- (1 + dep) * (asy[1] * asy[2])^(-dep) * (x * (1-x))^(dep-1) *
       ((x/asy[1])^dep + ((1-x)/asy[2])^dep)^(-1/dep-2)
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -836,10 +891,14 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
       exp(log(1-beta) + log(alpha) + (alpha - 1)*log(gma) + log(x))
     h <- exp(log(1-alpha) + log(1-beta) - log(x * (1-x)) - log(h)) 
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -870,10 +929,14 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE,
     h <- exp(log(1+alpha) + log(1+beta) + alpha * log(gma) + beta * log(1-gma) -
              log(x * (1-x)) - log(h))
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -894,10 +957,14 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE, half = FALSE, lty = 1,
     h <- dbeta(u, shape1 = alpha + 1, shape2 = beta + 1) /
           (alpha * x^2 * (1-x) + beta * x * (1-x)^2) * c1
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -921,10 +988,14 @@ function(x = 0.5, alpha, beta, plot = FALSE, add = FALSE, half = FALSE, lty = 1,
     if(plot || add) x <- seq(0, 1, length = 100)
     h <- 2 * alpha + 6 * beta * (1-x)
     if(half) h <- h/2
-    if(plot) plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
-                  ylim = ylim, lty = lty, ...)
-    if(add) lines(x, h, lty = lty)
-    if(plot || add) return(invisible(list(x = x, y = h)))
+    if(plot || add) {
+      if(!add) {
+        plot(x, h, type = "l", xlab = xlab, ylab = ylab, xlim = xlim,
+          ylim = ylim, lty = lty, ...) 
+      }
+      lines(x, h, lty = lty) 
+      return(invisible(list(x = x, y = h)))
+    }
     h
 }
 
@@ -1295,22 +1366,6 @@ function(x, alpha, beta, mar1 = c(0,1,0), mar2 = mar1, log = FALSE)
     d   
 }
 
-
-##### DEFUNCT FUNCTION #####
-
-"abvpar" <-
-function(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
-    "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
-     rev = FALSE, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
-     blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1), xlab = "t",
-     ylab = "A(t)", ...)
-{
-  warning("this function is defunct: please use abvevd")
-  abvevd(x = x, dep = dep, asy = asy, alpha = alpha, beta = beta,
-    model = model, rev = rev, plot = plot, add = add, lty = lty,
-    lwd = lwd, col = col, blty = blty, blwd = blwd, xlim = xlim,
-    ylim = ylim, xlab = xlab, ylab = ylab, ...)
-}
 
 
 

@@ -1,3 +1,4 @@
+
 "profile.evd" <-  function(fitted, which = names(fitted$estimate), conf = 0.999, mesh = fitted$std.err[which]/4, xmin = rep(-Inf, length(which)), xmax = rep(Inf, length(which)), convergence = FALSE, method = "BFGS", control = list(maxit = 500), ...)
 {
     if(!inherits(fitted, "evd")) 
@@ -112,49 +113,6 @@
     }
     structure(prof.list, deviance = fitted$deviance,
               xmin = xmin, xmax = xmax, class = "profile.evd")
-}
-
-# Assumes profile trace is unimodal
-"pcint" <- function(prof, which = names(prof), ci = 0.95)
-{
-    if (!inherits(prof, "profile.evd")) 
-        stop("Use only with `profile.evd' objects")
-    if(!is.character(which))
-        stop("`which' must be a character vector")
-    if(!all(which %in% names(prof)))
-        stop("`which' contains unprofiled parameters")
-    rdevs <- attributes(prof)$deviance + qchisq(ci, df = 1)
-    civals <- as.list(which)
-    names(civals) <- which
-    for(i in which) {
-      x <- prof[[i]]
-      n <- nrow(x)
-      ulim <- min(x[1,"deviance"],x[n,"deviance"])
-      llim <- min(x[1,"deviance"],x[n,"deviance"])
-      th.l <- x[1, i] == attributes(prof)$xmin[i]
-      th.u <- x[n, i] == attributes(prof)$xmax[i]
-      halves <- c(diff(x[,"deviance"]) < 0, FALSE)
-      cisfi <- matrix(0, nrow = length(ci), ncol = 2, dimnames =
-        list(ci, c("lower", "upper")))
-      for(j in 1:length(ci)) {  
-        if(x[1,"deviance"] <= rdevs[j] && !th.l) {
-            warning(paste("cannot calculate lower confidence limit for", i))
-            cisfi[j,1] <- NA
-        }
-        if(x[1,"deviance"] <= rdevs[j] && th.l) cisfi[j,1] <- x[1, i]
-        if(x[1,"deviance"] > rdevs[j])
-          cisfi[j,1] <- approx(x[halves,2], x[halves,1], xout = rdevs[j])$y
-        if(x[n,"deviance"] <= rdevs[j] && !th.u) {
-            warning(paste("cannot calculate upper confidence limit for", i))
-            cisfi[j,2] <- NA
-        }
-        if(x[n,"deviance"] <= rdevs[j] && th.u) cisfi[j,2] <- x[n, i]
-        if(x[n,"deviance"] > rdevs[j])
-          cisfi[j,2] <- approx(x[!halves,2], x[!halves,1], xout = rdevs[j])$y
-        civals[[i]] <- drop(cisfi)
-      }
-    }
-    civals
 }
     
 profile2d <- function (fitted, ...) {
@@ -276,7 +234,41 @@ profile2d <- function (fitted, ...) {
         cdist <- -(attributes(x)$deviance + qchisq(ci, df = 1))/2
         abline(h = cdist, lty = clty)
     }
-    invisible(pcint(prof = x, which = which, ci = ci))
+    invisible(x)
+}
+
+"confint.profile.evd" <- function(object, parm, level = 0.95, ...)
+{
+    if(missing(parm)) 
+      parm <- names(object)
+    if(!all(parm %in% names(object)))
+      stop("`parm' contains unprofiled parameters")
+    rdev <- attributes(object)$deviance + qchisq(level, df = 1)
+    pct <- c("lower", "upper")
+    ci <- array(NA, dim = c(length(parm), 2), dimnames = list(parm, pct))
+    # Assumes profile trace is unimodal
+    for(i in parm) {
+      x <- object[[i]]
+      n <- nrow(x)
+      th.l <- (x[1, 1] == attributes(object)$xmin[i])
+      th.u <- (x[n, 1] == attributes(object)$xmax[i])
+      halves <- c(diff(x[,"deviance"]) < 0, FALSE)
+      if(x[1,"deviance"] <= rdev && !th.l) {
+        warning(paste("cannot calculate lower confidence limit for", i))
+        ci[i,1] <- NA
+      }
+      if(x[1,"deviance"] <= rdev && th.l) ci[i,1] <- x[1, 1]
+      if(x[1,"deviance"] > rdev)
+        ci[i,1] <- approx(x[halves,2], x[halves,1], xout = rdev)$y
+      if(x[n,"deviance"] <= rdev && !th.u) {
+        warning(paste("cannot calculate upper confidence limit for", i))
+        ci[i,2] <- NA
+      }
+      if(x[n,"deviance"] <= rdev && th.u) ci[i,2] <- x[n, 1]
+      if(x[n,"deviance"] > rdev)
+        ci[i,2] <- approx(x[!halves,2], x[!halves,1], xout = rdev)$y 
+    }
+    ci
 }
 
 "plot.profile2d.evd" <-  function(x, main = NULL, ci = c(0.5,0.8,0.9,0.95,0.975, 0.99, 0.995), col = heat.colors(8), intpts = 75, xaxs = "r", yaxs = "r", ...)
@@ -324,4 +316,12 @@ profile2d <- function (fitted, ...) {
     }
     invisible(x)
 }
+
+
+
+
+
+
+
+
 

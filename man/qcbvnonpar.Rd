@@ -8,11 +8,10 @@
 \synopsis{
 qcbvnonpar(p = seq(0.75, 0.95, 0.05), data, epmar = FALSE, nsloc1 =
     NULL, nsloc2 = NULL, mint = 1, method = c("cfg", "pickands",
-    "deheuvels", "halltajvidi", "tdo"), convex = FALSE, madj = 0,
-    kmar = NULL, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
-    xlim = range(data[,1], na.rm = TRUE), ylim = range(data[,2],
-    na.rm = TRUE), xlab = colnames(data)[1], ylab = colnames(data)[2],
-    \dots)
+    "tdo"), convex = FALSE, madj = 0, kmar = NULL, plot = FALSE,
+    add = FALSE, lty = 1, lwd = 1, col = 1, xlim = range(data[,1],
+    na.rm = TRUE), ylim = range(data[,2], na.rm = TRUE), xlab =
+    colnames(data)[1], ylab = colnames(data)[2], \dots)
 }
 \usage{
 qcbvnonpar(p = seq(0.75, 0.95, 0.05), data, epmar = FALSE, nsloc1 =

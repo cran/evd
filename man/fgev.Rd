@@ -3,6 +3,7 @@
 \alias{fitted.evd}
 \alias{std.errors}
 \alias{std.errors.evd}
+\alias{vcov.evd}
 \alias{print.evd}
 \alias{logLik.evd}
 
@@ -129,6 +130,7 @@ fgev(x, start, \dots, nsloc = NULL, prob = NULL, std.err = TRUE,
   \item{param}{A vector containing all parameters (optimized and fixed).}
   \item{deviance}{The deviance at the maximum likelihood estimates.}
   \item{corr}{The correlation matrix.}
+  \item{var.cov}{The variance covariance matrix.}
   \item{convergence, counts, message}{Components taken from the
     list returned by \code{\link{optim}}.}
   \item{data}{The data passed to the argument \code{x}.}
