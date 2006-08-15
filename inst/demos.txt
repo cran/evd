@@ -61,14 +61,12 @@ and showing Figure 9.6 with gev margins.
 6) Table 9.2 and Figure 9.8 use two undocumented features
 of the package. One: the likelihood argument of fbvpot,
 which allows implementation of the point process likelihood.
-Two: the k argument of abvnonpar, which allows computation
+Two: the pot method of abvnonpar, which allows computation
 of the peaks-over-threshold non-parametric estimator of
-the dependence function in equation (9.72).
+the dependence function in equations (9.72) and (9.58).
 
 7) In Figures 9.9 and 9.10 the demo uses confidence intervals 
-based on a normal approximation, because this is quicker. 
-Bootstrap confidence intervals in Figure 9.9 can be plotted 
-using 'boot = TRUE' in the call to chiplot.
+based on normal approximations.
 
 8) Figure 9.11 has been excluded: there is no function in evd 
 which plots this explicitly, and using basic R code would

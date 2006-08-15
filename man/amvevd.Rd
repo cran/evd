@@ -1,44 +1,47 @@
 \name{amvevd}
 \alias{amvevd}
-\title{Parametric Dependence Functions of Trivariate Extreme
+\title{Parametric Dependence Functions of Multivariate Extreme
     Value Models}
 \description{
-  Calculate or plot the dependence function \eqn{A} for the trivariate
-  logistic and trivariate asymmetric logistic models.
+  Calculate the dependence function \eqn{A} for the multivariate
+  logistic and multivariate asymmetric logistic models; plot the
+  estimated function in the trivariate case.
 }
 \usage{
-amvevd(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
+amvevd(x = rep(1/d,d), dep, asy, model = c("log", "alog"), d = 3, plot =
     FALSE, col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
     lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
 }
 \arguments{
-  \item{x}{A vector of length three or a matrix with three columns,
-    in which case the dependence function is evaluated across
-    the rows (ignored if plot is \code{TRUE}). The elements/rows
-    of the vector/matrix should be positive and should sum to one,
-    or else they should have a positive sum, in which case the rows
-    are rescaled and a warning is given. \eqn{A(1/3,1/3,1/3)} is
-    returned by default since it is often a useful summary of
-    dependence.}
+  \item{x}{A vector of length \code{d} or a matrix with \code{d}
+    columns, in which case the dependence function is evaluated
+    across the rows (ignored if plot is \code{TRUE}). The
+    elements/rows of the vector/matrix should be positive and should
+    sum to one, or else they should have a positive sum, in which
+    case the rows are rescaled and a warning is given.
+    \eqn{A(1/d,\dots,1/d)} is returned by default since it is often
+    a useful summary of dependence.}
   \item{dep}{The dependence parameter(s). For the logistic model,
     should be a single value. For the asymmetric logistic model,
-    should be a vector of length four, or a single value,
-    in which case the value is used for each of the four
+    should be a vector of length \eqn{2^d-d-1}, or a single value,
+    in which case the value is used for each of the \eqn{2^d-d-1}
     parameters (see \code{\link{rmvevd}}).}
   \item{asy}{The asymmetry parameters for the asymmetric logistic
-    model. Should be a list with seven vector elements; three
-    of length one, three of length two and one of length three,
+    model. Should be a list with \eqn{2^d-1} vector elements
     containing the asymmetry parameters for each separate component
     (see \code{\link{rmvevd}} and \bold{Examples}).}
   \item{model}{The specified model; a character string. Must be
     either \code{"log"} (the default) or \code{"alog"} (or any unique
     partial match), for the logistic and asymmetric logistic models
-    respectively. The definition of each model is given (for general
-    dimensions) in \code{\link{rmvevd}}.}
-  \item{plot}{Logical; if \code{TRUE} the function is plotted. The
-    minimum (evaluated) value is returned invisibly.
-    If \code{FALSE} (the default), the following arguments are
-    ignored.}
+    respectively. The definition of each model is given in
+    \code{\link{rmvevd}}.}
+  \item{d}{The dimension; an integer greater than or equal to two.
+    The trivariate case \code{d = 3} is the default.}
+  \item{plot}{Logical; if \code{TRUE}, and the dimension \code{d} is
+    three (the default dimension), the dependence function of a
+    trivariate model is plotted. For plotting in the bivariate case,
+    use \code{\link{abvevd}}. If \code{FALSE} (the default), the
+    following arguments are ignored.}
   \item{col}{A list of colours (see \code{\link{image}}). The first
     colours in the list represent smaller values, and hence
     stronger dependence. Each colour represents an equally spaced
@@ -71,42 +74,40 @@ amvevd(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
     if \code{lab} is \code{NULL}.}
 }
 \details{
-  Let \eqn{z = (z_1,z_2,z_3)}{z = (z1,z2,z3)} and
-  \eqn{w = (w_1,w_2,w_3)}{w = (w1,w2,w3)}.
-  Any trivariate extreme value distribution can be written as
-  \deqn{G(z) = \exp\left\{- \left\{\sum\nolimits_{j=1}^{3} y_j
-    \right\} A\left(\frac{y_1}{\sum\nolimits_{j=1}^{3} y_j},
-    \frac{y_2}{\sum\nolimits_{j=1}^{3} y_j},
-    \frac{y_3}{\sum\nolimits_{j=1}^{3} y_j}\right)\right\}}{
-    G(z) = exp{-(y1+y2+y3) A[y1/(y1+y2+y3),y2/(y1+y2+y3),
-      y3/(y1+y2+y3)]}}
+  Let \eqn{z = (z_1,\dots,z_d)}{z = (z1,\dots,zd)} and
+  \eqn{w = (w_1,\dots,w_d)}{w = (w1,\dots,wd)}.
+  Any multivariate extreme value distribution can be written as
+  \deqn{G(z) = \exp\left\{- \left\{\sum\nolimits_{j=1}^{d} y_j
+    \right\} A\left(\frac{y_1}{\sum\nolimits_{j=1}^{d} y_j}, \dots,
+    \frac{y_d}{\sum\nolimits_{j=1}^{d} y_j}\right)\right\}}{
+    G(z) = exp{-(y1+\dots+yd) A[y1/(y1+\dots+yd),
+      \dots, yd/(y1+\dots+yd)]}}
   for some function \eqn{A} defined on the simplex
-  \eqn{S_3 = \{w \in R^3_+ : \sum\nolimits_{j=1}^{3}
-    w_j = 1\}}{S_3 = {w: w1 + w2 + w3 = 1}},
+  \eqn{S_d = \{w \in R^d_+ : \sum\nolimits_{j=1}^{d}
+    w_j = 1\}}{S_d = {w: w1 + \dots + wd = 1}},
   where \deqn{y_i = \{1+s_i(z_i-a_i)/b_i\}^{-1/s_i}}{
     yi = {1+si(zi-ai)/bi}^(-1/si)}
   for \eqn{1+s_i(z_i-a_i)/b_i > 0}{1+si(zi-ai)/bi > 0} and
-  \eqn{i = 1,2,3}, and where the (generalized extreme value)
+  \eqn{i = 1,\dots,d}, and where the (generalized extreme value)
   marginal parameters are given by
   \eqn{(a_i,b_i,s_i)}{(ai,bi,si)}, \eqn{b_i > 0}{bi > 0}.
   If \eqn{s_i = 0}{si = 0} then \eqn{y_i}{yi} is defined by
   continuity.
 
   \eqn{A} is called (by some authors) the dependence function.
-  It follows that \eqn{A(1,0,0) = A(0,1,0) = A(0,0,1) = 1}, and
-  that \eqn{A} is a convex function with
-  \eqn{\max(w_1,w_2,w_3) \leq A(w)\leq 1}{
-    max(w1,w2,w3) <= A(w) <= 1} for
-  all \eqn{w} in \eqn{S_3}.
+  It follows that \eqn{A(w) = 1} when \eqn{w} is one of the \eqn{d}
+  vertices of \eqn{S_d}, and that \eqn{A} is a convex function with
+  \eqn{\max(w_1,\dots,w_d) \leq A(w)\leq 1}{
+    max(w1,\dots,wd) <= A(w) <= 1} for
+  all \eqn{w} in \eqn{S_d}.
   The lower and upper limits of \eqn{A} are obtained under complete
   dependence and mutual independence respectively.
   \eqn{A} does not depend on the marginal parameters.
 }
 
 \value{
-  \code{amvevd} calculates or plots the dependence function
-  for the trivariate logistic and trivariate asymmetric logistic
-  models, at specified parameter values.
+  A numeric vector of values. If plotting, the smallest evaluated
+  function value is returned invisibly.
 }
 
 \seealso{\code{\link{amvnonpar}}, \code{\link{abvevd}},

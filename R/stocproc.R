@@ -1,3 +1,4 @@
+
 "evmc" <-
 function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),

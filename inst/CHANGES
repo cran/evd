@@ -1,3 +1,51 @@
+CHANGES FROM VERSION 2.2-1 ARE AS FOLLOWS
+
+  Fitted objects now contain the variance covariance
+  matrix, which can be accessed by the function vcov. 
+
+  New function confint (methods confint.profile.evd and 
+  confint.evd) for calculating Wald and profile 
+  confidence intervals. The internal function pcint 
+  has now been deleted, and plot.profile.evd no longer 
+  returns profile confidence intervals invisibly. 
+
+  The function amvnonpar now implements non-parametric
+  estimators for dependence functions of extreme value 
+  distributions of any dimension.
+
+  The function amvevd now implements parametric 
+  evaluation of dependence functions of logistic and
+  asymmetric logistic models of any dimension.
+
+  I have removed the bootstrap confidence intervals
+  option from chiplot. This had problems with zero 
+  empirical cdf estimates for some replications. A
+  solution would be to use smoothed estimates, but I
+  decided against implementing this.
+
+  Argument trunc added to chiplot to control whether
+  estimates are truncated at theoretical upper and
+  lower bounds.
+
+  The old interfaces to abvnonpar and amvnonpar have 
+  been removed.
+
+  I have included a CITATION file in the /inst directory
+  so that typing citation("evd") returns an appropriate
+  citation.
+
+  The internal functions ccop and ccop.case have been
+  converted into a new documented function ccbvevd.
+
+  The recommended R package "stats" is now a required
+  package for evd.
+
+  The files INDEX and data/00Index are now unnecessary
+  (the information is now automatically generated from
+  documentation files) and have been removed.
+
+  The defunct function abvpar has been removed.
+
 CHANGES FROM VERSION 2.2-0 ARE AS FOLLOWS
 
   New function hbvevd for plotting the spectral density

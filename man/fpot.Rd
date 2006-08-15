@@ -144,6 +144,7 @@ fpot(x, threshold, model = c("gpd", "pp"), start, npp = length(x),
   \item{param}{A vector containing all parameters (optimized and fixed).}
   \item{deviance}{The deviance at the maximum likelihood estimates.}
   \item{corr}{The correlation matrix.}
+  \item{var.cov}{The variance covariance matrix.}
   \item{convergence, counts, message}{Components taken from the
     list returned by \code{\link{optim}}.}
   \item{threshold, r, ulow, rlow, npp}{The arguments of the same

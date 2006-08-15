@@ -1,6 +1,5 @@
 \name{abvevd}
 \alias{abvevd}
-\alias{abvpar}
 \title{Parametric Dependence Functions of Bivariate Extreme
     Value Models}
 \description{

@@ -1,51 +1,55 @@
 \name{amvnonpar}
 \alias{amvnonpar}
 \title{Non-parametric Estimates for Dependence Functions of the
-    Trivariate Extreme Value Distribution}
+    Multivariate Extreme Value Distribution}
 \description{
-  Calculate or plot non-parametric estimates for the dependence function
-  \eqn{A} of the trivariate extreme value distribution.
+  Calculate non-parametric estimates for the dependence function
+  \eqn{A} of the multivariate extreme value distribution and plot
+  the estimated function in the trivariate case.
 }
 \synopsis{
-amvnonpar(x = rep(1/3,3), data, epmar = FALSE, nsloc1 = NULL, nsloc2 =
-    NULL, nsloc3 = NULL, method = c("pickands", "deheuvels",
-    "halltajvidi"), madj = 0, kmar = NULL, plot = FALSE,
-    col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
-    lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
-}
-\usage{
-amvnonpar(x = rep(1/3,3), data, epmar = FALSE, nsloc1 = NULL, nsloc2 =
-    NULL, nsloc3 = NULL, madj = 0, plot = FALSE, col = heat.colors(12),
+amvnonpar(x = rep(1/d,d), data, d = 3, epmar = FALSE, nsloc = NULL,
+    madj = 0, kmar = NULL, plot = FALSE, col = heat.colors(12),
     blty = 0, grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3,
     lab = as.character(1:3), lcex = 1)
 }
+\usage{
+amvnonpar(x = rep(1/d,d), data, d = 3, epmar = FALSE, nsloc = NULL,
+    madj = 0, plot = FALSE, col = heat.colors(12), blty = 0,
+    grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3,
+    lab = as.character(1:3), lcex = 1)
+}
 \arguments{
-  \item{x}{A vector of length three or a matrix with three columns,
-    in which case the dependence function is evaluated across
-    the rows (ignored if plot is \code{TRUE}). The elements/rows
-    of the vector/matrix should be positive and should sum to one,
-    or else they should have a positive sum, in which case the rows
-    are rescaled and a warning is given. \eqn{A(1/3,1/3,1/3)} is
-    returned by default since it is often a useful summary of
-    dependence.}
-  \item{data}{A matrix or data frame with three columns, which may
+  \item{x}{A vector of length \code{d} or a matrix with \code{d}
+    columns, in which case the dependence function is evaluated
+    across the rows (ignored if plot is \code{TRUE}). The
+    elements/rows of the vector/matrix should be positive and should
+    sum to one, or else they should have a positive sum, in which
+    case the rows are rescaled and a warning is given.
+    \eqn{A(1/d,\dots,1/d)} is returned by default since it is often
+    a useful summary of dependence.}
+  \item{data}{A matrix or data frame with \code{d} columns, which may
     contain missing values.}
+  \item{d}{The dimension; an integer greater than or equal to two.
+    The trivariate case \code{d = 3} is the default.}
   \item{epmar}{If \code{TRUE}, an empirical transformation of the
     marginals is performed in preference to marginal parametric
-    GEV estimation, and the \code{nsloc} arguments are ignored.}
-  \item{nsloc1, nsloc2, nsloc3}{A data frame with the same number of
-    rows as \code{data}, for linear modelling of the location
-    parameter on the first/second/third margin.
-    The data frames are treated as covariate matrices, excluding the
-    intercept.
-    A numeric vector can be given as an alternative to a single column
-    data frame.}
+    GEV estimation, and the \code{nsloc} argument is ignored.}
+  \item{nsloc}{A data frame with the same number of rows as \code{data},
+    or a list containing \code{d} elements of this type, for linear
+    modelling of the marginal location parameters. In the former case,
+    the argument is applied to all margins. The data frames are treated
+    as covariate matrices, excluding the intercept. Numeric vectors can
+    be given as alternatives to single column data frames. A list can
+    contain \code{NULL} elements for stationary modelling of selected
+    margins.}
   \item{madj}{Performs marginal adjustments. See
     \code{\link{abvnonpar}}.}
-  \item{plot}{Logical; if \code{TRUE} the function is plotted. The
-    minimum (evaluated) value is returned invisibly.
-    If \code{FALSE} (the default), the following arguments are
-    ignored.}
+  \item{plot}{Logical; if \code{TRUE}, and the dimension \code{d} is
+    three (the default dimension), the dependence function of a
+    trivariate extreme value distribution is plotted. For plotting in
+    the bivariate case, use \code{\link{abvnonpar}}. If \code{FALSE}
+    (the default), the following arguments are ignored.}
   \item{col}{A list of colours (see \code{\link{image}}). The first
     colours in the list represent smaller values, and hence
     stronger dependence. Each colour represents an equally spaced
@@ -82,30 +86,29 @@ amvnonpar(x = rep(1/3,3), data, epmar = FALSE, nsloc1 = NULL, nsloc2 =
   in the estimation of the dependence structure, but every non-missing
   value is used in estimating the margins.
 
-  The dependence function of the trivariate extreme value
+  The dependence function of the multivariate extreme value
   distribution is defined in \code{\link{amvevd}}.
   The function \code{\link{amvevd}} calculates and plots dependence
-  functions of trivariate logistic and trivariate asymmetric
+  functions of multivariate logistic and multivariate asymmetric
   logistic models.
 
-  The estimator plotted or calculated is a trivariate extension of
-  the bivariate Pickands estimator defined in
-  \code{\link{abvnonpar}}.
+  The estimator plotted or calculated is a multivariate extension of
+  the bivariate Pickands estimator defined in \code{\link{abvnonpar}}.
 }
 
 \value{
-  \code{amvnonpar} calculates or plots a non-parametric estimate of
-  the dependence function of the trivariate extreme value distribution.
+  A numeric vector of estimates. If plotting, the smallest evaluated
+  estimate is returned invisibly.
 }
 
 \seealso{\code{\link{amvevd}}, \code{\link{abvnonpar}},
   \code{\link{fgev}}}
 
 \examples{
-s3pts <- matrix(rexp(30), nrow = 10, ncol = 3)
-s3pts <- s3pts/rowSums(s3pts)
-sdat <- rmvevd(100, dep = 0.6, model = "log", d = 3)
-amvnonpar(s3pts, sdat)
+s5pts <- matrix(rexp(50), nrow = 10, ncol = 5)
+s5pts <- s5pts/rowSums(s5pts)
+sdat <- rmvevd(100, dep = 0.6, model = "log", d = 5)
+amvnonpar(s5pts, sdat, d = 5)
 
 \dontrun{amvnonpar(data = sdat, plot = TRUE)}
 \dontrun{amvnonpar(data = sdat, plot = TRUE, ord = c(2,3,1), lab = LETTERS[1:3])}

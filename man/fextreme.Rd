@@ -65,6 +65,7 @@ fextreme(x, start, densfun, distnfun, \dots, distn, mlen = 1, largest =
   \item{std.err}{A vector containing the standard errors.}
   \item{deviance}{The deviance at the maximum likelihood estimates.}
   \item{corr}{The correlation matrix.}
+  \item{var.cov}{The variance covariance matrix.}
   \item{convergence, counts, message}{Components taken from the
     list returned by \code{\link{optim}}.}
   \item{call}{The call of the current function.}

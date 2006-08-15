@@ -1,3 +1,4 @@
+
 "rmvevd" <-
 function(n, dep, asy, model = c("log", "alog"), d = 2, mar = c(0,1,0))
 {
@@ -266,7 +267,7 @@ function(x,  dep, asy, d = 2, mar = c(0,1,0), log = FALSE)
 }
 
 "amvevd" <-
-function(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
+function(x = rep(1/d,d), dep, asy, model = c("log", "alog"), d = 3, plot =
     FALSE, col = heat.colors(12), blty = 0, grid = if(blty) 150 else 50,
     lower = 1/3, ord = 1:3, lab = as.character(1:3), lcex = 1)
 {
@@ -276,8 +277,8 @@ function(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
 
   if(!plot) {
     if(is.vector(x)) x <- as.matrix(t(x))
-    if(!is.matrix(x) || ncol(x) != 3)
-      stop("`x' must be a vector/matrix with three elements/columns")
+    if(!is.matrix(x) || ncol(x) != d)
+      stop("`x' must be a vector/matrix with `d' elements/columns")
     if(any(x < 0, na.rm = TRUE))
       stop("`x' must be non-negative")
     rs <- rowSums(x)
@@ -287,16 +288,21 @@ function(x = rep(1/3,3), dep, asy, model = c("log", "alog"), plot =
       warning("row(s) of `x' will be rescaled")
     x <- x/rs
   }
+  if(plot) {
+    if(d == 2) stop("use abvnonpar for bivariate plots")
+    if(d >= 4) stop("cannot plot in high dimensions")
+  }
      
   switch(model,
-    log = atvlog(x = x, dep = dep, plot = plot, col = col, blty = blty,
-      grid = grid, lower = lower, ord = ord, lab = lab, lcex = lcex),
-    alog = atvalog(x = x, dep = dep, asy = asy, plot = plot, col = col, blty =
-      blty, grid = grid, lower = lower, ord = ord, lab = lab, lcex = lcex))
+    log = amvlog(x = x, dep = dep, d = d, plot = plot, col = col, blty =
+      blty, grid = grid, lower = lower, ord = ord, lab = lab, lcex = lcex),
+    alog = amvalog(x = x, dep = dep, d = d, asy = asy, plot = plot, col =
+      col, blty = blty, grid = grid, lower = lower, ord = ord, lab = lab,
+      lcex = lcex))
 }
 
-"atvlog"<- 
-function(x, dep, plot = FALSE, col = heat.colors(12), blty = 0,
+"amvlog"<- 
+function(x, dep, d = 3, plot = FALSE, col = heat.colors(12), blty = 0,
     grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3, lab =
     as.character(1:3), lcex = 1)
 {
@@ -311,19 +317,22 @@ function(x, dep, plot = FALSE, col = heat.colors(12), blty = 0,
     depfn(x = x, dep = dep)   
 }
 
-"atvalog"<- 
-function(x, dep, asy, plot = FALSE, col = heat.colors(12), blty = 0,
+"amvalog"<- 
+function(x, dep, asy, d = 3, plot = FALSE, col = heat.colors(12), blty = 0,
     grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3, lab =
     as.character(1:3), lcex = 1)
 {
-    dep <- c(rep(dep, length.out = 4))
-    asy <- mvalog.check(asy, dep, d = 3)
-    depfn <- function(x, dep, asy) {
-      dep <- c(rep(1,3), dep)
-      tot <- matrix(0, nrow = nrow(x), ncol = 7)
+    dep <- rep(dep, length.out = 2^d-d-1)
+    asy <- mvalog.check(asy, dep, d)
+    
+    depfn <- function(x, dep, asy)
+    {
+      d <- ncol(x)
+      dep <- c(rep(1,d), dep)
+      tot <- matrix(0, nrow = nrow(x), ncol = 2^d-1)
       idep <- 1/dep
       x <- t(x)
-      for(k in 1:7)
+      for(k in 1:(2^d-1))
         tot[,k] <- colSums((asy[k,] * x)^idep[k])^dep[k]
       rowSums(tot)
     }
@@ -336,7 +345,10 @@ function(x, dep, asy, plot = FALSE, col = heat.colors(12), blty = 0,
     depfn(x = x, dep = dep, asy = asy)   
 }
 
-"tvdepfn" <- 
+### Ancillary Functions ###
+
+"tvdepfn" <-
+# Plots Dependence Function On Simplex S3
 function(depfn, col = heat.colors(12), blty = 0, grid =
     if(blty) 150 else 50, lower = 1/3, ord = 1:3, lab = as.character(1:3),
     lcex = 1, ...)
@@ -378,7 +390,9 @@ function(depfn, col = heat.colors(12), blty = 0, grid =
     invisible(mz)
 }
 
-mvalog.check <- function(asy, dep, d, ss = FALSE)
+"mvalog.check" <-
+# Checks And Transforms Arguments For Asymmetric Logistic
+function(asy, dep, d, ss = FALSE)
 {
     if(mode(dep) != "numeric" || any(dep <= 0) || any(dep > 1))
       stop("invalid argument for `dep'")
@@ -407,7 +421,9 @@ mvalog.check <- function(asy, dep, d, ss = FALSE)
     asy
 }
 
-subsets <- function(d) {
+"subsets" <-
+# Lists All Subsets Of 1:d
+function(d) {
     x <- 1:d
     k <- NULL
     for(m in x) 

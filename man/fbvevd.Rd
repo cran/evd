@@ -156,6 +156,7 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE,
   \item{deviance}{The deviance at the maximum likelihood estimates.}
   \item{dep.summary}{The estimate of \eqn{2(1-A(1/2))}.}
   \item{corr}{The correlation matrix.}
+  \item{var.cov}{The variance covariance matrix.}
   \item{convergence, counts, message}{Components taken from the
     list returned by \code{\link{optim}}.}
   \item{data}{The data passed to the argument \code{x}.}
