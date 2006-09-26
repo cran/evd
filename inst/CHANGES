@@ -1,3 +1,9 @@
+CHANGES FROM VERSION 2.2-2 ARE AS FOLLOWS
+
+  Added a Suggests field to the description file in
+  order to avoid warnings under future versions of
+  R CMD check.   
+
 CHANGES FROM VERSION 2.2-1 ARE AS FOLLOWS
 
   Fitted objects now contain the variance covariance
