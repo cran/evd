@@ -413,11 +413,13 @@ function(x, threshold, model = c("gpd", "pp"), start, npp = length(x), cmax = FA
 function(x, threshold, model, start, npp = length(x), cmax = FALSE, r = 1, ulow = -Inf, rlow = 1, ..., std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {
     if(model == "gpd") {
-      nlpot <- function(scale, shape) { 
+      nlpot <- function(loc, scale, shape) { 
         .C("nlgpd",
             exceed, nhigh, threshold, scale, shape, dns = double(1),
             PACKAGE = "evd")$dns
       }
+      # Avoids note produced by R CMD check
+      formals(nlpot) <- formals(nlpot)[2:3] 
     }
     if(model == "pp") {
       nlpot <- function(loc, scale, shape) {
