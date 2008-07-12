@@ -1,3 +1,10 @@
+CHANGES FROM VERSION 2.2-3 ARE AS FOLLOWS
+
+  Removed defunct url from description file.
+
+  Internal coding change to fpot.norm in order to
+  avoid note produced under R CMD check.
+
 CHANGES FROM VERSION 2.2-2 ARE AS FOLLOWS
 
   Added a Suggests field to the description file in
