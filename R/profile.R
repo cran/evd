@@ -289,7 +289,7 @@ profile2d <- function (fitted, ...) {
     lbak <- TRUE
     if (is.na(match("package:akima", search()))) {
         oldop <- options(warn = -1)
-        lbak <- library("akima", char = TRUE, logical = TRUE)
+        lbak <- library("akima", character.only = TRUE, logical.return = TRUE)
         options(oldop)
         if(lbak) cat("Loaded package akima", "\n")
     }
