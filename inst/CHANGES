@@ -1,3 +1,17 @@
+CHANGES FROM VERSION 2.2-4 ARE AS FOLLOWS
+
+  Added default NAMESPACE file to avoid note produced
+  under R CMD check.
+
+  Changed licence to GPL-3.
+
+  Datasets are now binary .rda files instead of .R.
+
+  Renamed doc/guide22.tex to doc/guide22.txt.
+
+  Call to library in plot.profile2d.evd did not use
+  full argument matching. Fixed.
+
 CHANGES FROM VERSION 2.2-3 ARE AS FOLLOWS
 
   Removed defunct url from description file.
@@ -83,7 +97,7 @@ CHANGES FROM VERSION 2.2-0 ARE AS FOLLOWS
   pscale allowing the x-axis to be the threshold
   exceedance probability rather than the threshold.
 
-  The default plotting charater in bivariate density 
+  The default plotting character in bivariate density 
   plots is now a circle, to be consistent with quantile
   curves plots. Also, all plotting functions now produce
   all available plots by default.
