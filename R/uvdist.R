@@ -19,6 +19,13 @@ function(n, loc = 0, scale = 1, shape = 1)
     loc - scale * rexp(n)^(1/shape)
 }
 
+"rnweibull"<-
+function(n, loc = 0, scale = 1, shape = 1)
+{
+    if(min(scale) < 0 || min(shape) <= 0) stop("invalid arguments")
+    loc - scale * rexp(n)^(1/shape)
+}
+
 "rgev"<-
 function(n, loc = 0, scale = 1, shape = 0)
 {
@@ -93,6 +100,16 @@ function(p, loc = 0, scale = 1, shape = 1, lower.tail = TRUE)
     loc - scale * (-log(p))^(1/shape)
 }
 
+"qnweibull"<-
+function(p, loc = 0, scale = 1, shape = 1, lower.tail = TRUE)
+{
+    if(min(p, na.rm = TRUE) <= 0 || max(p, na.rm = TRUE) >=1)
+        stop("`p' must contain probabilities in (0,1)")
+    if(min(scale) < 0 || min(shape) <= 0) stop("invalid arguments")
+    if(!lower.tail) p <- 1 - p
+    loc - scale * (-log(p))^(1/shape)
+}
+
 "qgev"<-
 function(p, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
 {
@@ -151,6 +168,16 @@ function(q, loc = 0, scale = 1, lower.tail = TRUE)
 }
 
 "prweibull"<-
+function(q, loc = 0, scale = 1, shape = 1, lower.tail = TRUE)
+{
+    if(min(scale) <= 0 || min(shape) <= 0) stop("invalid arguments")
+    q <- pmin((q - loc)/scale,0)
+    p <- exp(-(-q)^shape)
+    if(!lower.tail) p <- 1 - p
+    p
+}
+
+"pnweibull"<-
 function(q, loc = 0, scale = 1, shape = 1, lower.tail = TRUE)
 {
     if(min(scale) <= 0 || min(shape) <= 0) stop("invalid arguments")
@@ -252,6 +279,23 @@ function(x, loc = 0, scale = 1, log = FALSE)
 }
 
 "drweibull"<-
+function(x, loc = 0, scale = 1, shape = 1, log = FALSE)
+{
+    if(min(scale) <= 0 || min(shape) <= 0) stop("invalid arguments")
+    x <- (x - loc)/scale
+    xneg <- x[x<0 | is.na(x)]
+    nn <- length(x)
+    scale <- rep(scale, length.out = nn)[x<0 | is.na(x)]
+    shape <- rep(shape, length.out = nn)[x<0 | is.na(x)]
+    d <- numeric(nn)
+    d[x<0 | is.na(x)] <- log(shape/scale) + (shape-1) * log(-xneg) -
+        (-xneg)^shape
+    d[x>=0 & !is.na(x)] <- -Inf
+    if(!log) d <- exp(d)
+    d
+}
+
+"dnweibull"<-
 function(x, loc = 0, scale = 1, shape = 1, log = FALSE)
 {
     if(min(scale) <= 0 || min(shape) <= 0) stop("invalid arguments")

@@ -6,20 +6,13 @@
   Calculate or plot non-parametric estimates for the dependence function
   \eqn{A} of the bivariate extreme value distribution.
 }
-\synopsis{
+\usage{
 abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL,
     nsloc2 = NULL, method = c("cfg", "pickands", "tdo", "pot"),
      k = nrow(data)/4, convex = FALSE, rev = FALSE, madj = 0,
     kmar = NULL, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
     col = 1, blty = 3, blwd = 1, xlim = c(0, 1), ylim = c(0.5, 1),
     xlab = "t", ylab = "A(t)", \dots)
-}
-\usage{
-abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,
-    method = c("cfg", "pickands"), convex = FALSE, rev = FALSE,
-    madj = 0, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
-    blty = 3, blwd = 1, xlim = c(0, 1), ylim = c(0.5, 1), xlab = "t",
-    ylab = "A(t)", \dots)
 }
 \arguments{
   \item{x}{A vector of values at which the dependence function is
@@ -36,13 +29,19 @@ abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,
     first/second margin. The data frames are treated as covariate
     matrices, excluding the intercept. A numeric vector can be given
     as an alternative to a single column data frame.}
-  \item{method}{The estimation method (see \bold{Details}). Either
-    \code{"cfg"} (the default) or \code{"pickands"}.}
+  \item{method}{The estimation method (see \bold{Details}). Typically
+    either \code{"cfg"} (the default) or \code{"pickands"}. The remaining
+	methods \code{"tdo"} and \code{"pot"} can be used but are not 
+	otherwise documented.}
+  \item{k}{A parameter for the \code{"pot"} method.}
   \item{convex}{Logical; take the convex minorant?}
   \item{rev}{Logical; reverse the dependence function? This is
     equivalent to evaluating the function at \code{1-x}.}
   \item{madj}{Performs marginal adjustments for the \code{"pickands"}
     method (see \bold{Details}).}
+  \item{kmar}{In the rare case that the marginal distributions are known,
+    specifies the GEV parameters to be used instead of maximum likelihood
+	estimates.}
   \item{plot}{Logical; if \code{TRUE} the function is plotted. The
     x and y values used to create the plot are returned invisibly.
     If \code{plot} and \code{add} are \code{FALSE} (the default),
@@ -92,9 +91,9 @@ abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL, nsloc2 = NULL,
   follows.
 
   \code{method = "cfg"} (Caperaa, Fougeres and Genest, 1997)
-  \deqn{\log(A_c(w)) = 1/n \left\{ sum_{i=1}^n \log(max[(1-w)y_{i1},
-    wy_{i1}]) - (1-w)sum_{i=1}^n y_{i1} - w sum_{i=1}^n y_{i2}
-    \right\}}{log(A_c(w)) = 1/n { sum_{i=1}^n \log (max[(1-w)y_{i1},
+  \deqn{\log(A_c(w)) = \frac{1}{n} \left\{ \sum_{i=1}^n \log(\max[(1-w)y_{i1},
+    wy_{i1}]) - (1-w)\sum_{i=1}^n y_{i1} - w \sum_{i=1}^n y_{i2}
+    \right\}}{log(A_c(w)) = 1/n { sum_{i=1}^n log (max[(1-w)y_{i1},
     wy_{i1}]) - (1-w)sum_{i=1}^n y_{i1} - w sum_{i=1}^n y_{i2} }}
   
   \code{method = "pickands"} (Pickands, 1981)

@@ -6,18 +6,12 @@
   Calculate or plot the dependence function \eqn{A} for
   nine parametric bivariate extreme value models.
 }
-\synopsis{
+\usage{
 abvevd(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
      rev = FALSE, plot = FALSE, add = FALSE, lty = 1, lwd = 1, col = 1,
      blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1), xlab = "t",
      ylab = "A(t)", \dots)
-}
-\usage{
-abvevd(x = 0.5, dep, asy = c(1,1), alpha, beta, model = "log",
-     rev = FALSE, plot = FALSE, add = FALSE, lty = 1, lwd = 1,
-     col = 1, blty = 3, blwd = 1, xlim = c(0,1), ylim = c(0.5,1),
-     xlab = "t", ylab = "A(t)", \dots)
 }
 \arguments{
   \item{x}{A vector of values at which the dependence function is

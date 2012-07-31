@@ -1,7 +1,7 @@
 \name{uccle}
 \alias{uccle}
 \title{Rainfall Maxima at Uccle, Belgium}
-\usage{data(uccle)}
+\usage{uccle}
 \description{
   The \code{uccle} data frame has 35 rows and 4 columns.
   The columns contain annual rainfall maxima (in millimetres) from

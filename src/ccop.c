@@ -34,15 +34,13 @@ double ccbvalog(double m1, double m2, double oldm1, double dep, double asy1,
 
 double ccbvhr(double m1, double m2, double oldm1, double dep)
 {
-  double tm1,tm2,v,idep,q,fval;
+  double tm1,tm2,v,idep,fval;
 
   tm1 = -log(m1);
   tm2 = -log(m2);
   idep = 1 / dep;
   v = tm2 * pnorm(idep + (log(tm2) - log(tm1)) * dep/2, 0, 1, 1, 0) +
     tm1 * pnorm(idep + (log(tm1) - log(tm2)) * dep/2, 0, 1, 1, 0);
-  q = pnorm(idep + (log(tm2) - log(tm1)) * dep/2, 0, 1, 1, 0) *
-    exp(-v) / m2 - oldm1;
   fval = pnorm(idep + (log(tm2) - log(tm1)) * dep/2, 0, 1, 1, 0) *
     exp(-v) / m2 - oldm1;
   return fval;
@@ -79,14 +77,14 @@ double ccbvbilog(double m1, double m2, double oldm1, double alpha,
 {
   int i;
   double tm1,tm2,v,fval;
-  double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
+  double delta,eps,llim,midpt,ilen,lval,midval,uval;
 
   tm1 = -log(m1);
   tm2 = -log(m2);
 
   delta = eps = R_pow(DOUBLE_EPS, 0.75);
   llim = 0;
-  ulim = ilen = 1;
+  ilen = 1;
   lval = (1 - alpha) * tm1;
   uval = (beta - 1) * tm2;
   if(!(sign(lval) != sign(uval))) 
@@ -99,7 +97,6 @@ double ccbvbilog(double m1, double m2, double oldm1, double alpha,
     if(fabs(midval) < eps || fabs(ilen) < delta) 
       break;
     if(sign(lval) != sign(midval)) {
-      ulim = midpt;
       uval = midval;
     }
     else {
@@ -120,14 +117,14 @@ double ccbvnegbilog(double m1, double m2, double oldm1, double alpha,
 {
   int i;
   double tm1,tm2,v,fval;
-  double delta,eps,llim,midpt,ulim,ilen,lval,midval,uval;
+  double delta,eps,llim,midpt,ilen,lval,midval,uval;
 
   tm1 = -log(m1);
   tm2 = -log(m2);
 
   delta = eps = R_pow(DOUBLE_EPS, 0.75);
   llim = 0;
-  ulim = ilen = 1;
+  ilen = 1;
   lval = - (1 + beta) * tm2;
   uval = (1 + alpha) * tm1;
   if(!(sign(lval) != sign(uval))) 
@@ -140,7 +137,6 @@ double ccbvnegbilog(double m1, double m2, double oldm1, double alpha,
     if(fabs(midval) < eps || fabs(ilen) < delta) 
       break;
     if(sign(lval) != sign(midval)) {
-      ulim = midpt;
       uval = midval;
     }
     else {

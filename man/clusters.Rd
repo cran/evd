@@ -4,16 +4,10 @@
 \description{
   Identify clusters of exceedences. 
 }
-\synopsis{
+\usage{
 clusters(data, u, r = 1, ulow = -Inf, rlow = 1, cmax = FALSE, keep.names
     = TRUE, plot = FALSE, xdata = seq(along = data), lvals = TRUE, lty =
     1, lwd = 1, pch = par("pch"), col = if(n > 250) NULL else "grey",
-    xlab = "Index", ylab = "Data", ...)
-}
-\usage{
-clusters(data, u, r = 1, ulow = -Inf, cmax = FALSE, keep.names = TRUE,
-    plot = FALSE, xdata = seq(along = data), lvals = TRUE, lty = 1,
-    lwd = 1, pch = par("pch"), col = if(n > 250) NULL else "grey",
     xlab = "Index", ylab = "Data", ...)
 }
 \arguments{
@@ -30,6 +24,8 @@ clusters(data, u, r = 1, ulow = -Inf, cmax = FALSE, keep.names = TRUE,
     \code{data} (or else the usual recycling rules are applied).
     By default there is no lower threshold (or equivalently, the
     lower threshold is \code{-Inf}).}
+  \item{rlow}{A postive integer denoting the lower clustering interval
+    length. By default the interval length is one.}
   \item{cmax}{Logical; if \code{FALSE} (the default), a list
     containing the clusters of exceedences is returned. If
     \code{TRUE} a numeric vector containing the cluster maxima

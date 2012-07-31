@@ -5,19 +5,13 @@
   Calculate or plot non-parametric estimates for quantile curves
   of bivariate extreme value distributions.
 }
-\synopsis{
+\usage{
 qcbvnonpar(p = seq(0.75, 0.95, 0.05), data, epmar = FALSE, nsloc1 =
     NULL, nsloc2 = NULL, mint = 1, method = c("cfg", "pickands",
     "tdo"), convex = FALSE, madj = 0, kmar = NULL, plot = FALSE,
     add = FALSE, lty = 1, lwd = 1, col = 1, xlim = range(data[,1],
     na.rm = TRUE), ylim = range(data[,2], na.rm = TRUE), xlab =
     colnames(data)[1], ylab = colnames(data)[2], \dots)
-}
-\usage{
-qcbvnonpar(p = seq(0.75, 0.95, 0.05), data, epmar = FALSE, nsloc1 =
-    NULL, nsloc2 = NULL, mint = 1, method = c("cfg", "pickands"),
-    convex = FALSE, madj = 0, plot = FALSE, add = FALSE, lty = 1,
-    lwd = 1, col = 1, xlim, ylim, xlab, ylab, \dots)
 }
 \arguments{
   \item{p}{A vector of lower tail probabilities. One quantile curve is
@@ -34,7 +28,7 @@ qcbvnonpar(p = seq(0.75, 0.95, 0.05), data, epmar = FALSE, nsloc1 =
     as an alternative to a single column data frame.}
   \item{mint}{An integer \eqn{m}. Quantile curves are plotted or
     calculated using the lower tail probabilities \eqn{p^m}.}
-  \item{method}{Arguments for the non-parametric estimate of the
+  \item{method, kmar}{Arguments for the non-parametric estimate of the
     dependence function. See \code{\link{abvnonpar}}.}
   \item{convex, madj}{Other arguments for the non-parametric
     estimate of the dependence function.}

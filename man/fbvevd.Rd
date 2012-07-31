@@ -9,17 +9,12 @@
   location parameters, and allowing any of the parameters to be held
   fixed if desired. 
 }
-\synopsis{
+\usage{
 fbvevd(x, model = c("log", "alog", "hr", "neglog", "aneglog", "bilog",
     "negbilog", "ct", "amix"), start, \dots, sym = FALSE,
     nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc,
     cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS",
     warn.inf = TRUE)
-}
-\usage{
-fbvevd(x, model = "log", start, \dots, sym = FALSE,
-    nsloc1 = NULL, nsloc2 = NULL, cshape = cscale, cscale = cloc,
-    cloc = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS")
 }
 \arguments{
   \item{x}{A matrix or data frame, ordinarily with two columns,
@@ -69,6 +64,9 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE,
     returned.}
   \item{method}{The optimization method (see \code{\link{optim}} for
     details).}
+  \item{warn.inf}{Logical; if \code{TRUE} (the default), a warning is
+    given if the negative log-likelihood is infinite when evaluated at
+    the starting values.}
 }
 \details{
   The dependence parameter names are one or more of \code{dep},
@@ -90,7 +88,7 @@ fbvevd(x, model = "log", start, \dots, sym = FALSE,
   
   It is recommended that the covariates within the linear models for
   the location parameters are (at least approximately) centered and
-  scaled (i.e.\ that the columns of \code{nsloc1} and \code{nsloc2}
+  scaled (i.e. that the columns of \code{nsloc1} and \code{nsloc2}
   are centered and scaled), particularly if automatic starting values
   are used, since the starting values for the associated parameters are
   then zero. If \code{cloc} is \code{TRUE}, both \code{nsloc1} and
@@ -256,10 +254,10 @@ fbvevd(bvdata, model = "log", nsloc1 = trend, nsloc2 = data.frame(trend
 
 bvdata <- rbvevd(100, dep = 1, asy = c(0.5,0.5), model = "anegl")
 anlog <- fbvevd(bvdata, model = "anegl")
-amixed <- fbvevd(bvdata, model = "amix")
-mixed <- fbvevd(bvdata, model = "amix", beta = 0)
 mixed <- fbvevd(bvdata, model = "anegl", dep = 1, sym = TRUE)
 anova(anlog, mixed)
+amixed <- fbvevd(bvdata, model = "amix")
+mixed <- fbvevd(bvdata, model = "amix", beta = 0)
 anova(amixed, mixed)
 }
 

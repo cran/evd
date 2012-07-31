@@ -9,16 +9,12 @@
   distributions using threshold exceedances, allowing any of the
   parameters to be held fixed if desired.
 }
-\synopsis{
+\usage{
 fbvpot(x, threshold, model = c("log", "bilog", "alog", "neglog",
     "negbilog", "aneglog", "ct", "hr", "amix"), likelihood =
     c("censored", "poisson"), start, \dots, sym = FALSE, cshape =
     cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method =
     "BFGS", warn.inf = TRUE)
-}
-\usage{
-fbvpot(x, threshold, model = "log", start, \dots, sym = FALSE, cshape =
-   cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS")
 }
 \arguments{
   \item{x}{A matrix or data frame with two columns. If this
@@ -34,6 +30,8 @@ fbvpot(x, threshold, model = "log", start, \dots, sym = FALSE, cshape =
     bilogistic, negative bilogistic, Coles-Tawn and asymmetric mixed
     models respectively. The definition of each model is given in
     \code{\link{rbvevd}}.}
+  \item{likelihood}{Do not use: the second method is not fully 
+    implemented.}
   \item{start}{A named list giving the initial values for all of the
     parameters in the model. If \code{start} is omitted the routine
     attempts to find good starting values using marginal maximum
@@ -58,6 +56,9 @@ fbvpot(x, threshold, model = "log", start, \dots, sym = FALSE, cshape =
     returned.}
   \item{method}{The optimization method (see \code{\link{optim}} for
     details).}
+  \item{warn.inf}{Logical; if \code{TRUE} (the default), a warning is
+    given if the negative log-likelihood is infinite when evaluated at
+    the starting values.}
 }
 \details{
   The bivariate peaks over threshold models are fitted by

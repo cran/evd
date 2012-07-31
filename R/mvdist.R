@@ -191,7 +191,7 @@ function(x,  dep, asy, d = 2, mar = c(0,1,0), log = FALSE)
         ncol = 3, byrow = TRUE)
     }
     else mar <- matrix(t(mar), nrow = nn, ncol = 3, byrow = TRUE)
-    x<- mtransform(x, mar)
+    x <- mtransform(x, mar)
     ext <- apply(x, 1, function(z) any(z %in% c(0,Inf)))
     dns <- numeric(nn)
     dns[ext] <- -Inf
@@ -212,6 +212,7 @@ function(x,  dep, asy, d = 2, mar = c(0,1,0), log = FALSE)
         marshp <- mar[,3]
       }
       cfinit <- function(dep) {
+	    if(dep==1) return(diag(d))
         cf <- matrix(0, nrow = d, ncol = d)
         diag(cf) <- dep^(1:d - 1)
         cf[,1] <- exp(lgamma(1:d - dep) - lgamma(1:d) - lgamma(1 - dep))
@@ -251,7 +252,7 @@ function(x,  dep, asy, d = 2, mar = c(0,1,0), log = FALSE)
       for(i in 1:(2^(d*(d-1)))) {
         indmi <- indm[i,]
         pp <- tabulate(indmi, 2^d-1)[indmi]
-        if(all(asy[indmi + (2^d-1)*(0:(d-1))])) {
+        if(all(asy[indmi + (2^d-1)*(0:(d-1))] != 0)) {
           for(j in 1:d) 
             tot2[,j] <- 1/dep[indmi[j]] * (log(asy[indmi[j],j]) + lx[,j]) +
               (1 - 1/dep[indmi[j]]) * zm[,indmi[j]] + qfn(zm[,indmi[j]],

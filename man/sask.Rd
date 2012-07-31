@@ -1,7 +1,7 @@
 \name{sask}
 \alias{sask}
 \title{Maximum Annual Flood Discharges of the North Saskachevan River}
-\usage{data(sask)}
+\usage{sask}
 \description{
   A numeric vector containing maximum annual flood discharges, in
   units of 1000 cubic feet per second, of the North Saskachevan

@@ -1,7 +1,7 @@
 \name{lisbon}
 \alias{lisbon}
 \title{Annual Maximum Wind Speeds at Lisbon}
-\usage{data(lisbon)}
+\usage{lisbon}
 \description{
   A numeric vector containing annual maximum wind speeds, in
   kilometers per hour, from 1941 to 1970 at Lisbon, Portugal.

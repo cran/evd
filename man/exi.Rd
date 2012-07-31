@@ -4,11 +4,8 @@
 \description{
   Estimates of the extremal index. 
 }
-\synopsis{
-exi(data, u, r = 1, ulow = -Inf, rlow = 1)
-}
 \usage{
-exi(data, u, r = 1, ulow = -Inf)
+exi(data, u, r = 1, ulow = -Inf, rlow = 1)
 }
 \arguments{
   \item{data}{A numeric vector, which may contain missing values.}
@@ -26,6 +23,8 @@ exi(data, u, r = 1, ulow = -Inf)
     \code{data} (or else the usual recycling rules are applied).
     By default there is no lower threshold (or equivalently, the
     lower threshold is \code{-Inf}).}
+  \item{rlow}{A postive integer denoting the lower clustering interval
+    length. By default the interval length is one.}
 }
 \details{
   If \code{r} is a positive integer the extremal index is estimated

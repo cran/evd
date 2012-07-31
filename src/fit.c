@@ -388,7 +388,7 @@ void nlbvbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
 {
   int i,j;
   double *e1,*e2,*v,*jc,*dvec,*gma;
-  double llim,midpt,ulim,ilen,lval,midval,uval,delta,eps;
+  double llim,midpt,ilen,lval,midval,uval,delta,eps;
 
   gma = (double *)R_alloc(*n, sizeof(double));
   e1 = (double *)R_alloc(*n, sizeof(double));
@@ -425,7 +425,7 @@ void nlbvbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
   delta = eps = R_pow(DOUBLE_EPS, 0.5);
   for(i=0;i<*n;i++) {
     llim = 0;
-    ulim = ilen = 1;
+    ilen = 1;
     lval = (1 - *alpha) * exp(datam1[i]);
     uval = (*beta - 1) * exp(datam2[i]);
     if(!(sign(lval) != sign(uval))) 
@@ -438,7 +438,6 @@ void nlbvbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
       if(fabs(midval) < eps || fabs(ilen) < delta) 
         break;
       if(sign(lval) != sign(midval)) {
-        ulim = midpt;
         uval = midval;
       }
       else {
@@ -482,7 +481,7 @@ void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha
 {
   int i,j;
   double *e1,*e2,*e3,*v,*jc,*dvec,*gma;
-  double llim,midpt,ulim,ilen,lval,midval,uval,delta,eps;
+  double llim,midpt,ilen,lval,midval,uval,delta,eps;
 
   gma = (double *)R_alloc(*n, sizeof(double));
   e1 = (double *)R_alloc(*n, sizeof(double));
@@ -520,7 +519,7 @@ void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha
   delta = eps = R_pow(DOUBLE_EPS, 0.5);
   for(i=0;i<*n;i++) {
     llim = 0;
-    ulim = ilen = 1;
+    ilen = 1;
     uval = (1 + *alpha) * exp(datam1[i]);
     lval = - (1 + *beta) * exp(datam2[i]);
     if(!(sign(lval) != sign(uval))) 
@@ -533,7 +532,6 @@ void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha
       if(fabs(midval) < eps || fabs(ilen) < delta) 
         break;
       if(sign(lval) != sign(midval)) {
-        ulim = midpt;
         uval = midval;
       }
       else {
@@ -562,7 +560,7 @@ void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha
             datam2[i]);
     if(si[i] == 0) dvec[i] = log(e1[i]) - v[i] + jc[i];
     else if(si[i] == 1) 
-      dvec[i] = dvec[i] = log(e2[i] / e3[i]) - v[i] + jc[i];
+      dvec[i] = log(e2[i] / e3[i]) - v[i] + jc[i];
     else dvec[i] = log(e1[i] + e2[i] / e3[i]) - v[i] + jc[i];
   }
   
@@ -716,7 +714,7 @@ void nslmvalog(double *data, int *n, int *d, double *deps, double *thetas,
     double *mpar, double *psrvs, int *q, int *nslocid, double *nsloc, 
     int *depindx, int *thetaindx, double *dns)
 {
-  int i,j,k,l,dd,nn,qq,niinb,niinbm,ndepp,nthetap,nmp;
+  int i,j,k,l,dd,nn,qq,niinbm,ndepp,nmp;
   double iterm1, iterm2, term1, term2, eps;
   double thetasum, psrv, repdens;
   double dep, theta, loc;
@@ -726,9 +724,7 @@ void nslmvalog(double *data, int *n, int *d, double *deps, double *thetas,
   dd = *d; nn = *n; qq = *q;
   eps = R_pow(DOUBLE_EPS, 0.3);
   ndepp = R_pow(2, dd) - 1 - dd; 
-  niinb = R_pow(2, dd - 1);
-  nthetap = dd * (niinb - 1);
-  niinbm = niinb-1;
+  niinbm = R_pow(2, dd - 1) - 1;
   if(*nslocid) nmp = 4;
   else nmp = 3;
   *dns = 0;

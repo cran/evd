@@ -3,17 +3,26 @@
 \alias{prweibull}
 \alias{qrweibull}
 \alias{rrweibull}
-\title{The Reversed Weibull Distribution}
+\alias{dnweibull}
+\alias{pnweibull}
+\alias{qnweibull}
+\alias{rnweibull}
+\title{The Reverse Weibull Distribution}
 \description{
   Density function, distribution function, quantile function and
-  random generation for the reversed Weibull distribution with
-  location, scale and shape parameters. 
+  random generation for the reverse (or negative) Weibull 
+  distribution with location, scale and shape parameters. 
 }
 \usage{
 drweibull(x, loc=0, scale=1, shape=1, log = FALSE) 
 prweibull(q, loc=0, scale=1, shape=1, lower.tail = TRUE) 
 qrweibull(p, loc=0, scale=1, shape=1, lower.tail = TRUE)
 rrweibull(n, loc=0, scale=1, shape=1)
+
+dnweibull(x, loc=0, scale=1, shape=1, log = FALSE) 
+pnweibull(q, loc=0, scale=1, shape=1, lower.tail = TRUE) 
+qnweibull(p, loc=0, scale=1, shape=1, lower.tail = TRUE)
+rnweibull(n, loc=0, scale=1, shape=1)
 }
 \arguments{
   \item{x, q}{Vector of quantiles.}
@@ -26,7 +35,7 @@ rrweibull(n, loc=0, scale=1, shape=1)
     are P[X <= x], otherwise, P[X > x]}
 }
 \details{
-  The reversed Weibull distribution function with parameters
+  The reverse (or negative) Weibull distribution function with parameters
   \eqn{\code{loc} = a}, \eqn{\code{scale} = b} and
   \eqn{\code{shape} = s} is
   \deqn{G(z) = \exp\left\{-\left[-\left(\frac{z-a}{b}\right)
@@ -35,16 +44,18 @@ rrweibull(n, loc=0, scale=1, shape=1)
   \eqn{s > 0}.
 }
 \note{
-  Within extreme value theory the reversed Weibull distibution is
-  usually referred to as the Weibull distribution.
-  I make a distinction to avoid confusion with the three-parameter
+  Within extreme value theory the reverse Weibull distibution (also
+  known as the negative Weibull distribution) is often referred to 
+  as the Weibull distribution.
+  We make a distinction to avoid confusion with the three-parameter
   distribution used in survival analysis, which is related by a
   change of sign to the distribution given above.
 }
 \value{
-  \code{drweibull} gives the density function, \code{prweibull}
-  gives the distribution function, \code{qrweibull} gives the
-  quantile function, and \code{rrweibull} generates random deviates.
+  \code{drweibull} and \code{dnweibull} give the density function, 
+  \code{prweibull} and \code{pnweibull} give the distribution function, 
+  \code{qrweibull} and \code{qnweibull} give the quantile function, 
+  \code{rrweibull} and \code{rnweibull} generate random deviates.
 }
 
 \seealso{\code{\link{rfrechet}}, \code{\link{rgev}}, \code{\link{rgumbel}}}

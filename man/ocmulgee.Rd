@@ -1,7 +1,7 @@
 \name{ocmulgee}
 \alias{ocmulgee}
 \title{Maximum Annual Flood Discharges of the Ocmulgee River}
-\usage{data(ocmulgee)}
+\usage{ocmulgee}
 \description{
   The \code{ocmulgee} data frame has 40 rows and 2 columns.
   The columns contain maximum annual flood discharges, in units

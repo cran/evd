@@ -1,7 +1,7 @@
 \name{sealevel2}
 \alias{sealevel2}
 \title{Annual Sea Level Maxima at Dover and Harwich with Indicator}
-\usage{data(sealevel2)}
+\usage{sealevel2}
 \description{
   The \code{sealevel2} data frame has 81 rows and 3 columns.
   The first two columns contain annual sea level maxima from 1912

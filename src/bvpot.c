@@ -92,7 +92,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
   double *dvec, *t1, *t2, *v, *v1, *v2, *v12;
   double *q, *q1, *q2, *q12, *x1, *x2, *qa, *qb;
   double lambda2[2], lambda3[2], lambdaq, zdn;
-  double llim,midpt,ulim,ilen,lval,midval,uval,delta,eps;
+  double llim,midpt,ilen,lval,midval,uval,delta,eps;
 
   dvec = (double *)R_alloc(*nn, sizeof(double));
   t1 = (double *)R_alloc(*nn, sizeof(double));
@@ -121,7 +121,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
   lambda2[1] = -1/log(1 - lambda[1]);
   
   llim = 0;
-  ulim = ilen = 1;
+  ilen = 1;
   lval = (1 - *alpha) / lambda2[0];
   uval = (*beta - 1) / lambda2[1];
   if(!(sign(lval) != sign(uval))) 
@@ -134,7 +134,6 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
     if(fabs(midval) < eps || fabs(ilen) < delta) 
       break;
     if(sign(lval) != sign(midval)) {
-      ulim = midpt;
       uval = midval;
     }
     else {
@@ -188,7 +187,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
       t2[i] = lambda[1] * t2[i] / *scale2;
 
       llim = 0;
-      ulim = ilen = 1;
+	  ilen = 1;
       lval = (1 - *alpha) / data1[i];
       uval = (*beta - 1) / data2[i];
       if(!(sign(lval) != sign(uval))) 
@@ -201,7 +200,6 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
         if(fabs(midval) < eps || fabs(ilen) < delta) 
           break;
         if(sign(lval) != sign(midval)) {
-          ulim = midpt;
           uval = midval;
         }
         else {
@@ -435,7 +433,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
   double *dvec, *t1, *t2, *v, *v1, *v2, *v12;
   double *q, *q1, *q2, *q12, *x1, *x2, *qa, *qb;
   double lambda2[2], lambda3[2], lambdaq, zdn;
-  double llim,midpt,ulim,ilen,lval,midval,uval,delta,eps;
+  double llim,midpt,ilen,lval,midval,uval,delta,eps;
 
   dvec = (double *)R_alloc(*nn, sizeof(double));
   t1 = (double *)R_alloc(*nn, sizeof(double));
@@ -464,7 +462,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
   lambda2[1] = -1/log(1 - lambda[1]);
   
   llim = 0;
-  ulim = ilen = 1;
+  ilen = 1;
   uval = (1 + *alpha) / lambda2[0];
   lval = - (1 + *beta) / lambda2[1];
   if(!(sign(lval) != sign(uval))) 
@@ -477,7 +475,6 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
     if(fabs(midval) < eps || fabs(ilen) < delta) 
       break;
     if(sign(lval) != sign(midval)) {
-      ulim = midpt;
       uval = midval;
     }
     else {
@@ -531,7 +528,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
       t2[i] = lambda[1] * t2[i] / *scale2;
       
       llim = 0;
-      ulim = ilen = 1;
+	  ilen = 1;
       uval = (1 + *alpha) / data1[i];
       lval = - (1 + *beta) / data2[i];
       if(!(sign(lval) != sign(uval))) 
@@ -544,7 +541,6 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
         if(fabs(midval) < eps || fabs(ilen) < delta) 
           break;
         if(sign(lval) != sign(midval)) {
-          ulim = midpt;
           uval = midval;
         }
         else {
@@ -1184,7 +1180,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
   int i,j;
   double *dvec, *r, *w, *jac, *h;
   double v, utt[2];
-  double llim,midpt,ulim,ilen,lval,midval,uval,delta,eps;
+  double llim,midpt,ilen,lval,midval,uval,delta,eps;
 
   dvec = (double *)R_alloc(*nn, sizeof(double));
   r = (double *)R_alloc(*nn, sizeof(double));
@@ -1244,7 +1240,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
         exp(-1 / data2[i])) - log(*scale2) - *shape2 * log(p[1]);
      
     llim = 0;
-    ulim = ilen = 1;
+	ilen = 1;
     lval = (1 - *alpha) * (1 - w[i]);
     uval = (*beta - 1) * w[i];
     if(!(sign(lval) != sign(uval))) 
@@ -1257,7 +1253,6 @@ void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
       if(fabs(midval) < eps || fabs(ilen) < delta) 
         break;
       if(sign(lval) != sign(midval)) {
-        ulim = midpt;
         uval = midval;
       }
       else {
@@ -1280,7 +1275,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
   utt[0] = -1 / log(1 - p[0]);
   utt[1] = -1 / log(1 - p[1]);
   llim = 0;
-  ulim = ilen = 1;
+  ilen = 1;
   lval = (1 - *alpha) / utt[0];
   uval = (*beta - 1) / utt[1];
   if(!(sign(lval) != sign(uval))) 
@@ -1293,7 +1288,6 @@ void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
     if(fabs(midval) < eps || fabs(ilen) < delta) 
       break;
     if(sign(lval) != sign(midval)) {
-      ulim = midpt;
       uval = midval;
     }
     else {
@@ -1315,7 +1309,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
   int i,j;
   double *dvec, *r, *w, *jac, *h;
   double v, utt[2];
-  double llim,midpt,ulim,ilen,lval,midval,uval,delta,eps;
+  double llim,midpt,ilen,lval,midval,uval,delta,eps;
 
   dvec = (double *)R_alloc(*nn, sizeof(double));
   r = (double *)R_alloc(*nn, sizeof(double));
@@ -1375,7 +1369,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
         exp(-1 / data2[i])) - log(*scale2) - *shape2 * log(p[1]);
      
     llim = 0;
-    ulim = ilen = 1;
+	ilen = 1;
     uval = (1 + *alpha) * (1 - w[i]);
     lval = - (1 + *beta) * w[i];
     if(!(sign(lval) != sign(uval))) 
@@ -1388,7 +1382,6 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
       if(fabs(midval) < eps || fabs(ilen) < delta) 
         break;
       if(sign(lval) != sign(midval)) {
-        ulim = midpt;
         uval = midval;
       }
       else {
@@ -1411,7 +1404,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
   utt[0] = -1 / log(1 - p[0]);
   utt[1] = -1 / log(1 - p[1]);
   llim = 0;
-  ulim = ilen = 1;
+  ilen = 1;
   uval = (1 + *alpha) / utt[0];
   lval = - (1 + *beta) / utt[1];
   if(!(sign(lval) != sign(uval))) 
@@ -1424,7 +1417,6 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
     if(fabs(midval) < eps || fabs(ilen) < delta) 
       break;
     if(sign(lval) != sign(midval)) {
-      ulim = midpt;
       uval = midval;
     }
     else {
