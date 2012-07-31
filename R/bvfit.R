@@ -136,6 +136,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,
@@ -236,6 +237,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,
@@ -334,6 +336,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,
@@ -432,6 +435,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,
@@ -532,6 +536,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,
@@ -631,6 +636,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,
@@ -730,6 +736,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values") 
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,
@@ -830,6 +837,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,
@@ -930,6 +938,7 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     cmar <- c(cloc, cscale, cshape)
     bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
       std.err = std.err, corr = corr, sym = sym, cmar = cmar,

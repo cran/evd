@@ -37,10 +37,6 @@ rgumbel(n, loc=0, scale=1)
   the distribution function, \code{qgumbel} gives the quantile
   function, and \code{rgumbel} generates random deviates.
 }
-\section{Interesting Fact}{
-  Gumbel is the name of my teddy bear.
-  And a famous statistician.
-}
 \seealso{\code{\link{rfrechet}}, \code{\link{rgev}}, \code{\link{rrweibull}}}
 
 \examples{

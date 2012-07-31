@@ -6,13 +6,9 @@
   Calculate profile and Wald confidence intervals of parameters
   in fitted models.
 }
-\synopsis{
+\usage{
 \method{confint}{evd}(object, parm, level = 0.95, \dots)
 \method{confint}{profile.evd}(object, parm, level = 0.95, \dots)
-}
-\usage{
-\method{confint}{evd}(object, parm, level = 0.95)
-\method{confint}{profile.evd}(object, parm, level = 0.95)
 }
 \arguments{
   \item{object}{Either a fitted model object (of class \code{evd})
@@ -23,6 +19,7 @@
     intervals are returned for all parameters in the fitted model
     or profile trace.}
   \item{level}{A single number giving the confidence level.}
+  \item{\dots}{Not used.}
 }
 \value{
   A matrix with two columns giving lower and upper confidence

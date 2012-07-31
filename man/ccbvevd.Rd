@@ -7,14 +7,10 @@
   Conditional copula functions, conditioning on either margin,
   for nine parametric bivariate extreme value models. 
 }
-\synopsis{
+\usage{
 ccbvevd(x, mar = 2, dep, asy = c(1, 1), alpha, beta, model = c("log", 
     "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", 
     "amix"), lower.tail = TRUE) 
-}
-\usage{
-ccbvevd(x, mar = 2, dep, asy = c(1, 1), alpha, beta, model = "log",
-    lower.tail = TRUE) 
 }
 \arguments{
   \item{x}{A matrix or data frame, ordinarily with two columns,
@@ -45,16 +41,18 @@ ccbvevd(x, mar = 2, dep, asy = c(1, 1), alpha, beta, model = "log",
     survivor function is returned otherwise.}
 }
 \details{
-  The function calculates \eqn{P(U1 < x1|U2 = x2)}, where
-  \eqn{(U1,U2)} is a random vector with Uniform(0,1) margins
-  and with a dependence structure given by the specified
-  parametric model. By default, the values of \eqn{x1} and
-  \eqn{x2} are given by the first and second columns of the
-  argument \code{x}. If \code{mar = 1} then this is reversed.
+  The function calculates \eqn{P(U_1 < x_1|U_2 = x_2)}{
+  P(U1 < x1|U2 = x2)}, where \eqn{(U_1,U_2)}{(U1,U2)} is a random 
+  vector with Uniform(0,1) margins and with a dependence structure 
+  given by the specified parametric model. By default, the values 
+  of \eqn{x_1}{x1} and \eqn{x_1}{x2} are given by the first and second 
+  columns of the argument \code{x}. If \code{mar = 1} then this is 
+  reversed.
 
-  If \code{x} has a third column \code{x3} of mode logical, then
-  the function returns \eqn{P(U1 < x1|U2 = x2,I = x3)}, according
-  to inference proceedures derived by Stephenson and Tawn (2004).
+  If \code{x} has a third column \eqn{x_3}{x3} of mode logical, then
+  the function returns \eqn{P(U_1 < x_1|U_2 = x_2,I = x_3)}{
+  P(U1 < x1|U2 = x2,I = x3)}, according to inference proceedures derived 
+  by Stephenson and Tawn (2004).
   See \code{\link{fbvevd}}. This requires numerical integration,
   and hence will be slower.
   

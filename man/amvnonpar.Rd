@@ -7,16 +7,10 @@
   \eqn{A} of the multivariate extreme value distribution and plot
   the estimated function in the trivariate case.
 }
-\synopsis{
+\usage{
 amvnonpar(x = rep(1/d,d), data, d = 3, epmar = FALSE, nsloc = NULL,
     madj = 0, kmar = NULL, plot = FALSE, col = heat.colors(12),
     blty = 0, grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3,
-    lab = as.character(1:3), lcex = 1)
-}
-\usage{
-amvnonpar(x = rep(1/d,d), data, d = 3, epmar = FALSE, nsloc = NULL,
-    madj = 0, plot = FALSE, col = heat.colors(12), blty = 0,
-    grid = if(blty) 150 else 50, lower = 1/3, ord = 1:3,
     lab = as.character(1:3), lcex = 1)
 }
 \arguments{
@@ -45,6 +39,9 @@ amvnonpar(x = rep(1/d,d), data, d = 3, epmar = FALSE, nsloc = NULL,
     margins.}
   \item{madj}{Performs marginal adjustments. See
     \code{\link{abvnonpar}}.}
+  \item{kmar}{In the rare case that the marginal distributions are known,
+    specifies the GEV parameters to be used instead of maximum likelihood
+	estimates.}
   \item{plot}{Logical; if \code{TRUE}, and the dimension \code{d} is
     three (the default dimension), the dependence function of a
     trivariate extreme value distribution is plotted. For plotting in

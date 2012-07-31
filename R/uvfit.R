@@ -39,6 +39,7 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, largest = TRUE,
     opt <- optim(start, nllh, x = x, hessian = TRUE, ...,
                  densfun = densfun, distnfun = distnfun, mlen = mlen,
                  largest = largest, method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
         if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
@@ -110,6 +111,7 @@ function(x, start, densfun, distnfun, ..., distn, mlen = 1, j = 1,
     opt <- optim(start, nllh, x = x, hessian = TRUE, ..., densfun = densfun,
                  distnfun = distnfun, mlen = mlen, j = j, largest = largest,
                  method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
         if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
@@ -220,6 +222,7 @@ function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BF
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
         if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
@@ -336,6 +339,7 @@ function(x, start, ..., nsloc = NULL, prob, std.err = TRUE, corr = FALSE, method
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
         if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
@@ -483,6 +487,7 @@ function(x, threshold, model, start, npp = length(x), cmax = FALSE, r = 1, ulow 
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
         if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
@@ -590,6 +595,7 @@ function(x, threshold, start, npp = length(x), cmax = FALSE, r = 1, ulow = -Inf,
     if(warn.inf && do.call("nllh", start.arg) == 1e6)
         warning("negative log-likelihood is infinite at starting values")
     opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
     if (opt$convergence != 0) {
         warning("optimization may not have succeeded")
         if(opt$convergence == 1) opt$convergence <- "iteration limit reached"

@@ -8,15 +8,10 @@
   using the Generalized Pareto or Point Process representation,
   allowing any of the parameters to be held fixed if desired.
 }
-\synopsis{
+\usage{
 fpot(x, threshold, model = c("gpd", "pp"), start, npp = length(x),
     cmax = FALSE, r = 1, ulow = -Inf, rlow = 1, mper = NULL, \dots,
     std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
-}
-\usage{
-fpot(x, threshold, model = c("gpd", "pp"), start, npp = length(x),
-    cmax = FALSE, r = 1, ulow = -Inf, mper = NULL, \dots, std.err =
-    TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 }
 \arguments{
   \item{x}{A numeric vector. If this contains missing values,
@@ -46,7 +41,7 @@ fpot(x, threshold, model = c("gpd", "pp"), start, npp = length(x),
     is fitted using all exceedences over the threshold. If
     \code{TRUE}, the model is fitted using cluster maxima, using
     clusters of exceedences derived from \code{clusters}.}
-  \item{r, ulow}{Arguments used for the identification of
+  \item{r, ulow, rlow}{Arguments used for the identification of
     clusters of exceedences (see \code{\link{clusters}}).
     Ignored if \code{cmax} is \code{FALSE} (the default).}
   \item{mper}{Controls the parameterization of the generalized

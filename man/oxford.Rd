@@ -1,7 +1,7 @@
 \name{oxford}
 \alias{oxford}
 \title{Annual Maximum Temperatures at Oxford}
-\usage{data(oxford)}
+\usage{oxford}
 \description{
   A numeric vector containing annual maximum temperatures, in degrees
   Fahrenheit, from 1901 to 1980 at Oxford, England.

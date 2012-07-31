@@ -1,7 +1,7 @@
 \name{oldage}
 \alias{oldage}
 \title{Oldest Ages for Swedish Males and Females}
-\usage{data(oldage)}
+\usage{oldage}
 \description{
   The \code{oldage} data frame has 66 rows and 2 columns.
   The columns contain the oldest ages at death for men and women in

@@ -7,7 +7,7 @@
   Density function, distribution function and random generation
   for nine parametric bivariate extreme value models. 
 }
-\synopsis{
+\usage{
 dbvevd(x, dep, asy = c(1, 1), alpha, beta, model = c("log", "alog",
     "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
     mar1 = c(0, 1, 0), mar2 = mar1, log = FALSE) 
@@ -16,14 +16,6 @@ pbvevd(q, dep, asy = c(1, 1), alpha, beta, model = c("log", "alog",
     mar1 = c(0, 1, 0), mar2 = mar1, lower.tail = TRUE) 
 rbvevd(n, dep, asy = c(1, 1), alpha, beta, model = c("log", "alog",
     "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
-    mar1 = c(0, 1, 0), mar2 = mar1) 
-}
-\usage{
-dbvevd(x, dep, asy = c(1, 1), alpha, beta, model = "log",
-    mar1 = c(0, 1, 0), mar2 = mar1, log = FALSE) 
-pbvevd(q, dep, asy = c(1, 1), alpha, beta, model = "log",
-    mar1 = c(0, 1, 0), mar2 = mar1, lower.tail = TRUE) 
-rbvevd(n, dep, asy = c(1, 1), alpha, beta, model = "log",
     mar1 = c(0, 1, 0), mar2 = mar1) 
 }
 \arguments{

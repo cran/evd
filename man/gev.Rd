@@ -38,7 +38,7 @@ rgev(n, loc=0, scale=1, shape=0)
   than the lower end point (if \eqn{s > 0}).
   
   The parametric form of the GEV encompasses that of the Gumbel,
-  Frechet and reversed Weibull distributions, which are obtained
+  Frechet and reverse Weibull distributions, which are obtained
   for \eqn{s = 0}, \eqn{s > 0} and \eqn{s < 0} respectively.
   It was first introduced by Jenkinson (1955).
 }

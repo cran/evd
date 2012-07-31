@@ -1,7 +1,7 @@
 \name{failure}
 \alias{failure}
 \title{Failure Times}
-\usage{data(failure)}
+\usage{failure}
 \description{
   Failure times.
 }

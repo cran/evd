@@ -1,3 +1,18 @@
+CHANGES FROM VERSION 2.2-6 ARE AS FOLLOWS
+  
+  Documentation edited. In particular, \synopsis sections
+  have been removed as this is no longer supported.
+  
+  Added venice2 dataset.
+  
+  Added [dpqr]nweibull functions.
+  
+  The lazy loading of datasets is now implemented.
+  
+  Some internal C and R code cleaning to avoid warnings.
+  In particular, optimizations over one parameter allow
+  consistent inclusion of the "Brent" method.
+
 CHANGES FROM VERSION 2.2-5 ARE AS FOLLOWS
 
   Included proper NAMESPACE file and removed zzz.R.

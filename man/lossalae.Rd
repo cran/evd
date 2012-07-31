@@ -1,7 +1,7 @@
 \name{lossalae}
 \alias{lossalae}
 \title{General Liability Claims}
-\usage{data(lossalae)}
+\usage{lossalae}
 \description{
   The \code{lossalae} data frame has 1500 rows and 2 columns.
   The columns contain the indemnity payment (loss), and

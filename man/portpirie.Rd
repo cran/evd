@@ -1,7 +1,7 @@
 \name{portpirie}
 \alias{portpirie}
 \title{Annual Maximum Sea Levels at Port Pirie}
-\usage{data(portpirie)}
+\usage{portpirie}
 \description{
   A numeric vector containing annual maximum sea levels, in metres,
   from 1923 to 1987 at Port Pirie, South Australia.

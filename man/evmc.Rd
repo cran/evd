@@ -7,14 +7,10 @@
   of consecutive values has the dependence structure of one of
   nine parametric bivariate extreme value distributions. 
 }
-\synopsis{
+\usage{
 evmc(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     "hr", "neglog", "aneglog", "bilog", "negbilog", "ct", "amix"),
     margins = c("uniform","rweibull","frechet","gumbel"))
-}
-\usage{
-evmc(n, dep, asy = c(1,1), alpha, beta, model = "log",
-    margins = "uniform")
 }
 \arguments{
   \item{n}{Number of observations.}

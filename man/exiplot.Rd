@@ -4,22 +4,17 @@
 \description{
   Plots estimates of the extremal index. 
 }
-\synopsis{
+\usage{
 exiplot(data, tlim, r = 1, ulow = -Inf, rlow = 1, add = FALSE, 
     nt = 100, lty = 1, xlab = "Threshold", ylab = "Ext. Index",
     ylim = c(0,1), \dots)
-}
-\usage{
-exiplot(data, tlim, r = 1, ulow = -Inf, add = FALSE, nt =
-    max(100, length(data)), lty = 1, xlab = "Threshold", 
-    ylab = "Ext. Index", ylim = c(0,1), \dots)
 }
 \arguments{
   \item{data}{A numeric vector, which may contain missing values.}
   \item{tlim}{A numeric vector of length two, giving the limits for
     the (time invariant) thresholds at which the estimates are
     evaluated.}
-  \item{r, ulow}{The estimation method. See \code{\link{exi}}.}
+  \item{r, ulow, rlow}{The estimation method. See \code{\link{exi}}.}
   \item{add}{Add to an existing plot?}
   \item{nt}{The number of thresholds at which the estimates are
     evaluated.}

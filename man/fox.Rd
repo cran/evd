@@ -1,7 +1,7 @@
 \name{fox}
 \alias{fox}
 \title{Maximum Annual Flood Discharges of the Fox River}
-\usage{data(fox)}
+\usage{fox}
 \description{
   The \code{fox} data frame has 33 rows and 2 columns.
   The columns contain maximum annual flood discharges, in units
