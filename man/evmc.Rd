@@ -37,7 +37,7 @@ evmc(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
     character string. Must be either \code{"uniform"} (the
     default), \code{"rweibull"}, \code{"frechet"} or
     \code{"gumbel"} (or any unique partial match), for the uniform,
-    standard reversed Weibull, standard Gumbel and standard Frechet
+    standard reverse Weibull, standard Gumbel and standard Frechet
     distributions respectively.}
 }
 \value{

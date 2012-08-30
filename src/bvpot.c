@@ -221,7 +221,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
         q2[i] / (1 - q[i]) - x2[i] / data2[i];
       q12[i] = x1[i] * q2[i] / (data1[i] * (x2[i] + x1[i])) + 
         (1 - *alpha) * qb[i] * q12[i] / (data1[i] * data1[i] * 
-	(x2[i] + x1[i]) * (x2[i] + x1[i]));
+	      (x2[i] + x1[i]) * (x2[i] + x1[i]));
       v[i] = q[i] / (qa[i] * data1[i]) + (1 - q[i]) / (qb[i] * data2[i]);
       v1[i] = (1 - *alpha) * q1[i] / (qa[i] * data1[i]) - (1 - *beta) * 
         q1[i] / (qb[i] * data2[i]) - q[i] / (qa[i] * data1[i] * data1[i]);
@@ -562,7 +562,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
         q2[i] / (1 - q[i]) - x2[i] / data2[i];
       q12[i] = x1[i] * q2[i] / (data1[i] * (x2[i] + x1[i])) - 
         (1 + *alpha) * qa[i] * q12[i] / (data1[i] * data1[i] * 
-	(x2[i] + x1[i]) * (x2[i] + x1[i]));
+	      (x2[i] + x1[i]) * (x2[i] + x1[i]));
       v[i] = (1 - q[i] * qa[i]) / data1[i] + (1 - (1 - q[i]) * qb[i]) / 
         data2[i];
       v1[i] = (q[i] * qa[i] - 1) / (data1[i] * data1[i]);
@@ -935,7 +935,7 @@ void nllbvcamix(double *data1, double *data2, int *nn, int *n, double *thid, dou
 
 /* Point Process Likelihood Routines */
 
-void nllbvplog(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+void nllbvplog(double *data1, double *data2, int *nn, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
 {
   int i;
   double *dvec, *r, *w, *jac, *h;
@@ -980,9 +980,9 @@ void nllbvplog(double *data1, double *data2, int *nn, int *n, double *thid, doub
       data2[i] = R_pow(data2[i], -1 / *shape2);
     }
     data2[i] = -1/log(1 - r2[i] * data2[i]);
-
-    r[i] = log(data1[i] + data2[i]) - log(*n);
-    w[i] = data1[i] / (*n * exp(r[i]));
+		
+		r[i] = log(data1[i] + data2[i]);
+    w[i] = data1[i] / exp(r[i]);
 
     if(thid[i] < 1.5) 
       jac[i] = 2 * log(data1[i]) + 1 / data1[i] + (1 + *shape1) * log(1 - 
@@ -1010,10 +1010,10 @@ void nllbvplog(double *data1, double *data2, int *nn, int *n, double *thid, doub
   utt[1] = -1 / log(1 - p[1]);
   v = R_pow(R_pow(utt[0],-1 / *dep) + R_pow(utt[1],-1 / *dep), *dep);
   
-  *dns = *dns + *n * v;
+	*dns = *dns + v;
 }
 
-void nllbvpneglog(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+void nllbvpneglog(double *data1, double *data2, int *nn, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
 {
   int i;
   double *dvec, *r, *w, *jac, *h;
@@ -1059,8 +1059,8 @@ void nllbvpneglog(double *data1, double *data2, int *nn, int *n, double *thid, d
     }
     data2[i] = -1/log(1 - r2[i] * data2[i]);
 
-    r[i] = log(data1[i] + data2[i]) - log(*n);
-    w[i] = data1[i] / (*n * exp(r[i]));
+		r[i] = log(data1[i] + data2[i]);
+    w[i] = data1[i] / exp(r[i]);
 
     if(thid[i] < 1.5) 
       jac[i] = 2 * log(data1[i]) + 1 / data1[i] + (1 + *shape1) * log(1 - 
@@ -1089,10 +1089,10 @@ void nllbvpneglog(double *data1, double *data2, int *nn, int *n, double *thid, d
   v = 1 / utt[0] + 1 / utt[1] - R_pow(R_pow(utt[0], *dep) + 
     R_pow(utt[1], *dep), -1 / *dep);
   
-  *dns = *dns + *n * v;
+  *dns = *dns + v;
 }
 
-void nllbvpct(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *alpha, double *beta, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+void nllbvpct(double *data1, double *data2, int *nn, double *thid, double *r1, double *r2, double *p, double *alpha, double *beta, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
 {
   int i;
   double *dvec, *r, *w, *jac, *h;
@@ -1139,8 +1139,8 @@ void nllbvpct(double *data1, double *data2, int *nn, int *n, double *thid, doubl
     }
     data2[i] = -1/log(1 - r2[i] * data2[i]);
 
-    r[i] = log(data1[i] + data2[i]) - log(*n);
-    w[i] = data1[i] / (*n * exp(r[i]));
+		r[i] = log(data1[i] + data2[i]);
+    w[i] = data1[i] / exp(r[i]);
 
     if(thid[i] < 1.5) 
       jac[i] = 2 * log(data1[i]) + 1 / data1[i] + (1 + *shape1) * log(1 - 
@@ -1172,10 +1172,10 @@ void nllbvpct(double *data1, double *data2, int *nn, int *n, double *thid, doubl
   v = pbeta(v, *alpha + 1, *beta, 0, 0) / utt[0] + pbeta(v, *alpha, 
     *beta + 1, 1, 0) / utt[1];
   
-  *dns = *dns + *n * v;
+  *dns = *dns + v;
 }
 
-void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *alpha, double *beta, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+void nllbvpbilog(double *data1, double *data2, int *nn, double *thid, double *r1, double *r2, double *p, double *alpha, double *beta, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
 {
   int i,j;
   double *dvec, *r, *w, *jac, *h;
@@ -1224,8 +1224,8 @@ void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
     }
     data2[i] = -1/log(1 - r2[i] * data2[i]);
 
-    r[i] = log(data1[i] + data2[i]) - log(*n);
-    w[i] = data1[i] / (*n * exp(r[i]));
+		r[i] = log(data1[i] + data2[i]);
+    w[i] = data1[i] / exp(r[i]);
 
     if(thid[i] < 1.5) 
       jac[i] = 2 * log(data1[i]) + 1 / data1[i] + (1 + *shape1) * log(1 - 
@@ -1240,7 +1240,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
         exp(-1 / data2[i])) - log(*scale2) - *shape2 * log(p[1]);
      
     llim = 0;
-	ilen = 1;
+	  ilen = 1;
     lval = (1 - *alpha) * (1 - w[i]);
     uval = (*beta - 1) * w[i];
     if(!(sign(lval) != sign(uval))) 
@@ -1301,10 +1301,10 @@ void nllbvpbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
   v = R_pow(midpt, 1 - *alpha) / utt[0] + R_pow(1-midpt, 1 - *beta) / 
     utt[1];
   
-  *dns = *dns + *n * v;
+  *dns = *dns + v;
 }
 
-void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *alpha, double *beta, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+void nllbvpnegbilog(double *data1, double *data2, int *nn, double *thid, double *r1, double *r2, double *p, double *alpha, double *beta, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
 {
   int i,j;
   double *dvec, *r, *w, *jac, *h;
@@ -1353,8 +1353,8 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
     }
     data2[i] = -1/log(1 - r2[i] * data2[i]);
 
-    r[i] = log(data1[i] + data2[i]) - log(*n);
-    w[i] = data1[i] / (*n * exp(r[i]));
+		r[i] = log(data1[i] + data2[i]);
+    w[i] = data1[i] / exp(r[i]);
 
     if(thid[i] < 1.5) 
       jac[i] = 2 * log(data1[i]) + 1 / data1[i] + (1 + *shape1) * log(1 - 
@@ -1369,7 +1369,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
         exp(-1 / data2[i])) - log(*scale2) - *shape2 * log(p[1]);
      
     llim = 0;
-	ilen = 1;
+	  ilen = 1;
     uval = (1 + *alpha) * (1 - w[i]);
     lval = - (1 + *beta) * w[i];
     if(!(sign(lval) != sign(uval))) 
@@ -1430,10 +1430,10 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
   v = (1 - R_pow(midpt, 1 + *alpha)) / utt[0] + (1 - R_pow(1-midpt, 
     1 + *beta)) / utt[1];
   
-  *dns = *dns + *n * v;
+  *dns = *dns + v;
 }
 
-void nllbvphr(double *data1, double *data2, int *nn, int *n, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
+void nllbvphr(double *data1, double *data2, int *nn, double *thid, double *r1, double *r2, double *p, double *dep, double *scale1, double *shape1, double *scale2, double *shape2, double *dns)
 {
   int i;
   double *dvec, *r, *w, *jac, *h;
@@ -1479,8 +1479,8 @@ void nllbvphr(double *data1, double *data2, int *nn, int *n, double *thid, doubl
     }
     data2[i] = -1/log(1 - r2[i] * data2[i]);
 
-    r[i] = log(data1[i] + data2[i]) - log(*n);
-    w[i] = data1[i] / (*n * exp(r[i]));
+		r[i] = log(data1[i] + data2[i]);
+    w[i] = data1[i] / exp(r[i]);
 
     if(thid[i] < 1.5) 
       jac[i] = 2 * log(data1[i]) + 1 / data1[i] + (1 + *shape1) * log(1 - 
@@ -1509,7 +1509,7 @@ void nllbvphr(double *data1, double *data2, int *nn, int *n, double *thid, doubl
   v = pnorm(1 / *dep + *dep * log(utt[1]/utt[0]) / 2, 0, 1, 1, 0) / utt[0] + 
     pnorm(1 / *dep + *dep * log(utt[0]/utt[1]) / 2, 0, 1, 1, 0) / utt[1];
   
-  *dns = *dns + *n * v;
+  *dns = *dns + v;
 }
 
 

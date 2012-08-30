@@ -30,10 +30,13 @@ abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL,
     matrices, excluding the intercept. A numeric vector can be given
     as an alternative to a single column data frame.}
   \item{method}{The estimation method (see \bold{Details}). Typically
-    either \code{"cfg"} (the default) or \code{"pickands"}. The remaining
-	methods \code{"tdo"} and \code{"pot"} can be used but are not 
-	otherwise documented.}
-  \item{k}{A parameter for the \code{"pot"} method.}
+    either \code{"cfg"} (the default) or \code{"pickands"}. The method
+	  \code{"tdo"} performs poorly and is not recommended. The method 
+		\code{"pot"} is for peaks over threshold modelling where only 
+		large data values are used for estimation.}
+  \item{k}{An integer parameter for the \code{"pot"} method. Only the 
+	  largest \code{k} values are used, as described in
+		\code{\link{bvtcplot}}.}
   \item{convex}{Logical; take the convex minorant?}
   \item{rev}{Logical; reverse the dependence function? This is
     equivalent to evaluating the function at \code{1-x}.}
@@ -151,7 +154,7 @@ abvnonpar(x = 0.5, data, epmar = FALSE, nsloc1 = NULL,
 }
 
 \seealso{\code{\link{abvevd}}, \code{\link{amvnonpar}},
-  \code{\link{fgev}}}
+  \code{\link{bvtcplot}}, \code{\link{fgev}}}
 
 \examples{
 bvdata <- rbvevd(100, dep = 0.7, model = "log")

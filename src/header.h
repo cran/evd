@@ -133,29 +133,29 @@ void nllbvcamix(double *data1, double *data2, int *nn, int *n, double *thid,
 
 /* from bvpot.c (poisson) */
 
-void nllbvplog(double *data1, double *data2, int *nn, int *n, 
+void nllbvplog(double *data1, double *data2, int *nn, 
                double *thid, double *r1, double *r2, double *p, 
                double *dep, double *scale1, double *shape1, 
                double *scale2, double *shape2, double *dns);
-void nllbvpneglog(double *data1, double *data2, int *nn, int *n, 
+void nllbvpneglog(double *data1, double *data2, int *nn, 
                   double *thid, double *r1, double *r2, double *p, 
                   double *dep, double *scale1, double *shape1, 
                   double *scale2, double *shape2, double *dns);
-void nllbvpct(double *data1, double *data2, int *nn, int *n, double *thid, 
+void nllbvpct(double *data1, double *data2, int *nn, double *thid, 
               double *r1, double *r2, double *p, double *alpha, 
               double *beta, double *scale1, double *shape1, double *scale2, 
               double *shape2, double *dns);
-void nllbvpbilog(double *data1, double *data2, int *nn, int *n, 
+void nllbvpbilog(double *data1, double *data2, int *nn, 
                  double *thid, double *r1, double *r2, double *p, 
                  double *alpha, double *beta, double *scale1, 
                  double *shape1, double *scale2, double *shape2, 
                  double *dns);
-void nllbvpnegbilog(double *data1, double *data2, int *nn, int *n, 
+void nllbvpnegbilog(double *data1, double *data2, int *nn, 
                     double *thid, double *r1, double *r2, double *p, 
                     double *alpha, double *beta, double *scale1, 
                     double *shape1, double *scale2, double *shape2, 
                     double *dns);
-void nllbvphr(double *data1, double *data2, int *nn, int *n, double *thid, 
+void nllbvphr(double *data1, double *data2, int *nn, double *thid, 
               double *r1, double *r2, double *p, double *dep, 
               double *scale1, double *shape1, double *scale2, 
               double *shape2, double *dns);

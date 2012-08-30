@@ -29,7 +29,6 @@
 \seealso{\code{\link{profile.evd}}}
 
 \examples{
-data(portpirie)
 m1 <- fgev(portpirie)
 confint(m1)
 \dontrun{pm1 <- profile(m1)}

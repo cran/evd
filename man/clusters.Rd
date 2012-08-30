@@ -88,7 +88,6 @@ clusters(data, u, r = 1, ulow = -Inf, rlow = 1, cmax = FALSE, keep.names
 \seealso{\code{\link{exi}}, \code{\link{exiplot}}}
 
 \examples{
-data(portpirie)
 clusters(portpirie, 4.2, 3)
 clusters(portpirie, 4.2, 3, cmax = TRUE)
 clusters(portpirie, 4.2, 3, 3.8, plot = TRUE)
