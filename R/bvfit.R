@@ -1115,7 +1115,7 @@ function(x, method = c("evd","cpot","ppot"), u = NULL)
 
 "bvpost.optim" <-
 # Post-optimization Processing
-function(x, opt, nm, fixed.param, std.err, corr, sym, cmar, method = c("evd","pot"), nsloc1 = NULL, nsloc2 = NULL, u = NULL, nat = NULL, model)
+function(x, opt, nm, fixed.param, std.err, corr, sym, cmar, method = c("evd","pot"), nsloc1 = NULL, nsloc2 = NULL, u = NULL, nat = NULL, likelihood = NULL, model)
 {
     method <- match.arg(method)
     if(opt$convergence != 0) {
@@ -1204,9 +1204,10 @@ function(x, opt, nm, fixed.param, std.err, corr, sym, cmar, method = c("evd","po
     if(method == "evd")
       out <- c(out, list(tdata = x2, nsloc1 = nsloc1, nsloc2 = nsloc2))
     if(method == "pot")
-      out <- c(out, list(threshold = u, nat = nat))
+      out <- c(out, list(threshold = u, nat = nat, likelihood = likelihood))
     c(out, list(n = nrow(x), sym = sym, cmar = cmar, model = model))
 }
+
 
 
 

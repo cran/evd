@@ -1,3 +1,15 @@
+CHANGES FROM VERSION 2.2-7 ARE AS FOLLOWS
+
+  The demo soe9 has been replaced with a vignette
+	on multivariate extremes.
+	
+	Added functions bvtcplot and evind.test.
+	
+	Added [dpqr]nweibull functions to the namespace!
+	
+	Implemented the possion likelihood for bivariate 
+	threshold models.
+
 CHANGES FROM VERSION 2.2-6 ARE AS FOLLOWS
   
   Documentation edited. In particular, \synopsis sections

@@ -115,7 +115,7 @@ fbvclog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FAL
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "log")
+    u = u, nat = nat, likelihood = "censored", model = "log")
 }
 
 fbvcbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -159,7 +159,7 @@ fbvcbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = F
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "bilog")
+    u = u, nat = nat, likelihood = "censored", model = "bilog")
 }
 
 fbvcalog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -203,7 +203,7 @@ fbvcalog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FA
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "alog")
+    u = u, nat = nat, likelihood = "censored", model = "alog")
 }
 
 fbvcneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -246,7 +246,7 @@ fbvcneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = 
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "neglog")
+    u = u, nat = nat, likelihood = "censored", model = "neglog")
 }
 
 fbvcnegbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -290,7 +290,7 @@ fbvcnegbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale 
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "negbilog")
+    u = u, nat = nat, likelihood = "censored", model = "negbilog")
 }
 
 fbvcaneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -335,7 +335,7 @@ fbvcaneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale =
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "aneglog")
+    u = u, nat = nat, likelihood = "censored", model = "aneglog")
 }
 
 fbvcct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -380,7 +380,7 @@ fbvcct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "ct")
+    u = u, nat = nat, likelihood = "censored", model = "ct")
 }
 
 fbvchr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -423,7 +423,7 @@ fbvchr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "hr")
+    u = u, nat = nat, likelihood = "censored", model = "hr")
 }
 
 fbvcamix <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -466,7 +466,7 @@ fbvcamix <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FA
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "amix")
+    u = u, nat = nat, likelihood = "censored", model = "amix")
 }
 
 ### Poisson Likelihood Fitting ###
@@ -476,7 +476,7 @@ fbvplog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FAL
   nllbvplog <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvplog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1, spx$r2,
+    .C("nllbvplog", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
       spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
       PACKAGE = "evd")$dns
   }
@@ -511,7 +511,7 @@ fbvplog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FAL
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "log")
+    u = u, nat = nat, likelihood = "poisson", model = "log")
 }
 
 fbvpneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -519,7 +519,7 @@ fbvpneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = 
   nllbvpneglog <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvpneglog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1,
+    .C("nllbvpneglog", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
       spx$r2, spx$lambda, dep, scale1, shape1, scale2, shape2,
       dns = double(1), PACKAGE = "evd")$dns    
   }
@@ -554,7 +554,7 @@ fbvpneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = 
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "neglog")
+    u = u, nat = nat, likelihood = "poisson", model = "neglog")
 }
 
 fbvpct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -563,7 +563,7 @@ fbvpct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
     if(sym) beta <- alpha
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvpct", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1, spx$r2,
+    .C("nllbvpct", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
       spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
       dns = double(1), PACKAGE = "evd")$dns
   }
@@ -599,7 +599,7 @@ fbvpct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "ct")
+    u = u, nat = nat, likelihood = "poisson", model = "ct")
 }
 
 fbvpbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -607,7 +607,7 @@ fbvpbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = F
   nllbvpbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvpbilog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1,
+    .C("nllbvpbilog", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
       spx$r2, spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
       dns = double(1), PACKAGE = "evd")$dns    
   }
@@ -643,7 +643,7 @@ fbvpbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = F
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "bilog")
+    u = u, nat = nat, likelihood = "poisson", model = "bilog")
 }
 
 fbvpnegbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -651,7 +651,7 @@ fbvpnegbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale 
   nllbvpnegbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvpnegbilog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1,
+    .C("nllbvpnegbilog", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
       spx$r2, spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
       dns = double(1), PACKAGE = "evd")$dns 
   }
@@ -687,7 +687,7 @@ fbvpnegbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale 
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "negbilog")
+    u = u, nat = nat, likelihood = "poisson", model = "negbilog")
 }
 
 fbvphr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALSE, std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE) {
@@ -695,7 +695,7 @@ fbvphr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
   nllbvphr <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvphr", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$r1, spx$r2,
+    .C("nllbvphr", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
       spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
       PACKAGE = "evd")$dns
   }
@@ -730,7 +730,7 @@ fbvphr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
   cmar <- c(cscale, cshape); nat <- spx$nat
   bvpost.optim(x = x, opt = opt, nm = nm, fixed.param = fixed.param,
     std.err = std.err, corr = corr, sym = sym, cmar = cmar, method = "pot",
-    u = u, nat = nat, model = "hr")
+    u = u, nat = nat, likelihood = "poisson", model = "hr")
 }
 
 ### Method Function ###
@@ -738,6 +738,7 @@ fbvphr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
 "print.bvpot" <-  function(x, digits = max(3, getOption("digits") - 3), ...) 
 {
     cat("\nCall:", deparse(x$call), "\n")
+		cat("Likelihood:", x$likelihood, "\n")
     cat("Deviance:", deviance(x), "\n")
     cat("AIC:", AIC(x), "\n")
     if(!is.null(x$dep.summary)) cat("Dependence:", x$dep.summary, "\n")
@@ -770,5 +771,6 @@ fbvphr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
     cat("\n")
     invisible(x)
 }
+
 
 

@@ -85,7 +85,6 @@ tcplot(data, tlim, model = c("gpd","pp"), pscale = FALSE, cmax =
     \code{\link{clusters}}}
 
 \examples{
-data(portpirie)
 tlim <- c(3.6, 4.2)
 \dontrun{tcplot(portpirie, tlim)}
 \dontrun{tcplot(portpirie, tlim, nt = 100, lwd = 3, type = "l")}

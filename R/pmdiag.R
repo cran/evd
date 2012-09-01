@@ -172,7 +172,8 @@ function(data, tlim, model = c("gpd", "pp"), pscale = FALSE, cmax = FALSE,
    invisible(rtlist)
 }
 
-chiplot <- function(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, trunc = TRUE, spcases = FALSE, lty = 1, cilty = 2, col = 1, cicol = 1, xlim = c(0,1), ylim1 = c(-1,1), ylim2 = c(-1,1), main1 = "Chi Plot", main2 = "Chi Bar Plot", xlab = "Quantile", ylab1 = "Chi", ylab2 = "Chi Bar", ask = nb.fig < length(which) && dev.interactive(), ...)
+"chiplot"<- 
+function(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, trunc = TRUE, spcases = FALSE, lty = 1, cilty = 2, col = 1, cicol = 1, xlim = c(0,1), ylim1 = c(-1,1), ylim2 = c(-1,1), main1 = "Chi Plot", main2 = "Chi Bar Plot", xlab = "Quantile", ylab1 = "Chi", ylab2 = "Chi Bar", ask = nb.fig < length(which) && dev.interactive(), ...)
 {
     data <- na.omit(data)
     n <- nrow(data)
@@ -247,6 +248,90 @@ chiplot <- function(data, nq = 100, qlim = NULL, which = 1:2, conf = 0.95, trunc
     if(!show[1]) plvals$chi <- NULL
     if(!show[2]) plvals$chib <- NULL
     invisible(plvals)    
+}
+
+## Bivariate Threshold Choice ##
+
+"bvtcplot"<- 
+function(x, spectral = FALSE, xlab, ylab, ...)
+{
+  if(!is.matrix(x) && !is.data.frame(x))
+    stop("`x' must be a matrix or data frame")
+  if(ncol(x) != 2)
+	  stop("`x' has incorrect number of columns")
+	
+	x <- x[complete.cases(x),]
+	nn <- nrow(x)
+	ula <- apply(x, 2, rank)/(nn + 1)
+  fla <- -1/log(ula)
+  rr <- rowSums(fla); ww <- fla/rr
+	
+  rro <- sort(rr, decreasing = TRUE)[-1]
+  k <- 1:(nn-1)
+	k0 <- max(which(rro*k/nn > 2))
+  if(!spectral) {
+	  if(missing(xlab)) xlab <- "k"
+		if(missing(ylab)) ylab <- "H([0,1])"
+	  plot(k, rro*k/nn, xlab = xlab, ylab = ylab, ...)
+	  abline(h = 2, v = k0)
+		return(invisible(list(x = k, y = rro*k/nn, k0 = k0)))
+	}
+	
+  xx <- yy <- seq(0, 1, len = 100)
+  for(k in 1:100) yy[k] <- sum(rr > rro[k0] & ww[,1] <= xx[k])
+	if(missing(xlab)) xlab <- "w"
+	if(missing(ylab)) ylab <- "H([0,w])"
+  plot(xx, 2/k0 * yy, type = "l", xlab = xlab, ylab = ylab, ...)
+  abline(h = c(0,2))
+	return(invisible(list(x = xx, y = 2/k0 * yy, k0 = k0)))
+}
+
+## Hypothesis test for independence ##
+
+"evind.test"<-
+function(x, method = c("ratio", "score"), verbose = FALSE)
+{
+  method <- match.arg(method)
+  if(!is.matrix(x) && !is.data.frame(x))
+    stop("`x' must be a matrix or data frame")
+  if(ncol(x) != 2)
+	  stop("`x' has incorrect number of columns")
+	dname <- paste(deparse(substitute(x)))
+		
+	if(method == "ratio") {
+		meth <- "Likelihood Ratio Test Of Independence"
+	  fobj1 <- fbvevd(x, model = "log")
+		estimate <- fitted(fobj1)
+		if(!verbose) estimate <- estimate["dep"]
+	  fobj2 <- fbvevd(x, model = "log", dep = 1)
+	  lrt <- anova(fobj1, fobj2, half = TRUE)
+		stat <- c(norm.llhratio = lrt[["Chisq"]][2])
+		pval <- c(p.value = lrt[["Pr(>chisq)"]][2])
+ }
+	if(method == "score") {
+		meth <- "Score Test Of Independence"
+		fobj1 <- fbvevd(x, model = "log")
+		estimate <- fitted(fobj1)
+		if(!verbose) estimate <- estimate["dep"]
+		fobj2 <- fbvevd(x, model = "log", dep = 1)
+		ft <- fitted(fobj2)
+	  mmles <- list(ft[c("loc1","scale1","shape1")], 
+			ft[c("loc2","scale2","shape2")])
+    xtr <- mtransform(x, mmles)
+		xtr <- xtr[complete.cases(xtr),]
+		nn <- nrow(xtr)
+    rsm <- rowSums(xtr)
+    rsl <- rowSums(xtr * log(xtr))
+    tawn <- rsl - log(apply(xtr, 1, prod)) - (rsm - 2) * log(rsm) - 1/rsm
+		tawn <- (nn/2 * log(nn))^(-1/2) * sum(tawn)
+		stat <- c(norm.score = tawn)
+		pval <- c(p.value = pnorm(tawn))
+	}
+	rval <- list(statistic = stat, p.value = pval, estimate = estimate, null.value = 
+	  c(dependence = "independence"), alternative = "greater", method = meth, 
+		data.name = dname)
+  class(rval) <- "htest"
+  return(rval)
 }
 
 

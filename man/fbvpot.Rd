@@ -30,8 +30,9 @@ fbvpot(x, threshold, model = c("log", "bilog", "alog", "neglog",
     bilogistic, negative bilogistic, Coles-Tawn and asymmetric mixed
     models respectively. The definition of each model is given in
     \code{\link{rbvevd}}.}
-  \item{likelihood}{Do not use: the second method is not fully 
-    implemented.}
+  \item{likelihood}{The likelihood model; either \code{"censored"}
+	  (the default) or \code{"poisson"}. The \code{"poisson"} method 
+		is not recommended. See \bold{Details}.}
   \item{start}{A named list giving the initial values for all of the
     parameters in the model. If \code{start} is omitted the routine
     attempts to find good starting values using marginal maximum
@@ -61,11 +62,21 @@ fbvpot(x, threshold, model = c("log", "bilog", "alog", "neglog",
     the starting values.}
 }
 \details{
-  The bivariate peaks over threshold models are fitted by
-  maximizing the censored likelihood as given in e.g. Section
-  8.3.1 of Coles(2001). Declustering of the series is not
-  currently implemented.
-  
+  For the \code{"censored"} method bivariate peaks over threshold models 
+	are fitted by maximizing the censored likelihood as given in e.g. Section
+  8.3.1 of Coles(2001). For the \code{"poisson"} method models are fitted
+	using Equation 5.4 of Coles and Tawn (1991), see also Joe, Smith and
+	Weissman (1992). This method is only available for models whose spectral 
+	measure does not contain point masses (see {\link{hbvevd}}). It is not
+	recommended as in practice it can produce poor estimates.
+
+  For either likelihood the margins are modelled using a generalized Pareto 
+	distribution for points above the threshold and an empirical model for 
+	those below. For the \code{"poisson"} method data lying below both thresholds 
+	is not used. For the \code{"censored"} method the number of points lying
+  below both thresholds is used, but the locations of the those points are 
+	not.
+
   The dependence parameter names are one or more of \code{dep},
   \code{asy1}, \code{asy2}, \code{alpha} and \code{beta}, depending on
   the model selected (see \code{\link{rbvevd}}). 
@@ -136,6 +147,7 @@ fbvpot(x, threshold, model = c("log", "bilog", "alog", "neglog",
   \item{n}{The number of rows in \code{x}.}
   \item{nat}{The vector of length three containing the number of
     exceedances on the first, second and both margins respectively.}
+	\item{likelihood}{The argument \code{likelihood}.}
   \item{sym}{The argument \code{sym}.}
   \item{cmar}{The vector \code{c(cscale, cshape)}.}
   \item{model}{The argument \code{model}.}
@@ -154,6 +166,14 @@ fbvpot(x, threshold, model = c("log", "bilog", "alog", "neglog",
   Coles, S. G. (2001)
   \emph{An Introduction to Statistical Modelling of Extreme
   Values}, London: Springer--Verlag.
+	
+	Coles, S. G. and Tawn, J. A. (1991)
+  Modelling multivariate extreme events.
+  \emph{J. R. Statist. Soc. B}, \bold{53}, 377--392.
+	
+	Joe, H., Smith, R. L. and Weissman, I. (1992)
+	Bivariate threshold methods for extremes.
+	\emph{J. R. Statist. Soc. B}, \bold{54}, 171--183.
 
   Smith, R. L. (1985)
   Maximum likelihood estimation in a class of non-regular cases.

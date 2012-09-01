@@ -57,8 +57,8 @@ hbvevd(x = 0.5, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
   The functions \eqn{y_1}{y1} and \eqn{y_2}{y2} are as defined in
   \code{\link{abvevd}}.
 
-  \eqn{H(\cdot)}{H()} is called the spectral measure, with density
-  \eqn{h} on the interval \eqn{(0,1)}.
+  H is called the spectral measure, with density \eqn{h} on 
+	the interval \eqn{(0,1)}.
 }
 \section{Point Masses}{
   For differentiable models H may have up to two point masses:

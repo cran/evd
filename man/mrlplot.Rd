@@ -53,7 +53,6 @@ mrlplot(data, tlim, pscale = FALSE, nt = max(100, length(data)), lty =
     \code{\link{tcplot}}}
 
 \examples{
-data(portpirie)
 mrlplot(portpirie)
 }
 \keyword{hplot}

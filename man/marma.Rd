@@ -36,7 +36,8 @@ mma(n, q = 1, theta, rand.gen = rfrechet, \dots)
 }
 \details{
   A max autoregressive moving average process \eqn{\{X_k\}}{{X_k}},
-  denoted by MARMA(p,q), satisfies
+  denoted by MARMA(p,q), is defined in Davis and Resnick (1989) as
+	satisfying
   \deqn{X_k = \max\{\phi_1 X_{k-1}, \ldots, \phi_p X_{k-p}, \epsilon_k,
     \theta_1 \epsilon_{k-1}, \ldots, \theta_q \epsilon_{k-q}\}}{
     X_k = max[phi_1 X_{k-1}, \ldots, phi_p X_{k-p}, epsilon_k,
@@ -66,7 +67,11 @@ mma(n, q = 1, theta, rand.gen = rfrechet, \dots)
 \value{
   A numeric vector of length \code{n}.
 }
-
+\references{
+  Davis, R. A. and Resnick, S. I. (1989)
+  Basic properties and prediction of max-arma processes.
+  \emph{Adv. Appl. Prob.}, \bold{21}, 781--803.
+}
 \seealso{\code{\link{evmc}}}
 
 \examples{

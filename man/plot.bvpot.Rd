@@ -50,7 +50,7 @@
 }
 
 \seealso{\code{\link{plot.bvevd}}, \code{\link{contour}},
-  \code{\link{abvnonpar}}, \code{\link{qcbvnonpar}}}
+  \code{\link{abvnonpar}}, \code{\link{qcbvnonpar}}, \code{\link{hbvevd}}}
 
 \examples{
 bvdata <- rbvevd(500, dep = 0.6, model = "log")
