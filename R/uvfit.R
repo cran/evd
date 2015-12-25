@@ -520,7 +520,7 @@ function(x, threshold, model, start, npp = length(x), cmax = FALSE, r = 1, ulow 
     list(estimate = opt$par, std.err = std.err, fixed = unlist(fixed.param),
         param = param, deviance = 2*opt$value, corr = corr, var.cov = var.cov,
         convergence = opt$convergence, counts = opt$counts, message = opt$message,
-        threshold = threshold, r = r, ulow = ulow, rlow = rlow, npp = npp,
+        threshold = threshold, cmax = cmax, r = r, ulow = ulow, rlow = rlow, npp = npp,
         nhigh = nhigh, nat = nat, pat = pat, extind = extind,
         data = x, exceedances = exceed, mper = NULL, scale = scale)
 }
@@ -627,7 +627,7 @@ function(x, threshold, start, npp = length(x), cmax = FALSE, r = 1, ulow = -Inf,
     list(estimate = opt$par, std.err = std.err, fixed = unlist(fixed.param),
         param = param, deviance = 2*opt$value, corr = corr, var.cov = var.cov,
         convergence = opt$convergence, counts = opt$counts, message = opt$message,
-        threshold = threshold, r = r, ulow = ulow, rlow = rlow, npp = npp,
+        threshold = threshold, cmax = cmax, r = r, ulow = ulow, rlow = rlow, npp = npp,
         nhigh = nhigh, nat = nat, pat = pat, extind = extind,
         data = x, exceedances = exceed, mper = mper, scale = scale)
 }

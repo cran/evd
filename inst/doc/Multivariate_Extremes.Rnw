@@ -228,7 +228,7 @@ mar2 <- fitted(fpot(loss[,2], thresh[2]))
 rbind(mar1,mar2)
 @
 
-Parametric threshold models can be fitted using the function \texttt{fbvpot}, with the parametric model specified using the \texttt{model} argument. The default approach uses censored likelihood methodology, where a bivariate extreme value dependence structure is fitted to the data censored at the marginal thresholds $u_1$ and $u_2$. Alternatively, a Poisson process model can be employed using the \texttt{likelihood} argument. \textbf{SENTENCE}. Some examples of parametric fits are given below. Diagnostic plots for the fitted models can be produced using e.g.\ \texttt{plot(m2)}.
+Parametric threshold models can be fitted using the function \texttt{fbvpot}, with the parametric model specified using the \texttt{model} argument. The default approach uses censored likelihood methodology, where a bivariate extreme value dependence structure is fitted to the data censored at the marginal thresholds $u_1$ and $u_2$. Alternatively, a Poisson process model can be employed using the \texttt{likelihood} argument, employing the methodology of Coles and Tawn (1991). Some examples of parametric fits are given below. Diagnostic plots for the fitted models can be produced using e.g.\ \texttt{plot(m2)}.
 
 <<>>=
 m1 <- fbvpot(loss, thresh, model = "alog", asy1 = 1)
@@ -323,16 +323,16 @@ anova(m1, m2, half = TRUE)
 \label{etaplot}
 \end{figure}
 
-\textbf{POISSON LIKELIHOOD CODE AND SENTENCE TODO}
-
 \section*{Bibliography}
 
 Beirlant, J., Goegebeur, Y., Segers, J and Teugels, J. (2004) \textit{Statistics of Extremes: Theory and Applications}. Wiley, U.K.
 
-Coles, S., Heffernan, J. and Tawn, J. (1999) Dependence measures for extreme value analysis. \textit{Extremes}, \textbf{2}, 339--365.
+Coles, S. G., Heffernan, J. and Tawn, J. A. (1999) Dependence measures for extreme value analysis. \textit{Extremes}, \textbf{2}, 339--365.
+
+Coles, S. G. and Tawn, J. A. (1991) Modelling extreme multivariate events. \textit{J.\ R.\ Statist.\ Soc.\ B}, \textbf{53}, 377--392.
 
 Segers, J. and Vandewalle, B. (2004). Statistics of Multivariate Extremes. In Beirlant et al. (eds.), \textit{Statistics of Extremes: Theory and Applications}. Wiley, U.K.
 
-Tawn, J. (1988). Bivariate extreme value theory: Models and estimation. \textit{Biometrika}, \textbf{75}, 397--415.
+Tawn, J. A. (1988). Bivariate extreme value theory: Models and estimation. \textit{Biometrika}, \textbf{75}, 397--415.
 
 \end{document}

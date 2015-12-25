@@ -1,14 +1,31 @@
+CHANGES FROM VERSION 2.3-0 ARE AS FOLLOWS
+
+  Minor edits to vignette.
+  
+  Added cmax to output of fpot to correct bug
+  in profile call.
+  
+  Using requireNamespace in plot.profile2d.evd
+  
+  Added importFrom calls to NAMESPACE
+  
+  Removed dependency on stats
+  
+  Added Imports for stats, grDevices, graphics
+  
+  [Version 2.3-1 was not uploaded to CRAN.]
+
 CHANGES FROM VERSION 2.2-7 ARE AS FOLLOWS
 
   The demo soe9 has been replaced with a vignette
-	on multivariate extremes.
+  on multivariate extremes.
 	
-	Added functions bvtcplot and evind.test.
+  Added functions bvtcplot and evind.test.
 	
-	Added [dpqr]nweibull functions to the namespace!
+  Added [dpqr]nweibull functions to the namespace!
 	
-	Implemented the possion likelihood for bivariate 
-	threshold models.
+  Implemented the possion likelihood for bivariate 
+  threshold models.
 
 CHANGES FROM VERSION 2.2-6 ARE AS FOLLOWS
   

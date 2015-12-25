@@ -286,18 +286,11 @@ profile2d <- function (fitted, ...) {
     prof <- x$trace[,"deviance"]
     if(any(prof == 2e6))
         warning("non-convergence present in profile2d object")
-    lbak <- TRUE
-    if (is.na(match("package:akima", search()))) {
-        oldop <- options(warn = -1)
-        lbak <- library("akima", character.only = TRUE, logical.return = TRUE)
-        options(oldop)
-        if(lbak) cat("Loaded package akima", "\n")
-    }
     prof <- -prof/2
     br.pts <- (-br.pts/2)[length(br.pts):1]
     col <- col[length(col):1]
     
-    if(!lbak) {
+    if(!requireNamespace("akima", quietly = TRUE)) {
         image(x[[which[1]]], x[[which[2]]],
               matrix(prof, nrow = length(x[[which[1]]])),
               col = col, breaks = c(-1e6+1, br.pts),
@@ -307,7 +300,7 @@ profile2d <- function (fitted, ...) {
     else {
         lim1 <- range(x[[which[1]]])
         lim2 <- range(x[[which[2]]]) 
-        prof.interp <- interp(x$trace[,1], x$trace[,2], prof,
+        prof.interp <- akima::interp(x$trace[,1], x$trace[,2], prof,
             xo = seq(lim1[1], lim1[2], length = intpts),
             yo = seq(lim2[1], lim2[2], length = intpts))
         image(prof.interp, col = col, breaks = c(min(prof), br.pts),
