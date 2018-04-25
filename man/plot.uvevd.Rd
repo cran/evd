@@ -9,7 +9,7 @@
 \usage{
 \method{plot}{uvevd}(x, which = 1:4, main, ask = nb.fig <
     length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
-    adjust = 1, jitter = FALSE, nplty = 2, \dots)
+    a = 0, adjust = 1, jitter = FALSE, nplty = 2, \dots)
 }
 \arguments{
   \item{x}{An object that inherits from class \code{"uvevd"}.}
@@ -23,6 +23,8 @@
     95\% confidence intervals for the P-P, Q-Q and return level
     plots.}
   \item{cilwd}{Line width for confidence interval lines.}
+  \item{a}{Passed through to \code{ppoints} for empirical estimation.
+    Larger values give less probability for extreme events.}
   \item{adjust, jitter, nplty}{Arguments to the density plot.
     The density of the fitted model is plotted with a rug plot and
     (optionally) a non-parameteric estimate. The argument

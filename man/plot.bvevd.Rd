@@ -13,7 +13,7 @@
 \usage{
 \method{plot}{bvevd}(x, mar = 0, which = 1:6, main, ask = nb.fig <
     length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
-    grid = 50, legend = TRUE, nplty = 2, blty = 3, method = "cfg",
+    a = 0, grid = 50, legend = TRUE, nplty = 2, blty = 3, method = "cfg",
     convex = FALSE, rev = FALSE, p = seq(0.75, 0.95, 0.05),
     mint = 1, half = FALSE, \dots)
 }
@@ -31,6 +31,8 @@
   \item{ci}{Logical; if \code{TRUE} (the default), plot simulated
     95\% confidence intervals for the conditional P-P plots.}
   \item{cilwd}{Line width for confidence interval lines.}
+  \item{a}{Passed through to \code{ppoints} for empirical estimation.
+    Larger values give less probability for extreme events.}
   \item{grid}{Argument for the density plot. The (possibly
     transformed) data is plotted with a contour plot of the
     bivariate density of the fitted model. The density is evaluated

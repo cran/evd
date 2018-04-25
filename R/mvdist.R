@@ -17,9 +17,9 @@ function(n, dep, d = 2, mar = c(0,1,0))
 {
     if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0 ||
        dep > 1) stop("invalid argument for `dep'")
-    sim <- .C("rmvlog_tawn",
+    sim <- .C(C_rmvlog_tawn,
               as.integer(n), as.integer(d), as.double(dep),
-              sim = double(d*n), PACKAGE = "evd")$sim
+              sim = double(d*n))$sim
     mtransform(matrix(1/sim, ncol=d, byrow=TRUE), mar, inv = TRUE, drp = TRUE)
 }
 
@@ -31,9 +31,9 @@ function(n, dep, asy, d = 2, mar = c(0,1,0))
     dep <- rep(dep, length.out = nb-d)
     asy <- mvalog.check(asy, dep, d = d)
     dep <- c(rep(1,d), dep)
-    sim <- .C("rmvalog_tawn",
+    sim <- .C(C_rmvalog_tawn,
               as.integer(n), as.integer(d), as.integer(nb), as.double(dep),
-              as.double(t(asy)), sim = double(n*d), PACKAGE = "evd")$sim
+              as.double(t(asy)), sim = double(n*d))$sim
     mtransform(matrix(1/sim, ncol=d, byrow=TRUE), mar, inv = TRUE, drp = TRUE)
 }
 

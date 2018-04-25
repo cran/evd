@@ -64,22 +64,15 @@ function(n, dep, asy = c(1,1), alpha, beta, model = c("log", "alog",
   evmc <- runif(n)
   for(i in 2:n) {
     evmc[c(i,i-1)] <- switch(model,
-      log = .C("rbvlog", nn, dep, sim = evmc[c(i,i-1)], PACKAGE = "evd")$sim,
-      alog = .C("rbvalog", nn, dep, asy, sim = evmc[c(i,i-1)],
-        PACKAGE = "evd")$sim,
-      hr = .C("rbvhr", nn, dep, sim = evmc[c(i,i-1)], PACKAGE = "evd")$sim,
-      neglog = .C("rbvneglog", nn, dep, sim = evmc[c(i,i-1)],
-        PACKAGE = "evd")$sim,
-      aneglog = .C("rbvaneglog", nn, dep, asy, sim = evmc[c(i,i-1)],
-        PACKAGE = "evd")$sim,
-      bilog = .C("rbvbilog", nn, alpha, beta, sim = evmc[c(i,i-1)],
-        PACKAGE = "evd")$sim,
-      negbilog = .C("rbvnegbilog", nn, alpha, beta, sim = evmc[c(i,i-1)],
-        PACKAGE = "evd")$sim,
-      ct = .C("rbvct", nn, alpha, beta, sim = evmc[c(i,i-1)],
-        PACKAGE = "evd")$sim,
-      amix = .C("rbvamix", nn, alpha, beta, sim = evmc[c(i,i-1)],
-        PACKAGE = "evd")$sim)
+      log = .C(C_rbvlog, nn, dep, sim = evmc[c(i,i-1)])$sim,
+      alog = .C(C_rbvalog, nn, dep, asy, sim = evmc[c(i,i-1)])$sim,
+      hr = .C(C_rbvhr, nn, dep, sim = evmc[c(i,i-1)])$sim,
+      neglog = .C(C_rbvneglog, nn, dep, sim = evmc[c(i,i-1)])$sim,
+      aneglog = .C(C_rbvaneglog, nn, dep, asy, sim = evmc[c(i,i-1)])$sim,
+      bilog = .C(C_rbvbilog, nn, alpha, beta, sim = evmc[c(i,i-1)])$sim,
+      negbilog = .C(C_rbvnegbilog, nn, alpha, beta, sim = evmc[c(i,i-1)])$sim,
+      ct = .C(C_rbvct, nn, alpha, beta, sim = evmc[c(i,i-1)])$sim,
+      amix = .C(C_rbvamix, nn, alpha, beta, sim = evmc[c(i,i-1)])$sim)
   }
 
   switch(match.arg(margins),
@@ -137,8 +130,8 @@ function(data, u, r = 1, ulow = -Inf, rlow = 1, cmax = FALSE, keep.names = TRUE,
     if(!keep.names) names(data) <- NULL
     high <- as.double((data > u) & !is.na(data))
     high2 <- as.double((data > ulow) | is.na(data))
-    clstrs <- .C("clusters", high, high2, n, as.integer(r),
-        as.integer(rlow), clstrs = double(3*n), PACKAGE = "evd")$clstrs
+    clstrs <- .C(C_clusters, high, high2, n, as.integer(r),
+        as.integer(rlow), clstrs = double(3*n))$clstrs
     clstrs <- matrix(clstrs, n, 3)
     start <- clstrs[,2] ; end <- clstrs[,3]
     splvec <- clstrs[,1]

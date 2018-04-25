@@ -177,9 +177,8 @@ function(x, start, ..., nsloc = NULL, std.err = TRUE, corr = FALSE, method = "BF
             loc <- drop(nslocmat %*% ns)
         }
         else loc <- rep(loc, length.out = length(x))
-        .C("nlgev",
-            x, n, loc, scale, shape, dns = double(1),
-            PACKAGE = "evd")$dns
+        .C(C_nlgev,
+            x, n, loc, scale, shape, dns = double(1))$dns
     }
     if(!is.null(nsloc)) {
         if(is.vector(nsloc)) nsloc <- data.frame(trend = nsloc)
@@ -281,10 +280,9 @@ function(x, start, ..., nsloc = NULL, prob, std.err = TRUE, corr = FALSE, method
             loc <- drop(nslocmat %*% ns) + loc
         }
         if(any(is.infinite(loc))) return(1e6)
-        .C("nlgev",
+        .C(C_nlgev,
             x, n,
-            loc, scale, shape, dns = double(1),
-            PACKAGE = "evd")$dns
+            loc, scale, shape, dns = double(1))$dns
     }
     if(is.null(nsloc)) loc.param <- "quantile"
     else loc.param <- c("quantile", paste("loc", names(nsloc), sep=""))
@@ -418,18 +416,17 @@ function(x, threshold, model, start, npp = length(x), cmax = FALSE, r = 1, ulow 
 {
     if(model == "gpd") {
       nlpot <- function(loc, scale, shape) { 
-        .C("nlgpd",
-            exceed, nhigh, threshold, scale, shape, dns = double(1),
-            PACKAGE = "evd")$dns
+        .C(C_nlgpd,
+            exceed, nhigh, threshold, scale, shape, dns = double(1))$dns
       }
       # Avoids note produced by R CMD check
       formals(nlpot) <- formals(nlpot)[2:3] 
     }
     if(model == "pp") {
       nlpot <- function(loc, scale, shape) {
-        .C("nlpp",
+        .C(C_nlpp,
             exceed, nhigh, loc, scale, shape, threshold, nop,
-            dns = double(1), PACKAGE = "evd")$dns
+            dns = double(1))$dns
       }
     }
     nn <- length(x)
@@ -534,9 +531,8 @@ function(x, threshold, start, npp = length(x), cmax = FALSE, r = 1, ulow = -Inf,
         rlevel <- rlevel - threshold
         if(shape == 0) scale <- rlevel / log(adjmper)
         else scale <- shape * rlevel / (adjmper^shape - 1)
-        .C("nlgpd",
-            exceed, nhigh, threshold, scale, shape, dns = double(1),
-            PACKAGE = "evd")$dns
+        .C(C_nlgpd,
+            exceed, nhigh, threshold, scale, shape, dns = double(1))$dns
     }
     nn <- length(x)
     if(cmax) {

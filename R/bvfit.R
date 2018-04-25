@@ -72,16 +72,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
-                      shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
+                      shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
-                      shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
+                      shape2, dns = double(1))$dns
         else m2l <- 0   
-        bvl <- .C("nlbvlog", spx$x1, spx$x2, spx$n, spx$si, dep,
+        bvl <- .C(C_nlbvlog, spx$x1, spx$x2, spx$n, spx$si, dep,
                   loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                  scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
+                  scale2, shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -173,16 +173,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
-                shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
+                shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
-                shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
+                shape2, dns = double(1))$dns
         else m2l <- 0
-        bvl <- .C("nlbvalog", spx$x1, spx$x2, spx$n, spx$si, dep, asy1, asy2,
+        bvl <- .C(C_nlbvalog, spx$x1, spx$x2, spx$n, spx$si, dep, asy1, asy2,
                 loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
+                scale2, shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -272,16 +272,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
-                shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
+                shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
-                shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
+                shape2, dns = double(1))$dns
         else m2l <- 0
-        bvl <- .C("nlbvhr", spx$x1, spx$x2, spx$n, spx$si, dep,
+        bvl <- .C(C_nlbvhr, spx$x1, spx$x2, spx$n, spx$si, dep,
                 loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0], scale2,
-                shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
+                shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -371,16 +371,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
-                shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1, spx$n.m1, loc1[spx$na == 2], scale1,
+                shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
-                shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2, spx$n.m2, loc2[spx$na == 1], scale2,
+                shape2, dns = double(1))$dns
         else m2l <- 0
-        bvl <- .C("nlbvneglog", spx$x1, spx$x2, spx$n, spx$si, dep,
+        bvl <- .C(C_nlbvneglog, spx$x1, spx$x2, spx$n, spx$si, dep,
                   loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                  scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
+                  scale2, shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -472,16 +472,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2],
-                scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1, spx$n.m1, loc1[spx$na == 2],
+                scale1, shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2, spx$n.m2, loc2[spx$na == 1],
+                scale2, shape2, dns = double(1))$dns
         else m2l <- 0
-        bvl <- .C("nlbvaneglog", spx$x1, spx$x2, spx$n, spx$si, dep, asy1,
+        bvl <- .C(C_nlbvaneglog, spx$x1, spx$x2, spx$n, spx$si, dep, asy1,
                 asy2, loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
+                scale2, shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -572,16 +572,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1,  spx$n.m1, loc1[spx$na == 2],
-                scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1,  spx$n.m1, loc1[spx$na == 2],
+                scale1, shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2,  spx$n.m2, loc2[spx$na == 1],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2,  spx$n.m2, loc2[spx$na == 1],
+                scale2, shape2, dns = double(1))$dns
         else m2l <- 0
-        bvl <- .C("nlbvbilog", spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
+        bvl <- .C(C_nlbvbilog, spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
                 loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
+                scale2, shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -672,16 +672,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2],
-                scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1, spx$n.m1, loc1[spx$na == 2],
+                scale1, shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2, spx$n.m2, loc2[spx$na == 1],
+                scale2, shape2, dns = double(1))$dns
         else m2l <- 0
-        bvl <- .C("nlbvnegbilog", spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
+        bvl <- .C(C_nlbvnegbilog, spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
                   loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                  scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
+                  scale2, shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -773,16 +773,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2],
-                scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1, spx$n.m1, loc1[spx$na == 2],
+                scale1, shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2, spx$n.m2, loc2[spx$na == 1],
+                scale2, shape2, dns = double(1))$dns
         else m2l <- 0
-        bvl <- .C("nlbvct", spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
+        bvl <- .C(C_nlbvct, spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
                 loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, cfalse, dns = double(1), PACKAGE = "evd")$dns
+                scale2, shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)
@@ -874,17 +874,16 @@ function(x, start, ..., sym = FALSE, nsloc1 = NULL, nsloc2 = NULL, cshape = csca
           else loc2 <- rep(loc2, length.out = nrow(x))
         }
         if(spx$n.m1)
-            m1l <- .C("nlgev", spx$x.m1, spx$n.m1, loc1[spx$na == 2],
-                scale1, shape1, dns = double(1), PACKAGE = "evd")$dns
+            m1l <- .C(C_nlgev, spx$x.m1, spx$n.m1, loc1[spx$na == 2],
+                scale1, shape1, dns = double(1))$dns
         else m1l <- 0
         if(spx$n.m2)
-            m2l <- .C("nlgev", spx$x.m2, spx$n.m2, loc2[spx$na == 1],
-                scale2, shape2, dns = double(1), PACKAGE = "evd")$dns
+            m2l <- .C(C_nlgev, spx$x.m2, spx$n.m2, loc2[spx$na == 1],
+                scale2, shape2, dns = double(1))$dns
         else m2l <- 0
-        bvl <- .C("nlbvamix", spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
+        bvl <- .C(C_nlbvamix, spx$x1, spx$x2, spx$n, spx$si, alpha, beta,
                 loc1[spx$na == 0], scale1, shape1, loc2[spx$na == 0],
-                scale2, shape2, cfalse, dns = double(1),
-                PACKAGE = "evd")$dns
+                scale2, shape2, cfalse, dns = double(1))$dns
         if(any(is.nan(c(m1l,m2l,bvl)))) {
             warning("NaN returned in likelihood")
             return(1e6)

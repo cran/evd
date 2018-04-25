@@ -80,9 +80,8 @@ fbvclog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FAL
   nllbvclog <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvclog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi,
-      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
-      PACKAGE = "evd")$dns
+    .C(C_nllbvclog, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi,
+      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -123,9 +122,8 @@ fbvcbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = F
   nllbvcbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvcbilog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
-      alpha, beta, scale1, shape1, scale2, shape2, dns = double(1),
-      PACKAGE = "evd")$dns
+    .C(C_nllbvcbilog, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
+      alpha, beta, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -167,9 +165,8 @@ fbvcalog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FA
     if(sym) asy2 <- asy1
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvcalog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
-       dep, asy1, asy2, scale1, shape1, scale2, shape2, dns = double(1),
-       PACKAGE = "evd")$dns
+    .C(C_nllbvcalog, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
+       dep, asy1, asy2, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -211,9 +208,8 @@ fbvcneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = 
   nllbvcneglog <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvcneglog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
-      dep, scale1, shape1, scale2, shape2, dns = double(1),
-      PACKAGE = "evd")$dns
+    .C(C_nllbvcneglog, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
+      dep, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -254,9 +250,8 @@ fbvcnegbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale 
   nllbvcnegbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvcnegbilog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
-       alpha, beta, scale1, shape1, scale2, shape2, dns = double(1),
-       PACKAGE = "evd")$dns
+    .C(C_nllbvcnegbilog, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
+       alpha, beta, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -299,9 +294,8 @@ fbvcaneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale =
     if(sym) asy2 <- asy1
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvcaneglog", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
-       dep, asy1, asy2, scale1, shape1, scale2, shape2, dns = double(1),
-       PACKAGE = "evd")$dns
+    .C(C_nllbvcaneglog, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
+       dep, asy1, asy2, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -344,9 +338,8 @@ fbvcct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
     if(sym) beta <- alpha
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvcct", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
-      alpha, beta, scale1, shape1, scale2, shape2, dns = double(1),
-      PACKAGE = "evd")$dns
+    .C(C_nllbvcct, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
+      alpha, beta, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -388,9 +381,8 @@ fbvchr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
   nllbvchr <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvchr", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi,
-      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
-      PACKAGE = "evd")$dns
+    .C(C_nllbvchr, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi,
+      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -431,9 +423,8 @@ fbvcamix <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FA
   nllbvcamix <- function(scale1, shape1, scale2, shape2, alpha, beta) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvcamix", spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
-      alpha, beta, scale1, shape1, scale2, shape2, dns = double(1),
-      PACKAGE = "evd")$dns
+    .C(C_nllbvcamix, spx$x1, spx$x2, spx$nn, spx$n, spx$thdi, spx$lambda,
+      alpha, beta, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -476,9 +467,8 @@ fbvplog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FAL
   nllbvplog <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvplog", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
-      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
-      PACKAGE = "evd")$dns
+    .C(C_nllbvplog, spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
+      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -519,9 +509,9 @@ fbvpneglog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = 
   nllbvpneglog <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvpneglog", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
+    .C(C_nllbvpneglog, spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
       spx$r2, spx$lambda, dep, scale1, shape1, scale2, shape2,
-      dns = double(1), PACKAGE = "evd")$dns    
+      dns = double(1))$dns    
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -563,9 +553,9 @@ fbvpct <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
     if(sym) beta <- alpha
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvpct", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
+    .C(C_nllbvpct, spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
       spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
-      dns = double(1), PACKAGE = "evd")$dns
+      dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -607,9 +597,9 @@ fbvpbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = F
   nllbvpbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvpbilog", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
+    .C(C_nllbvpbilog, spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
       spx$r2, spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
-      dns = double(1), PACKAGE = "evd")$dns    
+      dns = double(1))$dns    
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -651,9 +641,9 @@ fbvpnegbilog <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale 
   nllbvpnegbilog <- function(scale1, shape1, scale2, shape2, alpha, beta) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvpnegbilog", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
+    .C(C_nllbvpnegbilog, spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1,
       spx$r2, spx$lambda, alpha, beta, scale1, shape1, scale2, shape2,
-      dns = double(1), PACKAGE = "evd")$dns 
+      dns = double(1))$dns 
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")
@@ -695,9 +685,8 @@ fbvphr <- function(x, u, start, ..., sym = FALSE, cshape = cscale, cscale = FALS
   nllbvphr <- function(scale1, shape1, scale2, shape2, dep) {
     if(cshape) shape2 <- shape1
     if(cscale) scale2 <- scale1
-    .C("nllbvphr", spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
-      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1),
-      PACKAGE = "evd")$dns
+    .C(C_nllbvphr, spx$x1, spx$x2, spx$nn, spx$thdi, spx$r1, spx$r2,
+      spx$lambda, dep, scale1, shape1, scale2, shape2, dns = double(1))$dns
   }
   param <- c("scale1", "shape1")
   if(!cscale) param <- c(param, "scale2")

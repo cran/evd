@@ -1,7 +1,7 @@
 ### Univariate GEV and POT Models ###
 
 "plot.uvevd" <-  function(x, which = 1:4, main, ask = nb.fig <
-     length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
+     length(which) && dev.interactive(), ci = TRUE, cilwd = 1, a = 0,
      adjust = 1, jitter = FALSE, nplty = 2, ...) 
 {
     if (!inherits(x, "uvevd")) 
@@ -27,18 +27,18 @@
         on.exit(par(op))
     }
     if (show[1]) {
-        pp(x, ci = ci, cilwd = cilwd, main = main[1], xlim = c(0,1),
+        pp(x, ci = ci, cilwd = cilwd, a = a, main = main[1], xlim = c(0,1),
            ylim = c(0,1), ...)
     }
     if (show[2]) {
-        qq(x, ci = ci, cilwd = cilwd, main = main[2], ...)
+        qq(x, ci = ci, cilwd = cilwd, a = a, main = main[2], ...)
     }
     if (show[3]) {
         dens(x, adjust = adjust, nplty = nplty, jitter = jitter,
              main = main[3], ...)
     }
     if (show[4]) {
-        rl(x, ci = ci, cilwd = cilwd, main = main[4], ...)
+        rl(x, ci = ci, cilwd = cilwd, a = a, main = main[4], ...)
     }
     invisible(x)
 }
@@ -48,9 +48,9 @@
 "rl" <- function (x, ...) UseMethod("rl")
 "dens" <- function (x, ...) UseMethod("dens")
 
-"qq.gev" <-  function(x, ci = TRUE, cilwd = 1, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
+"qq.gev" <-  function(x, ci = TRUE, cilwd = 1, a = 0, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
 {
-    quant <- qgev(ppoints(x$tdata), loc = x$loc,
+    quant <- qgev(ppoints(x$tdata, a = a), loc = x$loc,
                  scale = x$param["scale"], shape = x$param["shape"])
     if(!ci) {
       plot(quant, sort(x$tdata), main = main, xlab = xlab, ylab = ylab, ...)
@@ -76,9 +76,9 @@
     invisible(list(x = quant, y = sort(x$tdata)))
 }
 
-"pp.gev" <-  function(x, ci = TRUE, cilwd = 1, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+"pp.gev" <-  function(x, ci = TRUE, cilwd = 1, a = 0, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 {
-    ppx <- ppoints(x$n)
+    ppx <- ppoints(x$n, a = a)
     probs <- pgev(sort(x$tdata), loc = x$loc,
                  scale = x$param["scale"], shape = x$param["shape"])
     if(!ci) {
@@ -105,12 +105,12 @@
         segments(ppx-smidge, env[,2], ppx+smidge, env[,2], lwd = cilwd)
         abline(0, 1)
     }
-    invisible(list(x = ppoints(x$n), y = probs))
+    invisible(list(x = ppx, y = probs))
 }
 
-"rl.gev" <-  function(x, ci = TRUE, cilwd = 1, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
+"rl.gev" <-  function(x, ci = TRUE, cilwd = 1, a = 0, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
 {
-    ppx <- ppoints(x$tdata)
+    ppx <- ppoints(x$tdata, a = a)
     rps <- c(1.001,10^(seq(0,3,len=200))[-1])
     p.upper <- 1/rps
     rlev <- qgev(p.upper, loc = x$loc, scale = x$param["scale"],
@@ -158,9 +158,9 @@
     invisible(list(x = xvec, y = dens))
 }
 
-"qq.pot" <-  function(x, ci = TRUE, cilwd = 1, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
+"qq.pot" <-  function(x, ci = TRUE, cilwd = 1, a = 0, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
 {
-    quant <- qgpd(ppoints(x$nhigh), loc = x$threshold,
+    quant <- qgpd(ppoints(x$nhigh, a = a), loc = x$threshold,
                  scale = x$scale, shape = x$param["shape"])
     if(!ci) {
       plot(quant, sort(x$exceedances), main = main, xlab = xlab,
@@ -187,9 +187,9 @@
     invisible(list(x = quant, y = sort(x$exceedances)))
 }
 
-"pp.pot" <-  function(x, ci = TRUE, cilwd = 1, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+"pp.pot" <-  function(x, ci = TRUE, cilwd = 1, a = 0, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 {
-    ppx <- ppoints(x$nhigh)
+    ppx <- ppoints(x$nhigh, a = a)
     probs <- pgpd(sort(x$exceedances), loc = x$threshold,
                  scale = x$scale, shape = x$param["shape"])
     if(!ci) {
@@ -216,17 +216,17 @@
         segments(ppx-smidge, env[,2], ppx+smidge, env[,2], lwd = cilwd)
         abline(0, 1)
     }
-    invisible(list(x = ppoints(x$nhigh), y = probs))
+    invisible(list(x = ppx, y = probs))
 }
 
-"rl.pot" <- function(x, ci = TRUE, cilwd = 1, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
+"rl.pot" <- function(x, ci = TRUE, cilwd = 1, a = 0, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
 {
     rpstmfc <- c(1.001,10^(seq(0,3,len=200))[-1])
     rlev <- qgpd(1/rpstmfc, loc = x$threshold, scale = x$scale,
               shape = x$param["shape"], lower.tail = FALSE)
     mfc <- x$npp * x$nhigh/length(x$data)
     rps <- rpstmfc/mfc
-    ppx <- 1/(mfc * (1 - ppoints(x$nhigh)))
+    ppx <- 1/(mfc * (1 - ppoints(x$nhigh, a = a)))
     if(!ci) {
         plot(ppx, sort(x$exceedances), log = "x", main =
              main, xlab = xlab, ylab = ylab, ...)
@@ -277,7 +277,7 @@
 
 "plot.bvevd" <-  function(x, mar = 0, which = 1:6, main,
      ask = nb.fig < length(which) && dev.interactive(), ci = TRUE,
-     cilwd = 1, grid = 50, legend = TRUE, nplty = 2,
+     cilwd = 1, a = 0, grid = 50, legend = TRUE, nplty = 2,
      blty = 3, method = "cfg", convex = FALSE, rev = FALSE,
      p = seq(0.75, 0.95, 0.05), mint = 1, half = FALSE, ...) 
 {
@@ -318,11 +318,11 @@
         on.exit(par(op))
     }
     if (show[1]) {
-        bvcpp(x, mar = 1, ci = ci, cilwd = cilwd, main = main[1],
+        bvcpp(x, mar = 1, ci = ci, cilwd = cilwd, a = a, main = main[1],
               xlim = c(0,1), ylim = c(0,1), ...)
     }
     if (show[2]) {
-        bvcpp(x, mar = 2, ci = ci, cilwd = cilwd, main = main[2],
+        bvcpp(x, mar = 2, ci = ci, cilwd = cilwd, a = a, main = main[2],
               xlim = c(0,1), ylim = c(0,1), ...)
     }
     if (show[3]) {
@@ -347,7 +347,7 @@
 "bvqc" <- function (x, ...) UseMethod("bvqc")
 "bvh" <- function (x, ...) UseMethod("bvh")
 
-"bvcpp.bvevd" <-  function(x, mar = 2, ci = TRUE, cilwd = 1, main = "Conditional Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+"bvcpp.bvevd" <-  function(x, mar = 2, ci = TRUE, cilwd = 1, a = 0, main = "Conditional Probability Plot", xlab = "Empirical", ylab = "Model", ...)
 { 
     data <- x$tdata
     mle.m1 <- x$param[c("loc1","scale1","shape1")]
@@ -356,7 +356,7 @@
     narow <- is.na(data[,1]) | is.na(data[,2])
     data <- data[!narow,, drop=FALSE]
     n <- nrow(data)
-    ppx <- ppoints(n)
+    ppx <- ppoints(n, a = a)
     if(x$model %in% c("log","hr","neglog")) {
       probs <- ccbvevd(data, mar = mar, dep = x$param["dep"],
                     model = x$model)}
@@ -797,17 +797,15 @@ function(x, p, inv = FALSE, drp = FALSE)
   n <- nrow(x)
   
   if(ncol(x) == 2) {
-    ccop <- .C("ccop", as.double(x[,1]), as.double(x[,2]), as.integer(mar),
+    ccop <- .C(C_ccop, as.double(x[,1]), as.double(x[,2]), as.integer(mar),
       as.double(dep), as.double(asy[1]), as.double(asy[2]), as.double(alpha),
-      as.double(beta), as.integer(n), as.integer(imodel), ccop = double(n),
-      PACKAGE = "evd")$ccop
+      as.double(beta), as.integer(n), as.integer(imodel), ccop = double(n))$ccop
   }
   
   if(ncol(x) == 3) {
 
     "dbvevd.case" <- function(x1, x2, case, mar, dep, asy, alpha, beta)
     {
-      nlbvfn <- paste("nlbv", model, sep = "")
       n <- max(length(x1), length(x2))
       x1 <- rep(-1/log(x1), length = n)
       x2 <- rep(-1/log(x2), length = n)
@@ -822,23 +820,36 @@ function(x, p, inv = FALSE, drp = FALSE)
         if(model == "amix")
           { alpha <- alpha + 3*beta; beta <- -beta }
       }
-      if(model %in% c("bilog","negbilog","ct","amix"))
-        nl <- .C(nlbvfn,
-          as.double(x1), as.double(x2), n, case,
-          as.double(alpha), as.double(beta), rep(mpar,n), mpar, mpar,
-          rep(mpar,n), mpar, mpar, split, dns = double(n),
-          PACKAGE = "evd")$dns
-      if(model %in% c("log","hr","neglog"))
-        nl <- .C(nlbvfn,
-          as.double(x1), as.double(x2), n, case,
+	  
+	  nl <- switch(model,
+      log = .C(C_nlbvlog, as.double(x1), as.double(x2), n, case,
           as.double(dep), rep(mpar,n), mpar, mpar, rep(mpar,n), mpar,
-          mpar, split, dns = double(n), PACKAGE = "evd")$dns
-      if(model %in% c("alog","aneglog"))
-        nl <- .C(nlbvfn,
-          as.double(x1), as.double(x2), n, case,
+          mpar, split, dns = double(n))$dns,
+      alog = .C(C_nlbvalog, as.double(x1), as.double(x2), n, case,
           as.double(dep), as.double(asy[1]), as.double(asy[2]), rep(mpar,n),
-          mpar, mpar, rep(mpar,n), mpar, mpar, split, dns = double(n),
-          PACKAGE = "evd")$dns
+          mpar, mpar, rep(mpar,n), mpar, mpar, split, dns = double(n))$dns,
+      hr = .C(C_nlbvhr, as.double(x1), as.double(x2), n, case,
+          as.double(dep), rep(mpar,n), mpar, mpar, rep(mpar,n), mpar,
+          mpar, split, dns = double(n))$dns,
+      neglog = .C(C_nlbvneglog, as.double(x1), as.double(x2), n, case,
+          as.double(dep), rep(mpar,n), mpar, mpar, rep(mpar,n), mpar,
+          mpar, split, dns = double(n))$dns,
+      aneglog = .C(C_nlbvaneglog, as.double(x1), as.double(x2), n, case,
+          as.double(dep), as.double(asy[1]), as.double(asy[2]), rep(mpar,n),
+          mpar, mpar, rep(mpar,n), mpar, mpar, split, dns = double(n))$dns,
+      bilog = .C(C_nlbvbilog, as.double(x1), as.double(x2), n, case,
+          as.double(alpha), as.double(beta), rep(mpar,n), mpar, mpar,
+          rep(mpar,n), mpar, mpar, split, dns = double(n))$dns,
+      negbilog = .C(C_nlbvnegbilog, as.double(x1), as.double(x2), n, case,
+          as.double(alpha), as.double(beta), rep(mpar,n), mpar, mpar,
+          rep(mpar,n), mpar, mpar, split, dns = double(n))$dns,
+      ct = .C(C_nlbvct, as.double(x1), as.double(x2), n, case,
+          as.double(alpha), as.double(beta), rep(mpar,n), mpar, mpar,
+          rep(mpar,n), mpar, mpar, split, dns = double(n))$dns,
+      amix = .C(C_nlbvamix, as.double(x1), as.double(x2), n, case,
+          as.double(alpha), as.double(beta), rep(mpar,n), mpar, mpar,
+          rep(mpar,n), mpar, mpar, split, dns = double(n))$dns)
+  
       jac.alt <- 1/x1 + 1/x2 + 2*log(x1 * x2)
       exp(jac.alt - nl)
     }
@@ -850,11 +861,10 @@ function(x, p, inv = FALSE, drp = FALSE)
     if(mar == 1) { fm <- x[,2] ; cm <- x[,1] }
     for(i in 1:n) {
       if(is.na(case[i])) {
-        ccop[i] <- .C("ccop", as.double(x[i,1]), as.double(x[i,2]),
+        ccop[i] <- .C(C_ccop, as.double(x[i,1]), as.double(x[i,2]),
           as.integer(mar), as.double(dep), as.double(asy[1]),
           as.double(asy[2]), as.double(alpha), as.double(beta),
-          as.integer(1), as.integer(imodel), ccop = double(1),
-          PACKAGE = "evd")$ccop
+          as.integer(1), as.integer(imodel), ccop = double(1))$ccop
       }
       else {
         den <- integrate("dbvevd.case", eps, 1-eps, x2 = cm[i], case =

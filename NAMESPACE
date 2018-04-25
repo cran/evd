@@ -1,4 +1,4 @@
-useDynLib(evd)
+useDynLib(evd, .registration = TRUE, .fixes = "C_")
 
 export(rextreme,rorder,rrweibull,rnweibull,rfrechet,rgev,rgpd,rgumbel,rbvevd,rbvalog,rbvamix,rbvaneglog,rbvbilog,rbvct,rbvhr,rbvlog,rbvnegbilog,rbvneglog,rmvevd,rmvlog,rmvalog,
        dextreme,dorder,drweibull,dnweibull,dfrechet,dgev,dgpd,dgumbel,dbvevd,dbvalog,dbvamix,dbvaneglog,dbvbilog,dbvct,dbvhr,dbvlog,dbvnegbilog,dbvneglog,dmvevd,dmvlog,dmvalog,

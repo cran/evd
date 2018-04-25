@@ -39,9 +39,8 @@ function(n, dep, mar1 = c(0,1,0), mar2 = mar1)
 {
     if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0 ||
         dep > 1) stop("invalid argument for `dep'")
-    sim <- .C("rbvlog_shi",
-               as.integer(n), as.double(dep), sim = double(2*n),
-               PACKAGE = "evd")$sim
+    sim <- .C(C_rbvlog_shi,
+               as.integer(n), as.double(dep), sim = double(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(1/sim, list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
@@ -58,9 +57,9 @@ function(n, dep, asy = c(1,1), mar1 = c(0,1,0), mar2 = mar1)
         asy <- c(0,0)
         dep <- 1
     }
-    sim <- .C("rbvalog_shi",
+    sim <- .C(C_rbvalog_shi,
               as.integer(n), as.double(dep), as.double(asy),
-              sim = double(2*n), PACKAGE = "evd")$sim
+              sim = double(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(1/sim, list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
@@ -70,9 +69,8 @@ function(n, dep, mar1 = c(0,1,0), mar2 = mar1)
 {
     if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0)
         stop("invalid argument for `dep'")
-    sim <- .C("rbvhr",
-        as.integer(n), as.double(dep), sim = runif(2*n),
-        PACKAGE = "evd")$sim
+    sim <- .C(C_rbvhr,
+        as.integer(n), as.double(dep), sim = runif(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
@@ -82,9 +80,8 @@ function(n, dep, mar1 = c(0,1,0), mar2 = mar1)
 {
     if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0)
         stop("invalid argument for `dep'")
-    sim <- .C("rbvneglog",
-        as.integer(n), as.double(dep), sim = runif(2*n),
-        PACKAGE = "evd")$sim
+    sim <- .C(C_rbvneglog,
+        as.integer(n), as.double(dep), sim = runif(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
@@ -96,9 +93,8 @@ function(n, dep, asy = c(1,1), mar1 = c(0,1,0), mar2 = mar1)
         stop("invalid argument for `dep'")
     if(length(asy) != 2 || mode(asy) != "numeric" || min(asy) < 0 ||
        max(asy) > 1) stop("invalid argument for `asy'")
-    sim <- .C("rbvaneglog",
-        as.integer(n), as.double(dep), as.double(asy), sim = runif(2*n),
-        PACKAGE = "evd")$sim
+    sim <- .C(C_rbvaneglog,
+        as.integer(n), as.double(dep), as.double(asy), sim = runif(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
@@ -112,9 +108,8 @@ function(n, alpha, beta, mar1 = c(0,1,0), mar2 = mar1)
         stop("invalid argument for `beta'")
     if(any(c(alpha,beta) <= 0) || any(c(alpha,beta) >= 1))
         stop("`alpha' and `beta' must be in the open interval (0,1)")
-    sim <- .C("rbvbilog",
-        as.integer(n), as.double(alpha), as.double(beta), sim = runif(2*n),
-        PACKAGE = "evd")$sim
+    sim <- .C(C_rbvbilog,
+        as.integer(n), as.double(alpha), as.double(beta), sim = runif(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
@@ -128,9 +123,8 @@ function(n, alpha, beta, mar1 = c(0,1,0), mar2 = mar1)
         stop("invalid argument for `beta'")
     if(any(c(alpha,beta) <= 0))
         stop("`alpha' and `beta' must be non-negative")
-    sim <- .C("rbvnegbilog",
-        as.integer(n), as.double(alpha), as.double(beta), sim = runif(2*n),
-        PACKAGE = "evd")$sim
+    sim <- .C(C_rbvnegbilog,
+        as.integer(n), as.double(alpha), as.double(beta), sim = runif(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
@@ -144,9 +138,8 @@ function(n, alpha, beta, mar1 = c(0,1,0), mar2 = mar1)
         stop("invalid argument for `beta'")
     if(any(c(alpha,beta) <= 0))
         stop("`alpha' and `beta' must be non-negative")
-    sim <- .C("rbvct",
-        as.integer(n), as.double(alpha), as.double(beta), sim = runif(2*n),
-        PACKAGE = "evd")$sim
+    sim <- .C(C_rbvct,
+        as.integer(n), as.double(alpha), as.double(beta), sim = runif(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
 }
@@ -166,9 +159,9 @@ function(n, alpha, beta, mar1 = c(0,1,0), mar2 = mar1)
         stop("`alpha' + `2*beta' cannot be greater than one")
     if((alpha + 3*beta) < 0)
         stop("`alpha' + `3*beta' must be non-negative")
-    sim <- .C("rbvamix",
+    sim <- .C(C_rbvamix,
         as.integer(n), as.double(alpha), as.double(beta),
-        sim = runif(2*n), PACKAGE = "evd")$sim
+        sim = runif(2*n))$sim
     sim <- matrix(sim, nrow = n, ncol = 2, byrow = TRUE)
     mtransform(-log(sim), list(mar1, mar2), inv = TRUE, drp = TRUE)
 }

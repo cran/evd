@@ -1,3 +1,11 @@
+CHANGES FROM VERSION 2.3-2 ARE AS FOLLOWS
+
+  Changed url in CITATION to canonical form.
+  
+  Registered C routines in evd_init.c file.
+  
+  Added a = 0 argument to plotting functions.
+
 CHANGES FROM VERSION 2.3-0 ARE AS FOLLOWS
 
   Minor edits to vignette.
