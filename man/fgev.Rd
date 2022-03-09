@@ -1,5 +1,6 @@
 \name{fgev}
 \alias{fgev}
+\alias{fgumbel}
 \alias{fitted.evd}
 \alias{std.errors}
 \alias{std.errors.evd}

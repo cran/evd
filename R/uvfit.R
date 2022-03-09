@@ -384,6 +384,138 @@ function(x, start, ..., nsloc = NULL, prob, std.err = TRUE, corr = FALSE, method
         n = length(x), prob = prob, loc = loc)
 }
 
+"fgumbel"<-
+function(x, start, ..., nsloc = NULL, prob = NULL, std.err = TRUE,
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
+{
+    fgev(x = x, ..., shape = 0, nsloc = nsloc, prob = prob, std.err = std.err, 
+      corr = corr, method = method, warn.inf = warn.inf)
+}
+
+"fgumbelx"<-
+function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
+    corr = FALSE, method = "BFGS", warn.inf = TRUE)
+{
+    call <- match.call()
+    if(missing(x) || length(x) == 0 || !is.numeric(x)) 
+      stop("`x' must be a non-empty numeric vector")
+  
+    nlgumbelx <- function(loc1, scale1, loc2, scale2)
+    { 
+        if(scale1 <= 0 || scale2 <= 0) return(1e6)
+		if(!is.null(nsloc1)) {
+            ns <- numeric(length(loc.param1))
+            for(i in 1:length(ns))
+                ns[i] <- get(loc.param1[i])
+            loc1 <- drop(nslocmat1 %*% ns)
+        }
+        else loc1 <- rep(loc1, length.out = length(x))
+        if(!is.null(nsloc2)) {
+            ns <- numeric(length(loc.param2))
+            for(i in 1:length(ns))
+                ns[i] <- get(loc.param2[i])
+            loc2 <- drop(nslocmat2 %*% ns)
+        }
+        else loc2 <- rep(loc2, length.out = length(x))
+		
+        if(any(loc1 > loc2)) return(1e6)
+		
+		Ftimesf <- function(x, loc1, scale1, loc2, scale2) {
+          exp(-exp(-(x - loc1)/scale1) + log(1/scale2) - (x - loc2)/scale2 - exp(-(x - loc2)/scale2))
+        }
+        -sum(log(Ftimesf(x = x, loc1 = loc1, scale1 = scale1, loc2 = loc2, scale2 = scale2) + 
+		  Ftimesf(x = x, loc1 = loc2, scale1 = scale2, loc2 = loc1, scale2 = scale1)))
+    }
+	if(!is.null(nsloc1)) {
+        if(is.vector(nsloc1)) nsloc1 <- data.frame(trend = nsloc1)
+        if(nrow(nsloc1) != length(x))
+          stop("`nsloc1' and data are not compatible")
+        nslocmat1 <- cbind(1, as.matrix(nsloc1))
+    }
+    if(!is.null(nsloc2)) {
+        if(is.vector(nsloc2)) nsloc2 <- data.frame(trend = nsloc2)
+        if(nrow(nsloc2) != length(x))
+          stop("`nsloc2' and data are not compatible")
+        nslocmat2 <- cbind(1,as.matrix(nsloc2))
+    }
+    x <- as.double(x[!is.na(x)])
+    n <- as.integer(length(x))
+	loc.param1 <- paste("loc1", c("",names(nsloc1)), sep="")
+    loc.param2 <- paste("loc2", c("",names(nsloc2)), sep="")
+    param <- c(loc.param1, "scale1", loc.param2, "scale2")
+    if(missing(start)) {
+        start <- as.list(numeric(length(param)))
+        names(start) <- param
+        emc <- -digamma(1)
+        b0 <- mean(x)
+        b1 <- sum((1:n-1)/(n-1) * sort(x))/n
+        start$scale1 <- (2*b1-b0)/log(2)
+        start$loc1 <- b0 - start$scale1*emc - start$scale1*log(2)
+		start$scale2 <- start$scale1
+		start$loc2 <- start$loc1 + 1e-02
+        start <- start[!(param %in% names(list(...)))]
+    }
+    if(!is.list(start)) 
+        stop("`start' must be a named list")
+    if(!length(start))
+        stop("there are no parameters left to maximize over")
+    nm <- names(start)
+    l <- length(nm)
+	f <- c(as.list(numeric(length(loc.param1))), formals(nlgumbelx)[2],
+      as.list(numeric(length(loc.param2))), formals(nlgumbelx)[4])
+	  
+    names(f) <- param
+    m <- match(nm, param)
+    if(any(is.na(m))) 
+        stop("`start' specifies unknown arguments")    
+    formals(nlgumbelx) <- c(f[m], f[-m])
+    nllh <- function(p, ...) nlgumbelx(p, ...)
+    if(l > 1)
+        body(nllh) <- parse(text = paste("nlgumbelx(", paste("p[",1:l,
+            "]", collapse = ", "), ", ...)"))
+    fixed.param <- list(...)[names(list(...)) %in% param]
+    if(any(!(param %in% c(nm,names(fixed.param)))))
+        stop("unspecified parameters")
+    start.arg <- c(list(p = unlist(start)), fixed.param)
+    if(warn.inf && do.call("nllh", start.arg) == 1e6)
+        warning("negative log-likelihood is infinite at starting values")
+    opt <- optim(start, nllh, hessian = TRUE, ..., method = method)
+	if(is.null(names(opt$par))) names(opt$par) <- nm
+    if (opt$convergence != 0) {
+        warning("optimization may not have succeeded")
+        if(opt$convergence == 1) opt$convergence <- "iteration limit reached"
+    }
+    else opt$convergence <- "successful"
+    if(std.err) {
+        tol <- .Machine$double.eps^0.5
+        var.cov <- qr(opt$hessian, tol = tol)
+        if(var.cov$rank != ncol(var.cov$qr)) 
+            stop("observed information matrix is singular; use std.err = FALSE")
+        var.cov <- solve(var.cov, tol = tol)
+        std.err <- diag(var.cov)
+        if(any(std.err <= 0))
+            stop("observed information matrix is singular; use std.err = FALSE")
+        std.err <- sqrt(std.err)
+        names(std.err) <- nm
+        if(corr) {
+            .mat <- diag(1/std.err, nrow = length(std.err))
+            corr <- structure(.mat %*% var.cov %*% .mat, dimnames = list(nm,nm))
+            diag(corr) <- rep(1, length(std.err))
+        }
+        else corr <- NULL
+    }
+    else std.err <- var.cov <- corr <- NULL
+    param <- c(opt$par, unlist(fixed.param))
+    ft <- list(estimate = opt$par, std.err = std.err,
+        fixed = unlist(fixed.param), param = param,
+        deviance = 2*opt$value, corr = corr, var.cov = var.cov,
+        convergence = opt$convergence, counts = opt$counts,
+        message = opt$message,
+        data = x, nsloc1 = nsloc1, nsloc2 = nsloc2,
+        n = length(x))
+    structure(c(ft, call = call), class = c("gumbelx", "evd"))
+}
+
 "fpot"<-
 function(x, threshold, model = c("gpd", "pp"), start, npp = length(x), cmax = FALSE, r = 1, ulow = -Inf, rlow = 1, mper = NULL, ..., std.err = TRUE, corr = FALSE, method = "BFGS", warn.inf = TRUE)
 {

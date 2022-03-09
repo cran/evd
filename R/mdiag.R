@@ -467,7 +467,7 @@ function(x, p = seq(0.75, 0.95, 0.05), mint = 1, add = FALSE,
    na.rm = TRUE), ylim = range(x$tdata[,2], na.rm = TRUE), xlab =
    colnames(x$data)[1], ylab = colnames(x$data)[2], ...)
 {
-    if(mode(p) != "numeric" || p <= 0 || p >= 1)
+    if(mode(p) != "numeric" || any(p <= 0) || any(p >= 1))
       stop("`p' must be a vector of probabilities")
     nom <- 100
     om <- seq(0, 1, length = nom)
@@ -669,7 +669,7 @@ function(x, p = seq(0.75, 0.95, 0.05), above = FALSE, tlty = 1,
    range(x$data[,2], na.rm = TRUE), xlab = colnames(x$data)[1],
    ylab = colnames(x$data)[2], ...)
 {
-    if(mode(p) != "numeric" || p <= 0 || p >= 1)
+    if(mode(p) != "numeric" || any(p <= 0) || any(p >= 1))
       stop("`p' must be a vector of probabilities")
     nom <- 100
     om <- seq(0, 1, length = nom)
