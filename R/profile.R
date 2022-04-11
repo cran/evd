@@ -5,8 +5,6 @@
         stop("Use only with `evd' objects")
     if(inherits(fitted, "extreme"))
         stop("profiles not implemented for this model")
-	if(inherits(fitted, "gumbelx"))
-        stop("profiles not implemented for this model")
     if(length(xmin) != length(which))
         stop("`xmin' and `which' must have the same length")
     if(length(xmax) != length(which))
@@ -38,6 +36,10 @@
         if(inherits(fitted, "gev")) {
             call.args$nsloc <- fitted$nsloc
             call.args$prob <- fitted$prob
+        }
+		if(inherits(fitted, "gumbelx")) {
+            call.args$nsloc1 <- fitted$nsloc1
+            call.args$nsloc2 <- fitted$nsloc2
         }
         if(inherits(fitted, "pot")) {
             call.args$threshold <- fitted$threshold
@@ -127,8 +129,6 @@ profile2d <- function (fitted, ...) {
         stop("Use only with `evd' objects")
     if(inherits(fitted, "extreme"))
         stop("profiles not implemented for this model")
-	if(inherits(fitted, "gumbelx"))
-        stop("profiles not implemented for this model")
     if (!inherits(prof, "profile.evd")) 
         stop("`prof' must be a `profile.evd' object")
     if(length(fitted$estimate) < 3)
@@ -165,6 +165,10 @@ profile2d <- function (fitted, ...) {
     if(inherits(fitted, "gev")) {
         call.args$nsloc <- fitted$nsloc
         call.args$prob <- fitted$prob
+    }
+	if(inherits(fitted, "gumbelx")) {
+        call.args$nsloc1 <- fitted$nsloc1
+        call.args$nsloc2 <- fitted$nsloc2
     }
     #if(inherits(fitted, "pot")) {
     #    call.args$threshold <- fitted$threshold

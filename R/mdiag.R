@@ -5,7 +5,7 @@
      adjust = 1, jitter = FALSE, nplty = 2, ...) 
 {
     if (!inherits(x, "uvevd")) 
-        stop("Use only with `'uvevd objects")
+        stop("Use only with uvevd objects")
     if (!is.numeric(which) || any(which < 1) || any(which > 4)) 
         stop("`which' must be in 1:4")
     nb.fig <- prod(par("mfcol"))
@@ -39,6 +39,49 @@
     }
     if (show[4]) {
         rl(x, ci = ci, cilwd = cilwd, a = a, main = main[4], ...)
+    }
+    invisible(x)
+}
+
+"plot.gumbelx" <-  function(x, interval, which = 1:4, main, ask = nb.fig <
+     length(which) && dev.interactive(), ci = TRUE, cilwd = 1, a = 0,
+     adjust = 1, jitter = FALSE, nplty = 2, ...) 
+{
+    if (!inherits(x, "gumbelx")) 
+        stop("Use only with gumbelx objects")
+    if (!is.numeric(which) || any(which < 1) || any(which > 4)) 
+        stop("`which' must be in 1:4")
+    nb.fig <- prod(par("mfcol"))
+    show <- rep(FALSE, 4)
+    show[which] <- TRUE
+   if(missing(main)) {
+      main <- c("Probability Plot", "Quantile Plot", "Density Plot",
+        "Return Level Plot")
+    }
+    else {
+      if(length(main) != length(which))
+        stop("number of plot titles is not correct")
+      main2 <- character(4)
+      main2[show] <- main
+      main <- main2
+    }
+    if (ask) {
+        op <- par(ask = TRUE)
+        on.exit(par(op))
+    }
+    if (show[1]) {
+        pp(x, ci = ci, cilwd = cilwd, a = a, main = main[1], xlim = c(0,1),
+           ylim = c(0,1), ...)
+    }
+    if (show[2]) {
+        qq(x, interval = interval, ci = ci, cilwd = cilwd, a = a, main = main[2], ...)
+    }
+    if (show[3]) {
+        dens(x, adjust = adjust, nplty = nplty, jitter = jitter,
+             main = main[3], ...)
+    }
+    if (show[4]) {
+        rl(x, interval = interval, ci = ci, cilwd = cilwd, a = a, main = main[4], ...)
     }
     invisible(x)
 }
@@ -155,6 +198,116 @@
     if(jitter) rug(jitter(x$tdata))
     else rug(x$tdata)
     lines(density(x$tdata, adjust = adjust), lty = nplty)
+    invisible(list(x = xvec, y = dens))
+}
+
+"qq.gumbelx" <-  function(x, interval, ci = TRUE, cilwd = 1, a = 0, main = "Quantile Plot", xlab = "Model", ylab = "Empirical", ...)
+{
+    quant <- qgumbelx(ppoints(x$data, a = a), interval = interval, loc1 = x$param["loc1"],
+                 scale1 = x$param["scale1"], loc2 = x$param["loc2"], scale2 = x$param["scale2"])
+    if(!ci) {
+      plot(quant, sort(x$data), main = main, xlab = xlab, ylab = ylab, ...)
+      abline(0, 1)
+    }
+    else {
+      samp <- rgumbelx(x$n*99, loc1 = x$param["loc1"],
+                 scale1 = x$param["scale1"], loc2 = x$param["loc2"], scale2 = x$param["scale2"])
+      samp <- matrix(samp, x$n, 99)
+      samp <- apply(samp, 2, sort)
+      samp <- apply(samp, 1, sort)
+      env <- t(samp[c(3,97),])
+      rs <- sort(x$data)
+      matplot(quant, cbind(rs,env), main = main, xlab = xlab, ylab = ylab,
+              type = "pnn", pch = 4, ...)
+      xyuser <- par("usr")
+      smidge <- min(diff(c(xyuser[1], quant, xyuser[2])))/2
+      smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+      segments(quant-smidge, env[,1], quant+smidge, env[,1], lwd = cilwd)
+      segments(quant-smidge, env[,2], quant+smidge, env[,2], lwd = cilwd)
+      abline(0, 1)
+    }
+    invisible(list(x = quant, y = sort(x$data)))
+}
+
+"pp.gumbelx" <-  function(x, ci = TRUE, cilwd = 1, a = 0, main = "Probability Plot", xlab = "Empirical", ylab = "Model", ...)
+{
+    ppx <- ppoints(x$n, a = a)
+    probs <- pgumbelx(sort(x$data), loc1 = x$param["loc1"],
+                 scale1 = x$param["scale1"], loc2 = x$param["loc2"], scale2 = x$param["scale2"])
+    if(!ci) {
+        plot(ppx, probs, main = main, xlab = xlab, ylab = ylab, ...)
+        abline(0, 1)
+    }
+    else {
+        samp <- rgumbelx(x$n*99, loc1 = x$param["loc1"],
+                   scale1 = x$param["scale1"], loc2 = x$param["loc2"], scale2 = x$param["scale2"])
+        samp <- matrix(samp, x$n, 99)
+        samp <- apply(samp, 2, sort)
+        samp <- apply(samp, 1, sort)
+        env <- t(samp[c(3,97),])
+        env[,1] <- pgumbelx(env[,1], loc1 = x$param["loc1"],
+                    scale1 = x$param["scale1"], loc2 = x$param["loc2"], scale2 = x$param["scale2"])
+        env[,2] <- pgumbelx(env[,2], loc1 = x$param["loc1"],
+                    scale1 = x$param["scale1"], loc2 = x$param["loc2"], scale2 = x$param["scale2"])
+        matplot(ppx, cbind(probs, env), main = main, xlab = xlab,
+                ylab = ylab, type = "pnn", pch = 4, ...)
+        xyuser <- par("usr")
+        smidge <- min(diff(c(xyuser[1], ppx, xyuser[2])))/2
+        smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+        segments(ppx-smidge, env[,1], ppx+smidge, env[,1], lwd = cilwd)
+        segments(ppx-smidge, env[,2], ppx+smidge, env[,2], lwd = cilwd)
+        abline(0, 1)
+    }
+    invisible(list(x = ppx, y = probs))
+}
+
+"rl.gumbelx" <-  function(x, interval, ci = TRUE, cilwd = 1, a = 0, main = "Return Level Plot", xlab = "Return Period", ylab = "Return Level", ...)
+{
+    ppx <- ppoints(x$data, a = a)
+    rps <- c(1.001,10^(seq(0,3,len=200))[-1])
+    p.upper <- 1/rps
+    rlev <- qgumbelx(p.upper, interval = interval, loc1 = x$param["loc1"], scale1 = x$param["scale1"],
+              loc2 = x$param["loc2"], scale2 = x$param["scale2"], lower.tail = FALSE)
+    if(!ci) {
+        plot(-1/log(ppx), sort(x$data),log = "x", main = main,
+             xlab = xlab, ylab = ylab, ...)
+        lines(-1/log(1-p.upper), rlev)
+    }
+    else {
+        samp <- rgumbelx(x$n*99, loc1 = x$param["loc1"],
+                   scale1 = x$param["scale1"], loc2 = x$param["loc2"], scale2 = x$param["scale2"])
+        samp <- matrix(samp, x$n, 99)
+        samp <- apply(samp, 2, sort)
+        samp <- apply(samp, 1, sort)
+        env <- t(samp[c(3,97),])
+        rs <- sort(x$data)
+        matplot(-1/log(ppx), cbind(rs,env), main = main, xlab = xlab,
+                ylab = ylab, type = "pnn", pch = 4, log = "x", ...)
+        lines(-1/log(1-p.upper), rlev)
+        xyuser <- par("usr")
+        smidge <- min(diff(c(xyuser[1], log10(-1/log(ppx)), xyuser[2])))/2
+        smidge <- max(smidge, (xyuser[2] - xyuser[1])/200)
+        segments((-1/log(ppx))*exp(-smidge), env[,1],
+                 (-1/log(ppx))*exp(smidge), env[,1], lwd = cilwd)
+        segments((-1/log(ppx))*exp(-smidge), env[,2],
+                 (-1/log(ppx))*exp(smidge), env[,2], lwd = cilwd)
+    }
+    invisible(list(x = -1/log(1-p.upper), y = rlev))
+}
+
+"dens.gumbelx" <-  function(x, adjust = 1, nplty = 2, jitter = FALSE, main = "Density Plot", xlab = "Quantile", ylab = "Density", ...)
+{
+    xlimit <- range(x$data)
+    xlimit[1] <- xlimit[1] - diff(xlimit) * 0.075
+    xlimit[2] <- xlimit[2] + diff(xlimit) * 0.075
+    xvec <- seq(xlimit[1], xlimit[2], length = 100)
+    dens <- dgumbelx(xvec, loc1 = x$param["loc1"], scale1 = x$param["scale1"],
+                loc2 = x$param["loc2"], scale2 = x$param["scale2"])
+    plot(spline(xvec, dens), main = main, xlab = xlab, ylab = ylab,
+         type = "l", ...)
+    if(jitter) rug(jitter(x$data))
+    else rug(x$data)
+    lines(density(x$data, adjust = adjust), lty = nplty)
     invisible(list(x = xvec, y = dens))
 }
 

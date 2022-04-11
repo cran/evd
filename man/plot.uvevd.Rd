@@ -1,5 +1,6 @@
 \name{plot.uvevd}
 \alias{plot.uvevd}
+\alias{plot.gumbelx}
 
 \title{Plot Diagnostics for a Univariate EVD Object}
 \description{
@@ -8,6 +9,9 @@
 }
 \usage{
 \method{plot}{uvevd}(x, which = 1:4, main, ask = nb.fig <
+    length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
+    a = 0, adjust = 1, jitter = FALSE, nplty = 2, \dots)
+\method{plot}{gumbelx}(x, interval, which = 1:4, main, ask = nb.fig <
     length(which) && dev.interactive(), ci = TRUE, cilwd = 1,
     a = 0, adjust = 1, jitter = FALSE, nplty = 2, \dots)
 }
@@ -36,6 +40,11 @@
     values. \code{nplty} is the line type of the non-parametric
     estimate. To omit the non-parametric estimate set \code{nplty}
     to zero.}
+  \item{interval}{A vector of length two, for the gumbelx (maximum 
+    of two Gumbels) model. This is passed to the uniroot function to
+	calculate quantiles for the Q-Q and return level plots. The interval
+	should be large enough to contain all plotted quantiles or an error
+	from uniroot will occur.}
   \item{\dots}{Other parameters to be passed through to plotting
     functions.}
 }

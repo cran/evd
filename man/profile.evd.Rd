@@ -49,10 +49,13 @@
   matrices. The first column contains the values of the profiled
   parameter. The second column contains profile deviances. The
   remaining columns contain the constrained maximum likelihood
-  estimates for the remaining model parameters.
+  estimates for the remaining model parameters. For calculation of 
+  profile confidence intervals, use the \code{\link{confint.profile.evd}} 
+  function.
 }
 
-\seealso{\code{\link{profile2d.evd}}, \code{\link{plot.profile.evd}}}
+\seealso{\code{\link{confint.profile.evd}}, \code{\link{profile2d.evd}}, 
+  \code{\link{plot.profile.evd}}}
 
 \examples{
 uvdata <- rgev(100, loc = 0.13, scale = 1.1, shape = 0.2)

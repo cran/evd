@@ -26,6 +26,26 @@ void nlgev(double *data, int *n, double *loc, double *scale, double *shape,
   for(i=0;i<*n;i++) 
     *dns = *dns - dvec[i];
 }
+	
+void nlgumbelx(double *data, int *n, double *loc1, double *scale1, double *loc2, double *scale2, 
+           double *dns)
+{
+  int i;
+  double *dvec, *datam1, *datam2;
+
+  dvec = (double *)R_alloc(*n, sizeof(double));
+  datam1 = (double *)R_alloc(*n, sizeof(double));
+  datam2 = (double *)R_alloc(*n, sizeof(double));
+
+  for(i=0;i<*n;i++)  {
+	datam1[i] = (data[i] - loc1[i]) / *scale1;
+    datam2[i] = (data[i] - loc2[i]) / *scale2;
+    dvec[i] = exp(-exp(-datam1[i]) + log(1 / *scale2) - datam2[i] - exp(-datam2[i])) +
+		exp(-exp(-datam2[i]) + log(1 / *scale1) - datam1[i] - exp(-datam1[i]));
+  }
+  for(i=0;i<*n;i++) 
+    *dns = *dns - log(dvec[i]);
+}
 
 void nlbvlog(double *datam1, double *datam2, int *n, int *si, double *dep, 
              double *loc1, double *scale1, double *shape1, double *loc2, 

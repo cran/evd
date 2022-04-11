@@ -402,7 +402,8 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
   
     nlgumbelx <- function(loc1, scale1, loc2, scale2)
     { 
-        if(scale1 <= 0 || scale2 <= 0) return(1e6)
+	
+		if(scale1 <= 0 || scale2 <= 0) return(1e6)
 		if(!is.null(nsloc1)) {
             ns <- numeric(length(loc.param1))
             for(i in 1:length(ns))
@@ -419,12 +420,9 @@ function(x, start, ..., nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
         else loc2 <- rep(loc2, length.out = length(x))
 		
         if(any(loc1 > loc2)) return(1e6)
-		
-		Ftimesf <- function(x, loc1, scale1, loc2, scale2) {
-          exp(-exp(-(x - loc1)/scale1) + log(1/scale2) - (x - loc2)/scale2 - exp(-(x - loc2)/scale2))
-        }
-        -sum(log(Ftimesf(x = x, loc1 = loc1, scale1 = scale1, loc2 = loc2, scale2 = scale2) + 
-		  Ftimesf(x = x, loc1 = loc2, scale1 = scale2, loc2 = loc1, scale2 = scale1)))
+        
+        .C(C_nlgumbelx,
+            x, n, loc1, scale1, loc2, scale2, dns = double(1))$dns
     }
 	if(!is.null(nsloc1)) {
         if(is.vector(nsloc1)) nsloc1 <- data.frame(trend = nsloc1)

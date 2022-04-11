@@ -56,6 +56,8 @@ void rbvamix(int *n, double *alpha, double *beta, double *sim);
 /* from fit.c */
 
 void nlgev(double *data, int *n, double *loc, double *scale, double *shape, 
+           double *dns);		   
+void nlgumbelx(double *data, int *n, double *loc1, double *scale1, double *loc2, double *scale2, 
            double *dns);
 void nlbvalog(double *datam1, double *datam2, int *n, int *si, double *dep,
 	      double *asy1, double *asy2, double *loc1, double *scale1, 

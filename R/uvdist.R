@@ -35,6 +35,14 @@ function(n, loc = 0, scale = 1, shape = 0)
     else return(loc + scale * (rexp(n)^(-shape) - 1)/shape)
 }
 
+"rgumbelx"<-
+function(n, loc1 = 0, scale1 = 1, loc2 = 0, scale2 = 1)
+{
+    if(min(scale1) < 0 || min(scale2) < 0) stop("invalid scale")
+	if(any(loc1 > loc2)) stop("loc1 cannot be greater than loc2")
+    pmax(rgumbel(n = n, loc = loc1, scale = scale1), rgumbel(n = n, loc = loc2, scale = scale2))
+}
+
 "rgpd"<-
 function(n, loc = 0, scale = 1, shape = 0)
 {
@@ -122,6 +130,24 @@ function(p, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
     else return(loc + scale * ((-log(p))^(-shape) - 1)/shape)
 }
 
+"qgumbelx"<-
+function(p, interval, loc1 = 0, scale1 = 1, loc2 = 0, scale2 = 1, lower.tail = TRUE, ...)
+{
+    if(min(p, na.rm = TRUE) <= 0 || max(p, na.rm = TRUE) >=1)
+        stop("`p' must contain probabilities in (0,1)")
+    if(min(scale1) < 0 || min(scale2) < 0) stop("invalid scale")
+	if(any(loc1 > loc2)) stop("loc1 cannot be greater than loc2")
+	if(!lower.tail) p <- 1 - p
+	
+	n <- length(p)
+    out <- numeric(n)
+	for(i in 1:n) {
+	  tmpfn <- function(z) exp(-(z - loc1)/scale1) + exp(-(z - loc2)/scale2) + log(p[i])
+	  out[i] <- uniroot(tmpfn, interval = interval, ...)$root
+	}
+	out
+}
+
 "qgpd"<-
 function(p, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
 {
@@ -195,6 +221,18 @@ function(q, loc = 0, scale = 1, shape = 0, lower.tail = TRUE)
     q <- (q - loc)/scale
     if(shape == 0) p <- exp(-exp(-q))
     else p <- exp( - pmax(1 + shape * q, 0)^(-1/shape))
+    if(!lower.tail) p <- 1 - p
+    p
+}
+
+"pgumbelx"<-
+function(q, loc1 = 0, scale1 = 1, loc2 = 0, scale2 = 1, lower.tail = TRUE)
+{
+    if(min(scale1) < 0 || min(scale2) < 0) stop("invalid scale")
+	if(any(loc1 > loc2)) stop("loc1 cannot be greater than loc2")
+    q1 <- (q - loc1)/scale1
+	q2 <- (q - loc2)/scale2
+    p <- exp(-exp(-q1)) * exp(-exp(-q2))
     if(!lower.tail) p <- 1 - p
     p
 }
@@ -331,6 +369,18 @@ function(x, loc = 0, scale = 1, shape = 0, log = FALSE)
         d[xx<=0 & !is.na(xx)] <- -Inf
     }  
     if(!log) d <- exp(d)
+    d
+}
+
+"dgumbelx"<-
+function(x, loc1 = 0, scale1 = 1, loc2 = 0, scale2 = 1, log = FALSE)
+{
+    if(min(scale1) < 0 || min(scale2) < 0) stop("invalid scale")
+	if(any(loc1 > loc2)) stop("loc1 cannot be greater than loc2")
+    x1 <- (x - loc1)/scale1
+	x2 <- (x - loc2)/scale2
+	d <- exp(-exp(-x1) + log(1/scale2) - x2 - exp(-x2)) + exp(-exp(-x2) + log(1/scale1) - x1 - exp(-x1)) 
+    if(log) d <- log(d)
     d
 }
 

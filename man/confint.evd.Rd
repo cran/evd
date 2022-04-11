@@ -24,6 +24,10 @@
 \value{
   A matrix with two columns giving lower and upper confidence
   limits.
+  
+  For profile confidence intervals, this function assumes that the 
+  profile trace is unimodal. If the profile trace is not unimodal then
+  the function will give spurious results.  
 }
 
 \seealso{\code{\link{profile.evd}}}

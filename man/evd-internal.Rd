@@ -113,6 +113,10 @@
 \alias{pp.pot}
 \alias{qq.pot}
 \alias{rl.pot}
+\alias{dens.gumbelx}
+\alias{pp.gumbelx}
+\alias{qq.gumbelx}
+\alias{rl.gumbelx}
 
 \alias{bvcpp}
 \alias{bvdens}

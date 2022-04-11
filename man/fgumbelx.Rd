@@ -51,7 +51,12 @@ fgumbelx(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
   difficult to fit properly; the default starting values use a moment 
   based approach, however it is recommended that the user specify multiple 
   different starting values and experiment with different optimization 
-  methods.
+  methods. 
+  
+  Using non-stationary models with nsloc1 and nsloc2 is not 
+  recommended due to the model complexity; the data also cannot be 
+  transformed back to stationarity so diagnostic plots will be misleading
+  in this case.
 }
 
 \value{
@@ -63,8 +68,10 @@ fgumbelx(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
   \code{\link{AIC}} extract various features of the
   returned object.
 
-  Profile likelihoods and diagnostic plots are not currently
-  implemented for this model.
+  The functions \code{profile} and \code{profile2d} are
+  used to obtain deviance profiles for the model parameters.
+  The function \code{anova} compares nested models.
+  The function \code{plot} produces diagnostic plots.
 		
   An object of class \code{c("gumbelx","evd")} is a list
   containing at most the following components
@@ -89,10 +96,10 @@ fgumbelx(x, start, \dots, nsloc1 = NULL, nsloc2 = NULL, std.err = TRUE,
   complex surface.
 }
 
-\seealso{\code{\link{fgev}}, \code{\link{optim}}}
+\seealso{\code{\link{fgev}}, \code{\link{optim}}, \code{\link{rgumbelx}}}
 
 \examples{
-uvdata <- pmax(rgumbel(100, loc = 0, scale = 1), rgumbel(100, loc = 1, scale = 1))
+uvdata <- rgumbelx(100, loc1 = 0, scale1 = 1, loc2 = 1, scale2 = 1)
 fgumbelx(uvdata, loc1 = 0, scale1 = 1)
 }
 \keyword{models}

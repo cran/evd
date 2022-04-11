@@ -1,12 +1,10 @@
 \name{plot.profile.evd}
 \alias{plot.profile.evd}
 
-\title{Plot Profile Log-likelihoods and Calculate Profile Confidence
-  Intervals}
+\title{Plot Profile Log-likelihoods}
 \description{
   Displays profile log-likelihoods from a model profiled with
-  \code{\link{profile.evd}}, and invisibly returns profile
-  confidence intervals.
+  \code{\link{profile.evd}}.
 }
 \usage{
 \method{plot}{profile.evd}(x, which = names(x), main = NULL,
@@ -36,12 +34,8 @@
 }
 \value{
   Profile devainces are plotted for each parameter in
-  \code{which}.
-  A list with one element for each parameter in \code{which}
-  is also returned invisibly.
-  Each element is a vector of length two or a matrix with two
-  columns, giving the lower and upper limits of each confidence
-  interval.
+  \code{which}. For calculation of profile confidence intervals,
+  use the \code{\link{confint.profile.evd}} function.
 }
 \section{Warning}{
   The profile confidence intervals may not have confidence coefficient
@@ -56,8 +50,8 @@
   \emph{Biometrika}, \bold{72}, 67--90.
 }
 
-\seealso{\code{\link{plot.profile2d.evd}}, \code{\link{profile.evd}},
-  \code{\link{profile2d.evd}}}
+\seealso{\code{\link{confint.profile.evd}}, \code{\link{plot.profile2d.evd}}, 
+  \code{\link{profile.evd}}, \code{\link{profile2d.evd}}}
 
 \examples{
 uvdata <- rgev(100, loc = 0.13, scale = 1.1, shape = 0.2)

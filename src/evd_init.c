@@ -23,6 +23,7 @@ static const R_CMethodDef CEntries[] = {
 	{"rbvamix",  (DL_FUNC) &rbvamix,  4},
 	
 	{"nlgev", (DL_FUNC) &nlgev, 6},
+	{"nlgumbelx", (DL_FUNC) &nlgumbelx, 7},
 	{"nslmvalog",  (DL_FUNC) &nslmvalog,  13},
 	
 	{"nlbvlog", (DL_FUNC) &nlbvlog, 13},
