@@ -7,7 +7,7 @@ void nlgpd(double *data, int *n, double *loc, double *scale,
   double *dvec, eps;
   
   dvec = (double *)R_alloc(*n, sizeof(double));
-  eps = R_pow(DOUBLE_EPS, 0.3);
+  eps = R_pow(DBL_EPSILON, 0.3);
 
   if(*scale <= 0) {
      *dns = 1e6;
@@ -39,7 +39,7 @@ void nlpp(double *exceed, int *nhigh, double *loc, double *scale,
   double *dvec, d2, u, eps;
 
   dvec = (double *)R_alloc(*nhigh, sizeof(double));
-  eps = R_pow(DOUBLE_EPS, 0.3);
+  eps = R_pow(DBL_EPSILON, 0.3);
 
   if(*scale <= 0) {
      *dns = 1e6;

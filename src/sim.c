@@ -131,7 +131,7 @@ void rbvlog(int *n, double *dep, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -139,7 +139,7 @@ void rbvlog(int *n, double *dep, double *sim)
     uval = ccbvlog(ulim, sim[2*i+1], sim[2*i+0], *dep);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvlog(midpt, sim[2*i+1], sim[2*i+0], *dep);
@@ -153,7 +153,7 @@ void rbvlog(int *n, double *dep, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;
@@ -168,7 +168,7 @@ void rbvalog(int *n, double *dep, double *asy, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -176,7 +176,7 @@ void rbvalog(int *n, double *dep, double *asy, double *sim)
     uval = ccbvalog(ulim, sim[2*i+1], sim[2*i+0], *dep,asy[0],asy[1]);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvalog(midpt, sim[2*i+1], sim[2*i+0], *dep,asy[0],asy[1]);
@@ -190,7 +190,7 @@ void rbvalog(int *n, double *dep, double *asy, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;
@@ -205,7 +205,7 @@ void rbvhr(int *n, double *dep, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -213,7 +213,7 @@ void rbvhr(int *n, double *dep, double *sim)
     uval = ccbvhr(ulim, sim[2*i+1], sim[2*i+0], *dep);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvhr(midpt, sim[2*i+1], sim[2*i+0], *dep);
@@ -227,7 +227,7 @@ void rbvhr(int *n, double *dep, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;
@@ -242,7 +242,7 @@ void rbvneglog(int *n, double *dep, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -250,7 +250,7 @@ void rbvneglog(int *n, double *dep, double *sim)
     uval = ccbvneglog(ulim, sim[2*i+1], sim[2*i+0], *dep);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvneglog(midpt, sim[2*i+1], sim[2*i+0], *dep);
@@ -264,7 +264,7 @@ void rbvneglog(int *n, double *dep, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;
@@ -279,7 +279,7 @@ void rbvaneglog(int *n, double *dep, double *asy, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -287,7 +287,7 @@ void rbvaneglog(int *n, double *dep, double *asy, double *sim)
     uval = ccbvaneglog(ulim, sim[2*i+1], sim[2*i+0], *dep,asy[0],asy[1]);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvaneglog(midpt, sim[2*i+1], sim[2*i+0], *dep,asy[0],asy[1]);
@@ -301,7 +301,7 @@ void rbvaneglog(int *n, double *dep, double *asy, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;
@@ -316,7 +316,7 @@ void rbvbilog(int *n, double *alpha, double *beta, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -324,7 +324,7 @@ void rbvbilog(int *n, double *alpha, double *beta, double *sim)
     uval = ccbvbilog(ulim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign2");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvbilog(midpt, sim[2*i+1], sim[2*i+0], *alpha, *beta);
@@ -338,7 +338,7 @@ void rbvbilog(int *n, double *alpha, double *beta, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;
@@ -353,7 +353,7 @@ void rbvnegbilog(int *n, double *alpha, double *beta, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -361,7 +361,7 @@ void rbvnegbilog(int *n, double *alpha, double *beta, double *sim)
     uval = ccbvnegbilog(ulim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign2");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvnegbilog(midpt, sim[2*i+1], sim[2*i+0], *alpha, *beta);
@@ -375,7 +375,7 @@ void rbvnegbilog(int *n, double *alpha, double *beta, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;
@@ -390,7 +390,7 @@ void rbvct(int *n, double *alpha, double *beta, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -398,7 +398,7 @@ void rbvct(int *n, double *alpha, double *beta, double *sim)
     uval = ccbvct(ulim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvct(midpt, sim[2*i+1], sim[2*i+0], *alpha, *beta);
@@ -412,7 +412,7 @@ void rbvct(int *n, double *alpha, double *beta, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;
@@ -427,7 +427,7 @@ void rbvamix(int *n, double *alpha, double *beta, double *sim)
 
   for(i=0;i<*n;i++) 
   {
-    delta = eps = llim = R_pow(DOUBLE_EPS, 0.5);
+    delta = eps = llim = R_pow(DBL_EPSILON, 0.5);
     ulim = 1 - llim;
     ilen = 1;
     midpt = 0.5;
@@ -435,7 +435,7 @@ void rbvamix(int *n, double *alpha, double *beta, double *sim)
     uval = ccbvamix(ulim, sim[2*i+1], sim[2*i+0], *alpha, *beta);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = ccbvamix(midpt, sim[2*i+1], sim[2*i+0], *alpha, *beta);
@@ -449,7 +449,7 @@ void rbvamix(int *n, double *alpha, double *beta, double *sim)
         llim = midpt;
         lval = midval;
       }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
     }
     sim[2*i+0] = midpt;

@@ -115,7 +115,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
      *dns = 1e6;
      return;
   }
-  delta = eps = R_pow(DOUBLE_EPS, 0.8);
+  delta = eps = R_pow(DBL_EPSILON, 0.8);
 
   lambda2[0] = -1/log(1 - lambda[0]);
   lambda2[1] = -1/log(1 - lambda[1]);
@@ -126,7 +126,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
   uval = (*beta - 1) / lambda2[1];
   if(!(sign(lval) != sign(uval))) 
     error("values at end points are not of opposite sign");
-  for(j=0;j<DOUBLE_DIGITS;j++) {
+  for(j=0;j<DBL_MANT_DIG;j++) {
     ilen = ilen/2;
     midpt = llim + ilen;
     midval = (1 - *alpha) / lambda2[0] * R_pow(1 - midpt, *beta) - 
@@ -140,7 +140,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
       llim = midpt;
       lval = midval;
     }
-  if(j == DOUBLE_DIGITS-1) 
+  if(j == DBL_MANT_DIG-1) 
     error("numerical problem in root finding algorithm");
   }
   lambdaq = midpt;
@@ -192,7 +192,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
       uval = (*beta - 1) / data2[i];
       if(!(sign(lval) != sign(uval))) 
         error("values at end points are not of opposite sign");
-      for(j=0;j<DOUBLE_DIGITS;j++) {
+      for(j=0;j<DBL_MANT_DIG;j++) {
         ilen = ilen/2;
         midpt = llim + ilen;
         midval = (1 - *alpha) / data1[i] * R_pow(1 - midpt, *beta) - 
@@ -206,7 +206,7 @@ void nllbvcbilog(double *data1, double *data2, int *nn, int *n, double *thid, do
           llim = midpt;
           lval = midval;
         }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
       }
       q[i] = midpt;
@@ -456,7 +456,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
      *dns = 1e6;
      return;
   }
-  delta = eps = R_pow(DOUBLE_EPS, 0.8);
+  delta = eps = R_pow(DBL_EPSILON, 0.8);
 
   lambda2[0] = -1/log(1 - lambda[0]);
   lambda2[1] = -1/log(1 - lambda[1]);
@@ -467,7 +467,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
   lval = - (1 + *beta) / lambda2[1];
   if(!(sign(lval) != sign(uval))) 
     error("values at end points are not of opposite sign");
-  for(j=0;j<DOUBLE_DIGITS;j++) {
+  for(j=0;j<DBL_MANT_DIG;j++) {
     ilen = ilen/2;
     midpt = llim + ilen;
     midval = (1 + *alpha) / lambda2[0] * R_pow(midpt, *alpha) - 
@@ -481,7 +481,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
       llim = midpt;
       lval = midval;
     }
-  if(j == DOUBLE_DIGITS-1) 
+  if(j == DBL_MANT_DIG-1) 
     error("numerical problem in root finding algorithm");
   }
   lambdaq = midpt;
@@ -533,7 +533,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
       lval = - (1 + *beta) / data2[i];
       if(!(sign(lval) != sign(uval))) 
         error("values at end points are not of opposite sign");
-      for(j=0;j<DOUBLE_DIGITS;j++) {
+      for(j=0;j<DBL_MANT_DIG;j++) {
         ilen = ilen/2;
         midpt = llim + ilen;
         midval = (1 + *alpha) / data1[i] * R_pow(midpt, *alpha) - 
@@ -547,7 +547,7 @@ void nllbvcnegbilog(double *data1, double *data2, int *nn, int *n, double *thid,
           llim = midpt;
           lval = midval;
         }
-      if(j == DOUBLE_DIGITS-1) 
+      if(j == DBL_MANT_DIG-1) 
         error("numerical problem in root finding algorithm");
       }
       q[i] = midpt;
@@ -1193,7 +1193,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, double *thid, double *r1
      *dns = 1e6;
      return;
   }
-  delta = eps = R_pow(DOUBLE_EPS, 0.8);
+  delta = eps = R_pow(DBL_EPSILON, 0.8);
 
   for(i=0;i<*nn;i++)  {
 
@@ -1245,7 +1245,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, double *thid, double *r1
     uval = (*beta - 1) * w[i];
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = (1 - *alpha) * (1-w[i]) * R_pow(1 - midpt, *beta) - 
@@ -1259,7 +1259,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, double *thid, double *r1
         llim = midpt;
         lval = midval;
       }
-    if(j == DOUBLE_DIGITS-1) 
+    if(j == DBL_MANT_DIG-1) 
       error("numerical problem in root finding algorithm");
     }
 
@@ -1280,7 +1280,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, double *thid, double *r1
   uval = (*beta - 1) / utt[1];
   if(!(sign(lval) != sign(uval))) 
     error("values at end points are not of opposite sign");
-  for(j=0;j<DOUBLE_DIGITS;j++) {
+  for(j=0;j<DBL_MANT_DIG;j++) {
     ilen = ilen/2;
     midpt = llim + ilen;
     midval = (1 - *alpha) / utt[0] * R_pow(1 - midpt, *beta) - 
@@ -1294,7 +1294,7 @@ void nllbvpbilog(double *data1, double *data2, int *nn, double *thid, double *r1
       llim = midpt;
       lval = midval;
     }
-  if(j == DOUBLE_DIGITS-1) 
+  if(j == DBL_MANT_DIG-1) 
     error("numerical problem in root finding algorithm");
   }
 
@@ -1322,7 +1322,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, double *thid, double 
      *dns = 1e6;
      return;
   }
-  delta = eps = R_pow(DOUBLE_EPS, 0.8);
+  delta = eps = R_pow(DBL_EPSILON, 0.8);
 
   for(i=0;i<*nn;i++)  {
 
@@ -1374,7 +1374,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, double *thid, double 
     lval = - (1 + *beta) * w[i];
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = (1 + *alpha) * (1-w[i]) * R_pow(midpt, *alpha) - 
@@ -1388,7 +1388,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, double *thid, double 
         llim = midpt;
         lval = midval;
       }
-    if(j == DOUBLE_DIGITS-1) 
+    if(j == DBL_MANT_DIG-1) 
       error("numerical problem in root finding algorithm");
     }
 
@@ -1409,7 +1409,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, double *thid, double 
   lval = - (1 + *beta) / utt[1];
   if(!(sign(lval) != sign(uval))) 
     error("values at end points are not of opposite sign");
-  for(j=0;j<DOUBLE_DIGITS;j++) {
+  for(j=0;j<DBL_MANT_DIG;j++) {
     ilen = ilen/2;
     midpt = llim + ilen;
     midval = (1 + *alpha) / utt[0] * R_pow(midpt, *alpha) - 
@@ -1423,7 +1423,7 @@ void nllbvpnegbilog(double *data1, double *data2, int *nn, double *thid, double 
       llim = midpt;
       lval = midval;
     }
-  if(j == DOUBLE_DIGITS-1) 
+  if(j == DBL_MANT_DIG-1) 
     error("numerical problem in root finding algorithm");
   }
 

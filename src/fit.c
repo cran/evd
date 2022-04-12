@@ -442,7 +442,7 @@ void nlbvbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
     }
   }
 
-  delta = eps = R_pow(DOUBLE_EPS, 0.5);
+  delta = eps = R_pow(DBL_EPSILON, 0.5);
   for(i=0;i<*n;i++) {
     llim = 0;
     ilen = 1;
@@ -450,7 +450,7 @@ void nlbvbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
     uval = (*beta - 1) * exp(datam2[i]);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = (1 - *alpha) * exp(datam1[i]) * R_pow(1 - midpt, *beta) - 
@@ -464,7 +464,7 @@ void nlbvbilog(double *datam1, double *datam2, int *n, int *si, double *alpha,
         llim = midpt;
         lval = midval;
       }
-    if(j == DOUBLE_DIGITS-1) 
+    if(j == DBL_MANT_DIG-1) 
       error("numerical problem in root finding algorithm");
     }
     gma[i] = midpt;
@@ -536,7 +536,7 @@ void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha
     }
   }
 
-  delta = eps = R_pow(DOUBLE_EPS, 0.5);
+  delta = eps = R_pow(DBL_EPSILON, 0.5);
   for(i=0;i<*n;i++) {
     llim = 0;
     ilen = 1;
@@ -544,7 +544,7 @@ void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha
     lval = - (1 + *beta) * exp(datam2[i]);
     if(!(sign(lval) != sign(uval))) 
       error("values at end points are not of opposite sign");
-    for(j=0;j<DOUBLE_DIGITS;j++) {
+    for(j=0;j<DBL_MANT_DIG;j++) {
       ilen = ilen/2;
       midpt = llim + ilen;
       midval = (1 + *alpha) * exp(datam1[i]) * R_pow(midpt, *alpha) - 
@@ -558,7 +558,7 @@ void nlbvnegbilog(double *datam1, double *datam2, int *n, int *si, double *alpha
         llim = midpt;
         lval = midval;
       }
-    if(j == DOUBLE_DIGITS-1) 
+    if(j == DBL_MANT_DIG-1) 
       error("numerical problem in root finding algorithm");
     }
     gma[i] = midpt;
@@ -742,7 +742,7 @@ void nslmvalog(double *data, int *n, int *d, double *deps, double *thetas,
   int tmp1, tmp2;
   
   dd = *d; nn = *n; qq = *q;
-  eps = R_pow(DOUBLE_EPS, 0.3);
+  eps = R_pow(DBL_EPSILON, 0.3);
   ndepp = R_pow(2, dd) - 1 - dd; 
   niinbm = R_pow(2, dd - 1) - 1;
   if(*nslocid) nmp = 4;

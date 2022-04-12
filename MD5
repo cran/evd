@@ -1,4 +1,4 @@
-390a141b33e1b5d3c7218f4312ae5e73 *DESCRIPTION
+c5496847ca8b62fd4fbff5f56c3dd260 *DESCRIPTION
 6852e794057693efd448624d4fd6ca84 *NAMESPACE
 086f411bf36dfd3982eb1c06c8a41c69 *R/bvdist.R
 5fa03541b508f52c1dc0899dec1f9495 *R/bvfit.R
@@ -31,7 +31,7 @@ e7b1e6cbf7f132e6a57f7efc183475bc *inst/CHANGES
 74c16464801d0b97b69d7b8a237d7ead *inst/README
 9ab51b3769c4c7a82654e15d93d85696 *inst/doc/Multivariate_Extremes.R
 3e13579b90b9a81b645e21c28988d0b1 *inst/doc/Multivariate_Extremes.Rnw
-33afb6dcc2090d954868db186fa5845d *inst/doc/Multivariate_Extremes.pdf
+117c79eb22cc09a1edffa94d3684f1ef *inst/doc/Multivariate_Extremes.pdf
 953e1bde4f4155f80d60198b883f5f27 *inst/doc/guide22.pdf
 9f61c01952df4ff95184e1735e682487 *inst/doc/guide22.txt
 523dc67fff7227210c2ba8796646a822 *man/abvevd.Rd
@@ -93,11 +93,11 @@ a374e7df439ed123bcd8e9e0e141f716 *man/tcplot.Rd
 65fefd4bbfcddbaedf2946f59a7bcafc *man/uccle.Rd
 e0c35df69aefa81f9605db9b4a155c05 *man/venice.Rd
 81b83c21fad695895892d7f545ede416 *man/venice2.Rd
-15e04086259dbde2aaee1456b9c1499a *src/bvpot.c
-ab6ec968d811eae498a5e6a81e94a146 *src/ccop.c
+0d518ad4980329713d87e5f4172087c8 *src/bvpot.c
+07bb0242783f3d75a477d449ff238167 *src/ccop.c
 0ad7984cb65bf23c63b56a39d28888ac *src/evd_init.c
-deadced2d262470819e4b6660e576fac *src/fit.c
+a3aa7a9ccec41d05d622e9ea1d0ee216 *src/fit.c
 702d53fe4a6624682e09e86d8605b913 *src/header.h
-305b8719f33765d83b7a25a572030bd4 *src/pot.c
-0872c52906cbc7c0fcb28ee40e9b7ed7 *src/sim.c
+eb8249f374b8db714362b3d48c8ee9b2 *src/pot.c
+fd1b1c4713d66567985bc0213c6fbe88 *src/sim.c
 3e13579b90b9a81b645e21c28988d0b1 *vignettes/Multivariate_Extremes.Rnw
