@@ -1,4 +1,4 @@
-c5496847ca8b62fd4fbff5f56c3dd260 *DESCRIPTION
+5b5e91b7a401a51efe96399b91c85bf7 *DESCRIPTION
 6852e794057693efd448624d4fd6ca84 *NAMESPACE
 086f411bf36dfd3982eb1c06c8a41c69 *R/bvdist.R
 5fa03541b508f52c1dc0899dec1f9495 *R/bvfit.R
@@ -7,7 +7,7 @@ b3a3dce504dd4f18f802b79970fb529b *R/bvpot.R
 9947b19ae45868d856d4aa183f87228c *R/mvdist.R
 2abe52f6c84f8af5e1630551137e0ed8 *R/nonpar.R
 300e53ed9e9da38ebb4a9e20f16c98d8 *R/pmdiag.R
-cb6112eb01fd9a8ec65ab7ac9e61184f *R/profile.R
+e083d55c09bea5dd5414ff2fc6c307c5 *R/profile.R
 ef49ad50a3c7802b8bbe9732883bbb7c *R/stocproc.R
 e03f03ad0c12f6e3c67f73c1665c0ff2 *R/uvdist.R
 de734aa8d29555d42850bf2afe8d63ef *R/uvfit.R
@@ -79,7 +79,7 @@ ddeb90d652393cc3d2aa4adbad581463 *man/mrlplot.Rd
 546fd58521992b1458536154564e8bd0 *man/plot.bvevd.Rd
 01d8e4d539de0e68215d2c2ae58ecfae *man/plot.bvpot.Rd
 57ae51ef07f6277a9864ae8026952782 *man/plot.profile.evd.Rd
-ca6f6049d514deb682ed3a7fe66bd2d8 *man/plot.profile2d.evd.Rd
+1f9249df0ccc24dd6fe1cc14b2f3209a *man/plot.profile2d.evd.Rd
 3cb51b33006e88d3289af83d70314ff2 *man/plot.uvevd.Rd
 4714ee737485ba8383952827c615bb9b *man/portpirie.Rd
 05b179859f8f5fc2e88358743e601d20 *man/profile.evd.Rd
