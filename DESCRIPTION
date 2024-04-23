@@ -1,6 +1,6 @@
 Package: evd
-Version: 2.3-6.1
-Date: 2022-04-12
+Version: 2.3-7
+Date: 2024-04-23
 Title: Functions for Extreme Value Distributions
 Author: Alec Stephenson. Function fbvpot by Chris Ferro.
 Maintainer: Alec Stephenson <alec_stephenson@hotmail.com>
@@ -15,6 +15,6 @@ Description: Extends simulation, distribution, quantile and density
 LazyData: yes
 License: GPL-3
 NeedsCompilation: yes
-Packaged: 2022-07-04 10:00:55 UTC; ripley
+Packaged: 2024-04-23 06:55:43 UTC; ste6an
 Repository: CRAN
-Date/Publication: 2022-07-04 11:29:32 UTC
+Date/Publication: 2024-04-23 08:10:02 UTC

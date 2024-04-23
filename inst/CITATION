@@ -1,13 +1,11 @@
-citHeader("To cite the evd package in publications please use:")
-
-citEntry(entry="Article",
+bibentry(bibtype ="Article",
          title = "evd: Extreme Value Distributions",
-         author = "A. G. Stephenson",
+         author = c(person(c("A.", "G."), "Stephenson")),
          journal = "R News",
-         year = 2002,
-         volume = 2,
-         number = 2,
-         pages = 31-31,
+         year = "2002",
+         volume = "2",
+         number = "2",
+         pages = "31-32",
          month = "June",
          url = "https://CRAN.R-project.org/doc/Rnews/",
          textVersion =
@@ -17,6 +15,5 @@ citEntry(entry="Article",
                "URL: https://CRAN.R-project.org/doc/Rnews/")
 )
 
-citFooter("Thank you very much. Have a lovely day.")
 
 

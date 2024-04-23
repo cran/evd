@@ -1,3 +1,19 @@
+CHANGES SINCE VERSION 2.3-3 ARE AS FOLLOWS
+
+  Removed legacy S constants etc in the C code 
+  as required by CRAN
+  
+  Now uses interp package (if available) instead 
+  of akima for plot.profile2d.evd as required by
+  CRAN due to licensing issues 
+  
+  Fixed bug in dmvevd that gave an error when q 
+  was a vector and lower.tail was FALSE 
+  
+  Changed CITATION file to use bibentry
+  
+  Removed some non-ASCII characters in an Rd file
+
 CHANGES FROM VERSION 2.3-2 ARE AS FOLLOWS
 
   Changed url in CITATION to canonical form.

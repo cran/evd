@@ -52,54 +52,63 @@ function(q, dep, asy, model = c("log", "alog"), d = 2,
       lower.tail = lower.tail)) 
 }
 
-"pmvlog"<- 
-function(q, dep, d = 2, mar = c(0,1,0), lower.tail = TRUE)
+"pmvlog"<-
+function (q, dep, d = 2, mar = c(0, 1, 0), lower.tail = TRUE) 
 {
-    if(lower.tail) {
-      if(length(dep) != 1 || mode(dep) != "numeric" || dep <= 0 ||
-        dep > 1) stop("invalid argument for `dep'")
-      if(is.null(dim(q))) dim(q) <- c(1,d)
-      if(ncol(q) != d) stop("`q' and `d' are not compatible")
-      q <- mtransform(q, mar)
-      pp <- exp(-apply(q^(1/dep),1,sum)^dep)
-    } else {
-      pp <- numeric(1)
-      ss <- c(list(numeric(0)), subsets(d))
-      ssl <- d - sapply(ss, length)
-      for(i in 1:(2^d)) {
-        tmpq <- q
-        tmpq[, ss[[i]]] <- Inf
-        pp <- (-1)^ssl[i] * Recall(tmpq, dep, d, mar) + pp
-      }
+    if (length(dep) != 1 || mode(dep) != "numeric" || dep <= 
+        0 || dep > 1) 
+    stop("invalid argument for `dep'")
+    if (is.null(dim(q))) 
+        dim(q) <- c(1, d)
+    if (ncol(q) != d) 
+        stop("`q' and `d' are not compatible")
+    if (lower.tail) {
+        q <- mtransform(q, mar)
+        pp <- exp(-apply(q^(1/dep), 1, sum)^dep)
+    }
+    else {
+        pp <- numeric(1)
+        ss <- c(list(numeric(0)), subsets(d))
+        ssl <- d - sapply(ss, length)
+        for (i in 1:(2^d)) {
+            tmpq <- q
+            tmpq[, ss[[i]]] <- Inf
+            pp <- (-1)^ssl[i] * Recall(tmpq, dep, d, mar) + pp
+        }
     }
     pp
 }
 
 "pmvalog"<-
-function(q, dep, asy, d = 2, mar = c(0,1,0), lower.tail = TRUE)
+function (q, dep, asy, d = 2, mar = c(0, 1, 0), lower.tail = TRUE) 
 {
-    if(lower.tail) {
-      nb <- 2^d-1
-      dep <- rep(dep, length.out = nb-d)
-      asy <- mvalog.check(asy, dep, d = d)
-      dep <- c(rep(1,d), dep)
-      if(is.null(dim(q))) dim(q) <- c(1,d)
-      if(ncol(q) != d) stop("`q' and `d' are not compatible")
-      q <- mtransform(q, mar)
-      inner <- function(par)
-        apply((rep(par[1:d], rep(nrow(q),d))*q)^(1/par[d+1]), 1, sum)^par[d+1]
-      comps <- apply(cbind(asy,dep),1,inner)
-      if(is.null(dim(comps))) dim(comps) <- c(1,nb)
-      pp <- exp(-apply(comps,1,sum))
-    } else {
-      pp <- numeric(1)
-      ss <- c(list(numeric(0)), subsets(d))
-      ssl <- d - sapply(ss, length)
-      for(i in 1:(2^d)) {
-        tmpq <- q
-        tmpq[, ss[[i]]] <- Inf
-        pp <- (-1)^ssl[i] * Recall(tmpq, dep, asy, d, mar) + pp
-      }
+    if (is.null(dim(q))) 
+        dim(q) <- c(1, d)
+    if (ncol(q) != d) 
+        stop("`q' and `d' are not compatible")
+	nb <- 2^d - 1
+    dep2 <- rep(dep, length.out = nb - d)
+    asy2 <- mvalog.check(asy, dep2, d = d)
+    dep2 <- c(rep(1, d), dep2)
+    if (lower.tail) {
+        q <- mtransform(q, mar)
+        inner <- function(par) apply((rep(par[1:d], rep(nrow(q), 
+            d)) * q)^(1/par[d + 1]), 1, sum)^par[d + 1]
+        comps <- apply(cbind(asy2, dep2), 1, inner)
+        if (is.null(dim(comps))) 
+            dim(comps) <- c(1, nb)
+        pp <- exp(-apply(comps, 1, sum))
+    }
+    else {
+        pp <- numeric(1)
+        ss <- c(list(numeric(0)), subsets(d))
+        ssl <- d - sapply(ss, length)
+        for (i in 1:(2^d)) {
+            tmpq <- q
+            tmpq[, ss[[i]]] <- Inf
+            pp <- (-1)^ssl[i] * Recall(tmpq, dep, asy, d, mar) + 
+                pp
+        }
     }
     pp
 }

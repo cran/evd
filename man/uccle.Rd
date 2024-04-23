@@ -20,7 +20,7 @@
 }
 \source{
   Sneyers, R. (1977)
-  L'intensit\'{e} maximale des pr\'{e}cipitations en Belgique.
-  \emph{Inst. Royal M\'{e}t\'{e}or. Belgique, B} \bold{86}.
+  L'intensite maximale des precipitations en Belgique.
+  \emph{Inst. Royal Meteor. Belgique, B} \bold{86}.
 }
 \keyword{datasets}
