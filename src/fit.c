@@ -749,8 +749,8 @@ void nslmvalog(double *data, int *n, int *d, double *deps, double *thetas,
   else nmp = 3;
   *dns = 0;
   
-  tdata = (double *)Calloc(nn * dd * sizeof(double), double);
-  dvec = (double *)Calloc(nn * sizeof(double), double);
+  tdata = (double *)R_Calloc(nn * dd * sizeof(double), double);
+  dvec = (double *)R_Calloc(nn * sizeof(double), double);
 
   for(i=0;i<nn;i++) dvec[i] = 0;
 
@@ -817,6 +817,6 @@ void nslmvalog(double *data, int *n, int *d, double *deps, double *thetas,
 
   /*Rprintf("%f\n",*dns);
     error("stop");*/
-  Free(dvec); Free(tdata);
+  R_Free(dvec); R_Free(tdata);
   if(!R_FINITE(*dns) || R_IsNaN(*dns)) error("density is NaN/Inf");
 }
